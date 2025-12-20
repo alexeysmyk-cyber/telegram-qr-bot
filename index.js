@@ -1,6 +1,6 @@
 
 // ================== НАСТРОЙКИ ==================
-const TOKEN = process.env.BOT_TOKEN || 'ВАШ_TELEGRAM_BOT_TOKEN';
+const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
 const ADMIN_CHAT_ID = 1582980728; // <-- твой chat_id
 const DB_FILE = './db.json';
 
@@ -136,3 +136,4 @@ bot.on('message', (msg) => {
     const kop = Math.round(amount * 100);
     const params = { ...BASE_PARAMS, sum: kop.toString() };
     const query = Object.keys(params).map(k => k + '=' + params[k]
+
