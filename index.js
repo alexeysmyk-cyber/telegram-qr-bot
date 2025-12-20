@@ -73,12 +73,10 @@ bot.onText(/\/start/, (msg) => {
   if (!db.whitelist.includes(chatId)) {
     const username = msg.from.username || msg.from.first_name;
 
-    // Если пользователь ещё не в pending
     if (!db.pending.includes(chatId)) {
       db.pending.push(chatId);
       saveDB(db);
 
-      // Уведомляем админа
       bot.sendMessage(ADMIN_CHAT_ID,
         `Новый пользователь @${username} (chatId=${chatId}) хочет использовать бота.`,
         {
@@ -107,7 +105,7 @@ bot.onText(/\/start/, (msg) => {
   }
 });
 
-// ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
+// ================== CALLBACK ==================
 bot.on('callback_query', (query) => {
   const data = query.data;
   const chatIdAdmin = query.from.id;
@@ -120,19 +118,25 @@ bot.on('callback_query', (query) => {
     const chatId = Number(data.split('_')[1]);
     if (!db.whitelist.includes(chatId)) db.whitelist.push(chatId);
     db.pending = db.pending.filter(id => id !== chatId);
+    db.state[chatId] = null; // Инициализируем состояние
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
-    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту');
+    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту.\nВыберите действие:', mainKeyboard());
+
   } else if (data.startsWith('deny_')) {
     const chatId = Number(data.split('_')[1]);
     db.pending = db.pending.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '❌ Пользователь запрещен' });
     bot.sendMessage(chatId, '❌ Администратор отклонил доступ к боту');
+
   } else if (data.startsWith('remove_')) {
     const chatId = Number(data.split('_')[1]);
     db.whitelist = db.whitelist.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '🗑 Доступ удален' });
     bot.sendMessage(chatId, '🗑 Ваш доступ к боту был удален администратором');
   }
@@ -149,15 +153,10 @@ bot.on('message', (msg) => {
 
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
-  // ---- Меню админа: управление whitelist ----
+  // ---- Меню админа ----
   if (chatId === ADMIN_CHAT_ID && text === '📋 Управление whitelist') {
-    if (db.whitelist.length === 1 && db.pending.length === 0) {
-      return bot.sendMessage(chatId, 'Whitelist пуст, новых пользователей нет.');
-    }
-
     const buttons = [];
 
-    // Pending
     db.pending.forEach(id => {
       buttons.push([
         { text: `Разрешить ${id}`, callback_data: `allow_${id}` },
@@ -165,7 +164,6 @@ bot.on('message', (msg) => {
       ]);
     });
 
-    // Существующие пользователи
     db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
       buttons.push([{ text: `Удалить ${id}`, callback_data: `remove_${id}` }]);
     });
@@ -201,9 +199,9 @@ bot.on('message', (msg) => {
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
     return bot.sendPhoto(chatId, qrUrl, {
-  caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
-  ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
-});
+      caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
+      ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
+    });
   }
 
   // ---- История ----
@@ -223,5 +221,3 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
-
-
