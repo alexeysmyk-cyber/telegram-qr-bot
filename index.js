@@ -56,8 +56,8 @@ function adminKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['📋 Управление whitelist', '📜 История'],
-        ['🗑 Очистить историю']
+        ['➕ Создать платёж', '📋 Управление whitelist'],
+        ['📜 История', '🗑 Очистить историю']
       ],
       resize_keyboard: true
     }
@@ -151,7 +151,6 @@ bot.on('message', (msg) => {
     if (text === '📋 Управление whitelist') {
       const buttons = [];
 
-      // Pending
       db.pending.forEach(id => {
         const username = db.users[id] || id;
         buttons.push([
@@ -160,7 +159,6 @@ bot.on('message', (msg) => {
         ]);
       });
 
-      // Существующие пользователи
       db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
         const username = db.users[id] || id;
         buttons.push([{ text: `Удалить ${username}`, callback_data: `remove_${id}` }]);
@@ -229,3 +227,4 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
