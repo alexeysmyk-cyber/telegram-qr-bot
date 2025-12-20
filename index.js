@@ -1,19 +1,28 @@
-const TelegramBot = require('node-telegram-bot-api');
-const express = require('express');
-const shortid = require('shortid');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+import TelegramBot from 'node-telegram-bot-api';
+import express from 'express';
+import fs from 'fs';
+import shortid from 'shortid';
+import axios from 'axios';
 
 // ===== Настройки =====
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs'; // замените на свой токен
 const PORT = process.env.PORT || 3000;
 const BASE_URL = "https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71";
 const BASE_PARAMS = { type: "01", bank: "100000000111", sum: "0", cur: "RUB", crc: "2ddf" };
+const DB_FILE = './db.json';
 
-// ===== DB =====
-const adapter = new FileSync('db.json');
-const db = low(adapter);
-db.defaults({ whitelist: [], history: [], userState: {} }).write();
+// ===== Работа с JSON DB =====
+function readDB() {
+  try {
+    return JSON.parse(fs.readFileSync(DB_FILE, 'utf-8'));
+  } catch {
+    return { whitelist: [], history: [], userState: {} };
+  }
+}
+
+function writeDB(db) {
+  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+}
 
 // ===== Express сервер =====
 const app = express();
@@ -32,16 +41,19 @@ app.post('/webhook', async (req, res) => {
 
 // ===== Логика бота =====
 async function handleUpdate(update) {
+  const db = readDB();
+
   if (update.callback_query) {
     const chatId = update.callback_query.from.id;
     const data = update.callback_query.data;
     await bot.answerCallbackQuery(update.callback_query.id);
 
     if (data === 'create_payment') {
-      db.set(`userState.${chatId}`, 'awaiting_amount').write();
+      db.userState[chatId] = 'awaiting_amount';
+      writeDB(db);
       bot.sendMessage(chatId, '💰 Пожалуйста, пришлите сумму для платежа:');
     } else if (data === 'show_history') {
-      sendHistory(chatId);
+      sendHistory(chatId, db);
     }
     return;
   }
@@ -50,12 +62,12 @@ async function handleUpdate(update) {
   const chatId = update.message.chat.id;
   const text = update.message.text.trim();
 
-  if (!db.get('whitelist').includes(chatId).value()) {
+  if (!db.whitelist.includes(chatId)) {
     bot.sendMessage(chatId, '❌ Вы не в белом списке. Обратитесь к администратору.');
     return;
   }
 
-  if (db.get(`userState.${chatId}`).value() === 'awaiting_amount') {
+  if (db.userState[chatId] === 'awaiting_amount') {
     let rub = parseFloat(text.replace(',', '.'));
     if (isNaN(rub) || rub <= 0) {
       bot.sendMessage(chatId, '❌ Введите корректную сумму, например 150.50');
@@ -63,23 +75,21 @@ async function handleUpdate(update) {
     }
 
     const kop = Math.round(rub * 100);
-    const params = Object.assign({}, BASE_PARAMS, { sum: kop.toString() });
+    const params = { ...BASE_PARAMS, sum: kop.toString() };
     const query = Object.keys(params).map(k => `${k}=${params[k]}`).join('&');
     const link = `${BASE_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
-    db.get('history')
-      .push({ id: shortid.generate(), chatId, rub, kop, link, qrUrl, date: new Date().toISOString() })
-      .write();
-
-    db.unset(`userState.${chatId}`).write();
+    db.history.push({ id: shortid.generate(), chatId, rub, kop, link, qrUrl, date: new Date().toISOString() });
+    delete db.userState[chatId];
+    writeDB(db);
 
     bot.sendPhoto(chatId, qrUrl, { caption: `💰 Сумма: ${rub} ₽\n🔢 В копейках: ${kop}\n🔗 ${link}` });
     return;
   }
 
   if (text === '/history') {
-    sendHistory(chatId);
+    sendHistory(chatId, db);
     return;
   }
 
@@ -99,8 +109,8 @@ function sendMenu(chatId) {
 }
 
 // ===== История =====
-function sendHistory(chatId) {
-  const userRows = db.get('history').filter({ chatId }).value();
+function sendHistory(chatId, db) {
+  const userRows = db.history.filter(h => h.chatId === chatId);
   if (!userRows.length) return bot.sendMessage(chatId, '📭 У вас ещё нет истории QR.');
 
   const lastRows = userRows.slice(-10).reverse();
