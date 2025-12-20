@@ -119,7 +119,7 @@ bot.on('callback_query', (query) => {
     db.pending = db.pending.filter(id => id !== chatId);
     saveDB(db);
     bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
-    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту');
+    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту. Выберите действие:', mainKeyboard());
   } else if (data.startsWith('deny_')) {
     const chatId = Number(data.split('_')[1]);
     db.pending = db.pending.filter(id => id !== chatId);
@@ -231,6 +231,3 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
-
-
-
