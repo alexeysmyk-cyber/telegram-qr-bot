@@ -1,150 +1,121 @@
-// ===== Импорты =====
-import express from 'express';
-import TelegramBot from 'node-telegram-bot-api';
-import fs from 'fs';
-import { Low } from 'lowdb';
-import { JSONFile } from 'lowdb/node';
+const express = require('express');
+const TelegramBot = require('node-telegram-bot-api');
+const fs = require('fs');
 
-// ===== Настройки =====
-const TELEGRAM_TOKEN = "8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs";
+// ===== НАСТРОЙКИ =====
+const TELEGRAM_TOKEN = "8482523179:AAFQzWkCzLrkTWif6Jfn8sXQ-PVxbp0nvs";
+const ADMIN_CHAT_ID = 1582980728;
 const BASE_URL = "https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71";
 const BASE_PARAMS = { type: "01", bank: "100000000111", sum: "0", cur: "RUB", crc: "2ddf" };
 
-// Путь к базе данных lowdb
-const adapter = new JSONFile('db.json');
-const db = new Low(adapter);
+const PORT = 3000;
+const DB_FILE = './db.json';
 
-// Админский chatId
-const ADMIN_CHAT_ID = 1582980728;
+// ===== ПРОСТАЯ БАЗА (без lowdb, чтобы НЕ ЛОМАЛОСЬ) =====
+let db = { whitelist: [ADMIN_CHAT_ID], history: [], state: {} };
 
-// ===== Инициализация Express =====
+if (fs.existsSync(DB_FILE)) {
+  db = JSON.parse(fs.readFileSync(DB_FILE));
+}
+
+function saveDB() {
+  fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+}
+
+// ===== EXPRESS =====
 const app = express();
 app.use(express.json());
 
-// ===== Инициализация бота =====
+// ===== TELEGRAM BOT =====
 const bot = new TelegramBot(TELEGRAM_TOKEN, { polling: false });
 
-// ===== Инициализация базы =====
-await db.read();
-db.data ||= { whitelist: [ADMIN_CHAT_ID], history: [], userState: {} };
-await db.write();
+// ===== WEBHOOK =====
+app.post('/webhook', async (req, res) => {
+  console.log("INCOMING UPDATE:", JSON.stringify(req.body));
 
-// ===== Функция обработки обновлений =====
-async function handleUpdate(update) {
-  if (!update.message) return;
+  const msg = req.body.message;
+  if (!msg) return res.sendStatus(200);
 
-  const chatId = update.message.chat.id;
-  const text = update.message.text?.trim();
+  const chatId = msg.chat.id;
+  const text = msg.text?.trim();
 
-  console.log("=== Telegram Update ===");
-  console.log(JSON.stringify(update, null, 2));
-
-  // Проверка whitelist
-  if (!db.data.whitelist.includes(chatId)) {
-    const username = update.message.from.username || update.message.from.first_name;
-    const link = `https://bot_1766222536_1405_alexey-smyk.bothost.ru/webhook?action=allow&chatId=${chatId}`;
-    await bot.sendMessage(ADMIN_CHAT_ID,
-      `Пользователь @${username} (chatId=${chatId}) хочет использовать бота.\nСумма: ${text}\n[Разрешить](${link})`,
+  // --- whitelist ---
+  if (!db.whitelist.includes(chatId)) {
+    const allowLink = `https://bot_1766222536_1405_alexey-smyk.bothost.ru/allow?chatId=${chatId}`;
+    await bot.sendMessage(
+      ADMIN_CHAT_ID,
+      `Новый запрос доступа\nchatId: ${chatId}\n[РАЗРЕШИТЬ](${allowLink})`,
       { parse_mode: "Markdown" }
     );
-    await bot.sendMessage(chatId, "❌ Вы пока не добавлены в белый список. Доступ можно получить через администратора.");
-    return;
+    await bot.sendMessage(chatId, "⛔ Доступ не разрешён. Ожидайте подтверждения.");
+    return res.sendStatus(200);
   }
 
-  // Команда /history
-  if (text === "/history") {
-    sendHistory(chatId);
-    return;
-  }
-
-  // Проверка состояния пользователя для кнопок
-  if (db.data.userState[chatId] === "WAIT_SUM") {
-    let rubles = parseFloat(text.replace(",", "."));
-    if (isNaN(rubles) || rubles <= 0) {
-      await bot.sendMessage(chatId, "❌ Введите корректную сумму, например: 150.50");
-      return;
+  // --- ожидание суммы ---
+  if (db.state[chatId] === 'WAIT_SUM') {
+    const rub = parseFloat(text.replace(',', '.'));
+    if (isNaN(rub) || rub <= 0) {
+      await bot.sendMessage(chatId, "❌ Введите корректную сумму");
+      return res.sendStatus(200);
     }
 
-    const kop = Math.round(rubles * 100);
-
-    let params = Object.assign({}, BASE_PARAMS);
-    params.sum = kop.toString();
-    const query = Object.keys(params).map(k => k + "=" + params[k]).join("&");
+    const kop = Math.round(rub * 100);
+    const params = { ...BASE_PARAMS, sum: kop };
+    const query = Object.entries(params).map(([k,v]) => `${k}=${v}`).join('&');
     const link = `${BASE_URL}?${query}`;
+    const qr = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
-    const qrUrl = "https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=" + encodeURIComponent(link);
+    db.history.push({ chatId, rub, link, date: new Date() });
+    db.state[chatId] = null;
+    saveDB();
 
-    // Сохраняем в history
-    db.data.history.push({ chatId, date: new Date().toISOString(), rubles, kop, link, qrUrl });
-    await db.write();
-
-    await bot.sendPhoto(chatId, qrUrl, `💰 Сумма: ${rubles} ₽\n🔢 В копейках: ${kop}\n🔗 Ссылка: ${link}`);
-    db.data.userState[chatId] = null;
-    await db.write();
-    return;
+    await bot.sendPhoto(chatId, qr, { caption: `💰 ${rub} ₽\n🔗 ${link}` });
+    return res.sendStatus(200);
   }
 
-  // Главное меню с кнопками
-  const opts = {
-    reply_markup: {
-      keyboard: [
-        ["Создать платеж", "История платежей"]
-      ],
-      resize_keyboard: true,
-      one_time_keyboard: true
+  // --- меню ---
+  if (text === 'Создать платеж') {
+    db.state[chatId] = 'WAIT_SUM';
+    saveDB();
+    await bot.sendMessage(chatId, "Введите сумму:");
+  } else if (text === 'История платежей') {
+    const rows = db.history.filter(h => h.chatId === chatId);
+    if (!rows.length) {
+      await bot.sendMessage(chatId, "История пуста");
+    } else {
+      let msgText = "📊 История:\n\n";
+      rows.slice(-10).forEach(r => {
+        msgText += `💰 ${r.rub} ₽\n🔗 ${r.link}\n\n`;
+      });
+      await bot.sendMessage(chatId, msgText);
     }
-  };
-
-  if (text === "Создать платеж") {
-    db.data.userState[chatId] = "WAIT_SUM";
-    await db.write();
-    await bot.sendMessage(chatId, "Введите сумму в рублях:", opts);
-  } else if (text === "История платежей") {
-    sendHistory(chatId);
   } else {
-    await bot.sendMessage(chatId, "Выберите действие:", opts);
-  }
-}
-
-// ===== Функция вывода истории =====
-async function sendHistory(chatId) {
-  const userRows = db.data.history.filter(row => row.chatId === chatId);
-  if (!userRows.length) {
-    await bot.sendMessage(chatId, "📭 У вас ещё нет истории QR.");
-    return;
+    await bot.sendMessage(chatId, "Выберите действие:", {
+      reply_markup: {
+        keyboard: [["Создать платеж", "История платежей"]],
+        resize_keyboard: true
+      }
+    });
   }
 
-  const lastRows = userRows.slice(-10).reverse();
-  let messageText = "📊 Последние QR:\n\n";
-  lastRows.forEach(row => {
-    const date = new Date(row.date).toLocaleString("ru-RU");
-    messageText += `💰 ${row.rubles} ₽ — ${date}\n🔗 ${row.link}\n\n`;
-  });
-
-  await bot.sendMessage(chatId, messageText);
-}
-
-// ===== Webhook обработка =====
-app.post('/webhook', async (req, res) => {
-  console.log("=== Received webhook ===");
-  console.log(JSON.stringify(req.body, null, 2));
-  await handleUpdate(req.body);
   res.sendStatus(200);
 });
 
-// ===== Добавление в whitelist через ссылку =====
-app.get('/webhook', async (req, res) => {
-  const { action, chatId } = req.query;
-  if (action === "allow" && chatId) {
-    if (!db.data.whitelist.includes(Number(chatId))) {
-      db.data.whitelist.push(Number(chatId));
-      await db.write();
-    }
-    res.send("✅ Пользователь добавлен в белый список");
-  } else {
-    res.send("⚠ Неверный запрос");
+// ===== ДОБАВЛЕНИЕ В WHITELIST =====
+app.get('/allow', (req, res) => {
+  const chatId = Number(req.query.chatId);
+  if (!db.whitelist.includes(chatId)) {
+    db.whitelist.push(chatId);
+    saveDB();
   }
+  res.send("✅ Пользователь добавлен");
+});
+
+// ===== START =====
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
 
 // ===== Запуск сервера =====
 app.listen(3000, () => console.log("Server running on port 3000"));
+
