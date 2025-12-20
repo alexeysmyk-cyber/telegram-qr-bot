@@ -209,7 +209,7 @@ bot.on('message', (msg) => {
   const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
   // Выбираем клавиатуру в зависимости от роли
-  const keyboard = (chatId === ADMIN_CHAT_ID) ? adminMenuKeyboard() : mainKeyboard();
+  const keyboard = (chatId === ADMIN_CHAT_ID) ? adminKeyboard() : mainKeyboard();
 
   return bot.sendPhoto(chatId, qrUrl, {
     caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
@@ -231,5 +231,6 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
