@@ -1,10 +1,20 @@
 {
+  "name": "telegram-qr-bot",
+  "version": "1.0.0",
+  "description": "Telegram bot для генерации QR платежей",
   "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
-    "node-telegram-bot-api": "^0.61.0",
-    "express": "^4.18.2",
     "axios": "^1.6.0",
-    "shortid": "^2.2.16",
-    "lowdb": "^6.0.1"
+    "express": "^4.18.2",
+    "lowdb": "^6.0.1",
+    "node-telegram-bot-api": "^0.61.0",
+    "shortid": "^2.2.16"
+  },
+  "engines": {
+    "node": ">=18.0.0"
   }
 }
