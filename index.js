@@ -111,9 +111,9 @@ bot.on('message', (msg) => {
 
     // ---- Отправляем пользователю ----
     return bot.sendPhoto(chatId, qrUrl, {
-      caption: `✅ Платёж создан\n💰 Сумма: ${amount} ₽\n🔢 В копейках: ${kop}\n🔗 Ссылка: ${link}`,
-      ...mainKeyboard()
-    });
+  caption: `✅ Платёж создан\n🏢 ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
+  ...mainKeyboard()
+});
   }
 
   // ---- История ----
@@ -134,3 +134,4 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
