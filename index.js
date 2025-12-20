@@ -200,7 +200,10 @@ bot.on('message', (msg) => {
     const link = `${BASE_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
-    return bot.sendPhoto(chatId, qrUrl, `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`, mainKeyboard());
+    return bot.sendPhoto(chatId, qrUrl, {
+  caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
+  ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
+});
   }
 
   // ---- История ----
@@ -220,4 +223,5 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
