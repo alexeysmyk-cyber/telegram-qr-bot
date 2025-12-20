@@ -1,6 +1,6 @@
 // ================== НАСТРОЙКИ ==================
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
-const ADMIN_CHAT_ID = 1582980728;
+const ADMIN_CHAT_ID = 1582980728; // <-- твой chat_id
 const DB_FILE = './db.json';
 const BASE_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
 const BASE_PARAMS = { type: '01', bank: '100000000111', sum: '0', cur: 'RUB', crc: '2ddf' };
@@ -43,7 +43,8 @@ function mainKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['➕ Создать платёж', '📜 История']
+        ['➕ Создать платёж'],
+        ['📜 История']
       ],
       resize_keyboard: true
     }
@@ -54,8 +55,9 @@ function adminKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['📋 Управление whitelist', '🗑 Очистить историю'],
-        ['📜 История', '➕ Создать платёж']
+        ['➕ Создать платёж'],
+        ['📜 История'],
+        ['📋 Управление whitelist', '🗑 Очистить историю']
       ],
       resize_keyboard: true
     }
@@ -94,14 +96,11 @@ bot.onText(/\/start/, (msg) => {
   db.state[chatId] = null;
   saveDB(db);
 
-  if (chatId === ADMIN_CHAT_ID) {
-    bot.sendMessage(chatId, 'Привет админ 👋\nВыбери действие:', adminKeyboard());
-  } else {
-    bot.sendMessage(chatId, 'Привет 👋\nВыбери действие:', mainKeyboard());
-  }
+  const keyboard = chatId === ADMIN_CHAT_ID ? adminKeyboard() : mainKeyboard();
+  bot.sendMessage(chatId, 'Привет 👋\nВыбери действие:', keyboard);
 });
 
-// ================== CALLBACK ==================
+// ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
 bot.on('callback_query', (query) => {
   const data = query.data;
   const chatIdAdmin = query.from.id;
@@ -114,10 +113,9 @@ bot.on('callback_query', (query) => {
     const chatId = Number(data.split('_')[1]);
     if (!db.whitelist.includes(chatId)) db.whitelist.push(chatId);
     db.pending = db.pending.filter(id => id !== chatId);
-    db.state[chatId] = null;
     saveDB(db);
     bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
-    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту', mainKeyboard());
+    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту');
   } else if (data.startsWith('deny_')) {
     const chatId = Number(data.split('_')[1]);
     db.pending = db.pending.filter(id => id !== chatId);
@@ -139,62 +137,40 @@ bot.on('message', (msg) => {
   const text = msg.text;
 
   if (msg.entities && msg.entities.some(e => e.type === 'bot_command')) return;
-
   console.log(`MSG from ${chatId}: ${text}`);
-
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
-  // ----------------- Админ -----------------
+  // ---- Меню админа ----
   if (chatId === ADMIN_CHAT_ID) {
-    // Управление whitelist
     if (text === '📋 Управление whitelist') {
       const buttons = [];
-
       db.pending.forEach(id => {
         buttons.push([
           { text: `Разрешить ${id}`, callback_data: `allow_${id}` },
           { text: `Запретить ${id}`, callback_data: `deny_${id}` }
         ]);
       });
-
       db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
         buttons.push([{ text: `Удалить ${id}`, callback_data: `remove_${id}` }]);
       });
-
       return bot.sendMessage(chatId, '👥 Управление whitelist', { reply_markup: { inline_keyboard: buttons } });
     }
 
-    // Очистка истории
     if (text === '🗑 Очистить историю') {
-      Object.keys(db.history).forEach(id => { db.history[id] = []; });
+      db.history = {};
       saveDB(db);
-      return bot.sendMessage(chatId, '🗑 История очищена');
-    }
-
-    // Просмотр истории
-    if (text === '📜 История') {
-      const history = db.history[chatId] || [];
-      if (history.length === 0) return bot.sendMessage(chatId, '📭 История пуста');
-
-      const textHistory = history.map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`).join('\n');
-      return bot.sendMessage(chatId, `📜 История:\n\n${textHistory}`);
-    }
-
-    // Создание платежа
-    if (text === '➕ Создать платёж') {
-      db.state[chatId] = 'WAIT_SUM';
-      saveDB(db);
-      return bot.sendMessage(chatId, '💰 Введите сумму:');
+      return bot.sendMessage(chatId, '🗑 История платежей очищена');
     }
   }
 
-  // ----------------- Пользователь -----------------
+  // ---- Создание платежа ----
   if (text === '➕ Создать платёж') {
     db.state[chatId] = 'WAIT_SUM';
     saveDB(db);
     return bot.sendMessage(chatId, '💰 Введите сумму:');
   }
 
+  // ---- Ожидание суммы ----
   if (db.state[chatId] === 'WAIT_SUM') {
     const amount = Number(text);
     if (isNaN(amount) || amount <= 0) return bot.sendMessage(chatId, '❌ Введите корректную сумму');
@@ -210,17 +186,23 @@ bot.on('message', (msg) => {
     const link = `${BASE_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
+    const keyboard = chatId === ADMIN_CHAT_ID ? adminKeyboard() : mainKeyboard();
+
     return bot.sendPhoto(chatId, qrUrl, {
       caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
-      ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
+      reply_markup: keyboard.reply_markup
     });
   }
 
+  // ---- История ----
   if (text === '📜 История') {
     const history = db.history[chatId] || [];
     if (history.length === 0) return bot.sendMessage(chatId, '📭 История пуста');
 
-    const textHistory = history.map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`).join('\n');
+    const textHistory = history
+      .map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`)
+      .join('\n');
+
     return bot.sendMessage(chatId, `📜 История:\n\n${textHistory}`);
   }
 });
@@ -229,4 +211,3 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
-
