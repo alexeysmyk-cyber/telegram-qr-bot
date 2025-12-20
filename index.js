@@ -1,11 +1,10 @@
 import TelegramBot from 'node-telegram-bot-api';
 import express from 'express';
-import axios from 'axios';
 import shortid from 'shortid';
-import { Low, JSONFile } from 'lowdb';
+import { Low, JSONFile } from 'lowdb/node'; // <== обратите внимание, 'lowdb/node'
 
 // ===== Настройки =====
-const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs'; // <=== замени на токен своего бота
+const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
 const PORT = process.env.PORT || 3000;
 const BASE_URL = "https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71";
 const BASE_PARAMS = { type: "01", bank: "100000000111", sum: "0", cur: "RUB", crc: "2ddf" };
@@ -23,11 +22,10 @@ const app = express();
 app.use(express.json());
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
-// ===== Telegram бот через webhook =====
+// ===== Telegram бот =====
 const bot = new TelegramBot(TOKEN, { polling: false });
-bot.setWebHook(`https://${process.env.BOTHOST_PROJECT_DOMAIN}/webhook`);
 
-// ===== Обработка webhook =====
+// Webhook путь
 app.post('/webhook', async (req, res) => {
   const update = req.body;
   await handleUpdate(update);
@@ -57,13 +55,11 @@ async function handleUpdate(update) {
   const chatId = update.message.chat.id;
   const text = update.message.text.trim();
 
-  // ===== Проверка whitelist =====
   if (!db.data.whitelist.includes(chatId)) {
     bot.sendMessage(chatId, '❌ Вы не в белом списке. Обратитесь к администратору.');
     return;
   }
 
-  // ===== Обработка состояния пользователя =====
   if (db.data.userState[chatId] === 'awaiting_amount') {
     let rub = parseFloat(text.replace(',', '.'));
     if (isNaN(rub) || rub <= 0) {
@@ -85,7 +81,6 @@ async function handleUpdate(update) {
     return;
   }
 
-  // ===== Команда /history =====
   if (text === '/history') {
     sendHistory(chatId);
     return;
@@ -94,7 +89,7 @@ async function handleUpdate(update) {
   sendMenu(chatId);
 }
 
-// ===== Меню с кнопками =====
+// ===== Меню =====
 function sendMenu(chatId) {
   bot.sendMessage(chatId, 'Выберите действие:', {
     reply_markup: {
@@ -106,7 +101,7 @@ function sendMenu(chatId) {
   });
 }
 
-// ===== История платежей =====
+// ===== История =====
 function sendHistory(chatId) {
   const userRows = db.data.history.filter(h => h.chatId === chatId);
   if (!userRows.length) return bot.sendMessage(chatId, '📭 У вас ещё нет истории QR.');
@@ -120,3 +115,4 @@ function sendHistory(chatId) {
 
   bot.sendMessage(chatId, message);
 }
+
