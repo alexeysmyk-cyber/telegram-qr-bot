@@ -1,4 +1,4 @@
-
+// ================== НАСТРОЙКИ ==================
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
 const ADMIN_CHAT_ID = 1582980728;
 const DB_FILE = './db.json';
@@ -55,10 +55,9 @@ function adminMenuKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['➕ Создать платёж'],
-        ['📜 История'],
         ['📋 Управление whitelist'],
         ['🗑 Очистить историю'],
+        ['📜 История'],
         ['⬅ Назад']
       ],
       resize_keyboard: true
@@ -72,7 +71,6 @@ bot.onText(/\/start/, (msg) => {
 
   if (!db.whitelist.includes(chatId)) {
     const username = msg.from.username || msg.from.first_name;
-
     if (!db.pending.includes(chatId)) {
       db.pending.push(chatId);
       saveDB(db);
@@ -91,7 +89,6 @@ bot.onText(/\/start/, (msg) => {
         }
       );
     }
-
     return bot.sendMessage(chatId, '⛔ Вы пока не добавлены в белый список. Ожидайте одобрения администратора.');
   }
 
@@ -105,7 +102,7 @@ bot.onText(/\/start/, (msg) => {
   }
 });
 
-// ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
+// ================== CALLBACK ==================
 bot.on('callback_query', (query) => {
   const data = query.data;
   const chatIdAdmin = query.from.id;
@@ -118,19 +115,23 @@ bot.on('callback_query', (query) => {
     const chatId = Number(data.split('_')[1]);
     if (!db.whitelist.includes(chatId)) db.whitelist.push(chatId);
     db.pending = db.pending.filter(id => id !== chatId);
+    db.state[chatId] = null;
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
-    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту');
+    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту', mainKeyboard());
   } else if (data.startsWith('deny_')) {
     const chatId = Number(data.split('_')[1]);
     db.pending = db.pending.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '❌ Пользователь запрещен' });
     bot.sendMessage(chatId, '❌ Администратор отклонил доступ к боту');
   } else if (data.startsWith('remove_')) {
     const chatId = Number(data.split('_')[1]);
     db.whitelist = db.whitelist.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '🗑 Доступ удален' });
     bot.sendMessage(chatId, '🗑 Ваш доступ к боту был удален администратором');
   }
@@ -148,33 +149,32 @@ bot.on('message', (msg) => {
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
   // ---- Меню админа: управление whitelist ----
-  if (chatId === ADMIN_CHAT_ID) {
-    if (text === '📋 Управление whitelist') {
-      const buttons = [];
+  if (chatId === ADMIN_CHAT_ID && text === '📋 Управление whitelist') {
+    const buttons = [];
 
-      db.pending.forEach(id => {
-        buttons.push([
-          { text: `Разрешить ${id}`, callback_data: `allow_${id}` },
-          { text: `Запретить ${id}`, callback_data: `deny_${id}` }
-        ]);
-      });
+    db.pending.forEach(id => {
+      buttons.push([
+        { text: `Разрешить ${id}`, callback_data: `allow_${id}` },
+        { text: `Запретить ${id}`, callback_data: `deny_${id}` }
+      ]);
+    });
 
-      db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
-        buttons.push([{ text: `Удалить ${id}`, callback_data: `remove_${id}` }]);
-      });
+    db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
+      buttons.push([{ text: `Удалить ${id}`, callback_data: `remove_${id}` }]);
+    });
 
-      return bot.sendMessage(chatId, '👥 Управление whitelist', { reply_markup: { inline_keyboard: buttons } });
-    }
+    return bot.sendMessage(chatId, '👥 Управление whitelist', { reply_markup: { inline_keyboard: buttons } });
+  }
 
-    if (text === '🗑 Очистить историю') {
-      db.history = {};
-      saveDB(db);
-      return bot.sendMessage(chatId, '📭 История всех пользователей очищена');
-    }
+  // ---- Очистка истории админом ----
+  if (chatId === ADMIN_CHAT_ID && text === '🗑 Очистить историю') {
+    db.history = {};
+    saveDB(db);
+    return bot.sendMessage(chatId, '🗑 История очищена');
+  }
 
-    if (text === '⬅ Назад') {
-      return bot.sendMessage(chatId, 'Главное меню:', adminMenuKeyboard());
-    }
+  if (text === '⬅ Назад' && chatId === ADMIN_CHAT_ID) {
+    return bot.sendMessage(chatId, 'Главное меню:', adminMenuKeyboard());
   }
 
   // ---- Создание платежа ----
@@ -194,14 +194,15 @@ bot.on('message', (msg) => {
     db.history[chatId].push({ amount, date: new Date().toISOString() });
     saveDB(db);
 
-    let params = { ...BASE_PARAMS, sum: Math.round(amount * 100).toString() };
+    // Формируем ссылку
+    const params = { ...BASE_PARAMS, sum: Math.round(amount * 100).toString() };
     const query = Object.keys(params).map(k => k + '=' + params[k]).join('&');
     const link = `${BASE_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
     return bot.sendPhoto(chatId, qrUrl, {
       caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
-      reply_markup: chatId === ADMIN_CHAT_ID ? adminMenuKeyboard().reply_markup : mainKeyboard().reply_markup
+      ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
     });
   }
 
@@ -210,10 +211,7 @@ bot.on('message', (msg) => {
     const history = db.history[chatId] || [];
     if (history.length === 0) return bot.sendMessage(chatId, '📭 История пуста');
 
-    const textHistory = history
-      .map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`)
-      .join('\n');
-
+    const textHistory = history.map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`).join('\n');
     return bot.sendMessage(chatId, `📜 История:\n\n${textHistory}`);
   }
 });
@@ -222,6 +220,7 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
