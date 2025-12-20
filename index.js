@@ -1,9 +1,8 @@
-const TelegramBot = require('node-telegram-bot-api');
-const express = require('express');
-const axios = require('axios');
-const shortid = require('shortid');
-const low = require('lowdb');
-const FileSync = require('lowdb/adapters/FileSync');
+import TelegramBot from 'node-telegram-bot-api';
+import express from 'express';
+import axios from 'axios';
+import shortid from 'shortid';
+import { Low, JSONFile } from 'lowdb';
 
 // ===== Настройки =====
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs'; // <=== замени на токен своего бота
@@ -12,11 +11,12 @@ const BASE_URL = "https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71";
 const BASE_PARAMS = { type: "01", bank: "100000000111", sum: "0", cur: "RUB", crc: "2ddf" };
 
 // ===== DB =====
-const adapter = new FileSync('db.json');
-const db = low(adapter);
+const adapter = new JSONFile('db.json');
+const db = new Low(adapter);
 
-// Инициализация структуры базы
-db.defaults({ whitelist: [], history: [], userState: {} }).write();
+await db.read();
+db.data ||= { whitelist: [], history: [], userState: {} };
+await db.write();
 
 // ===== Express сервер =====
 const app = express();
@@ -24,7 +24,7 @@ app.use(express.json());
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
 // ===== Telegram бот через webhook =====
-const bot = new TelegramBot(TOKEN);
+const bot = new TelegramBot(TOKEN, { polling: false });
 bot.setWebHook(`https://${process.env.BOTHOST_PROJECT_DOMAIN}/webhook`);
 
 // ===== Обработка webhook =====
@@ -36,6 +36,7 @@ app.post('/webhook', async (req, res) => {
 
 // ===== Логика бота =====
 async function handleUpdate(update) {
+  await db.read();
 
   if (update.callback_query) {
     const chatId = update.callback_query.from.id;
@@ -43,7 +44,8 @@ async function handleUpdate(update) {
     await bot.answerCallbackQuery(update.callback_query.id);
 
     if (data === 'create_payment') {
-      db.set(`userState.${chatId}`, 'awaiting_amount').write();
+      db.data.userState[chatId] = 'awaiting_amount';
+      await db.write();
       bot.sendMessage(chatId, '💰 Пожалуйста, пришлите сумму для платежа:');
     } else if (data === 'show_history') {
       sendHistory(chatId);
@@ -56,13 +58,13 @@ async function handleUpdate(update) {
   const text = update.message.text.trim();
 
   // ===== Проверка whitelist =====
-  if (!db.get('whitelist').includes(chatId).value()) {
+  if (!db.data.whitelist.includes(chatId)) {
     bot.sendMessage(chatId, '❌ Вы не в белом списке. Обратитесь к администратору.');
     return;
   }
 
   // ===== Обработка состояния пользователя =====
-  if (db.get(`userState.${chatId}`).value() === 'awaiting_amount') {
+  if (db.data.userState[chatId] === 'awaiting_amount') {
     let rub = parseFloat(text.replace(',', '.'));
     if (isNaN(rub) || rub <= 0) {
       bot.sendMessage(chatId, '❌ Введите корректную сумму, например 150.50');
@@ -75,11 +77,9 @@ async function handleUpdate(update) {
     const link = `${BASE_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
-    db.get('history')
-      .push({ id: shortid.generate(), chatId, rub, kop, link, qrUrl, date: new Date().toISOString() })
-      .write();
-
-    db.unset(`userState.${chatId}`).write();
+    db.data.history.push({ id: shortid.generate(), chatId, rub, kop, link, qrUrl, date: new Date().toISOString() });
+    db.data.userState[chatId] = null;
+    await db.write();
 
     bot.sendPhoto(chatId, qrUrl, { caption: `💰 Сумма: ${rub} ₽\n🔢 В копейках: ${kop}\n🔗 ${link}` });
     return;
@@ -108,7 +108,7 @@ function sendMenu(chatId) {
 
 // ===== История платежей =====
 function sendHistory(chatId) {
-  const userRows = db.get('history').filter({ chatId }).value();
+  const userRows = db.data.history.filter(h => h.chatId === chatId);
   if (!userRows.length) return bot.sendMessage(chatId, '📭 У вас ещё нет истории QR.');
 
   const lastRows = userRows.slice(-10).reverse();
