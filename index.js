@@ -1,8 +1,8 @@
-import TelegramBot from 'node-telegram-bot-api';
-import express from 'express';
-import fs from 'fs';
-import shortid from 'shortid';
-import axios from 'axios';
+const TelegramBot = require('node-telegram-bot-api');
+const express = require('express');
+const fs = require('fs');
+const shortid = require('shortid');
+const axios = require('axios');
 
 // ===== Настройки =====
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs'; // замените на свой токен
@@ -75,7 +75,7 @@ async function handleUpdate(update) {
     }
 
     const kop = Math.round(rub * 100);
-    const params = { ...BASE_PARAMS, sum: kop.toString() };
+    const params = Object.assign({}, BASE_PARAMS, { sum: kop.toString() });
     const query = Object.keys(params).map(k => `${k}=${params[k]}`).join('&');
     const link = `${BASE_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
