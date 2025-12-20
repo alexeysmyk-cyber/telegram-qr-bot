@@ -3,7 +3,6 @@ const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 
 // ================= НАСТРОЙКИ =================
-const TELEGRAM_TOKEN = 'ВАШ_BOT_TOKEN';
 const TELEGRAM_TOKEN = "8482523179:AAFQzWkCzLrkTWif6Jfn8sXQ-PVxbp0nvs";
 const BASE_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
 const BASE_PARAMS = {
@@ -142,4 +141,5 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log('Server running on port', PORT);
 });
+
 
