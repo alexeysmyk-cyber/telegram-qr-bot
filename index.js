@@ -1,6 +1,6 @@
 
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
-const ADMIN_CHAT_ID = 1582980728; // <-- твой chat_id
+const ADMIN_CHAT_ID = 1582980728;
 const DB_FILE = './db.json';
 const BASE_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
 const BASE_PARAMS = { type: '01', bank: '100000000111', sum: '0', cur: 'RUB', crc: '2ddf' };
@@ -55,9 +55,10 @@ function adminMenuKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['📋 Управление whitelist'],
+        ['➕ Создать платёж'],
         ['📜 История'],
-        ['🗑 Очистить историю'], // новая кнопка
+        ['📋 Управление whitelist'],
+        ['🗑 Очистить историю'],
         ['⬅ Назад']
       ],
       resize_keyboard: true
@@ -147,33 +148,33 @@ bot.on('message', (msg) => {
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
   // ---- Меню админа: управление whitelist ----
-  if (chatId === ADMIN_CHAT_ID && text === '📋 Управление whitelist') {
-    const buttons = [];
+  if (chatId === ADMIN_CHAT_ID) {
+    if (text === '📋 Управление whitelist') {
+      const buttons = [];
 
-    // Pending
-    db.pending.forEach(id => {
-      buttons.push([
-        { text: `Разрешить ${id}`, callback_data: `allow_${id}` },
-        { text: `Запретить ${id}`, callback_data: `deny_${id}` }
-      ]);
-    });
+      db.pending.forEach(id => {
+        buttons.push([
+          { text: `Разрешить ${id}`, callback_data: `allow_${id}` },
+          { text: `Запретить ${id}`, callback_data: `deny_${id}` }
+        ]);
+      });
 
-    // Whitelist без админа
-    db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
-      buttons.push([{ text: `Удалить ${id}`, callback_data: `remove_${id}` }]);
-    });
+      db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
+        buttons.push([{ text: `Удалить ${id}`, callback_data: `remove_${id}` }]);
+      });
 
-    return bot.sendMessage(chatId, '👥 Управление whitelist', { reply_markup: { inline_keyboard: buttons } });
-  }
+      return bot.sendMessage(chatId, '👥 Управление whitelist', { reply_markup: { inline_keyboard: buttons } });
+    }
 
-  if (chatId === ADMIN_CHAT_ID && text === '🗑 Очистить историю') {
-    db.history = {};
-    saveDB(db);
-    return bot.sendMessage(chatId, '🗑 История всех пользователей очищена');
-  }
+    if (text === '🗑 Очистить историю') {
+      db.history = {};
+      saveDB(db);
+      return bot.sendMessage(chatId, '📭 История всех пользователей очищена');
+    }
 
-  if (text === '⬅ Назад' && chatId === ADMIN_CHAT_ID) {
-    return bot.sendMessage(chatId, 'Главное меню:', adminMenuKeyboard());
+    if (text === '⬅ Назад') {
+      return bot.sendMessage(chatId, 'Главное меню:', adminMenuKeyboard());
+    }
   }
 
   // ---- Создание платежа ----
@@ -193,7 +194,6 @@ bot.on('message', (msg) => {
     db.history[chatId].push({ amount, date: new Date().toISOString() });
     saveDB(db);
 
-    // Формируем ссылку
     let params = { ...BASE_PARAMS, sum: Math.round(amount * 100).toString() };
     const query = Object.keys(params).map(k => k + '=' + params[k]).join('&');
     const link = `${BASE_URL}?${query}`;
@@ -201,7 +201,7 @@ bot.on('message', (msg) => {
 
     return bot.sendPhoto(chatId, qrUrl, {
       caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
-      ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
+      reply_markup: chatId === ADMIN_CHAT_ID ? adminMenuKeyboard().reply_markup : mainKeyboard().reply_markup
     });
   }
 
@@ -222,4 +222,6 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
+
 
