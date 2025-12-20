@@ -194,24 +194,28 @@ bot.on('message', (msg) => {
 
   // ---- Ожидание суммы ----
   if (db.state[chatId] === 'WAIT_SUM') {
-    const amount = Number(text);
-    if (isNaN(amount) || amount <= 0) return bot.sendMessage(chatId, '❌ Введите корректную сумму');
+  const amount = Number(text);
+  if (isNaN(amount) || amount <= 0) return bot.sendMessage(chatId, '❌ Введите корректную сумму');
 
-    db.state[chatId] = null;
-    if (!db.history[chatId]) db.history[chatId] = [];
-    db.history[chatId].push({ amount, date: new Date().toISOString() });
-    saveDB(db);
+  db.state[chatId] = null;
+  if (!db.history[chatId]) db.history[chatId] = [];
+  db.history[chatId].push({ amount, date: new Date().toISOString() });
+  saveDB(db);
 
-    let params = { ...BASE_PARAMS, sum: Math.round(amount * 100).toString() };
-    const query = Object.keys(params).map(k => k + '=' + params[k]).join('&');
-    const link = `${BASE_URL}?${query}`;
-    const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
+  // Формируем ссылку
+  let params = { ...BASE_PARAMS, sum: Math.round(amount * 100).toString() };
+  const query = Object.keys(params).map(k => k + '=' + params[k]).join('&');
+  const link = `${BASE_URL}?${query}`;
+  const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
-    return bot.sendPhoto(chatId, qrUrl, {
-      caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
-      ...mainKeyboard().reply_markup ? { reply_markup: mainKeyboard().reply_markup } : {}
-    });
-  }
+  // Выбираем клавиатуру в зависимости от роли
+  const keyboard = (chatId === ADMIN_CHAT_ID) ? adminMenuKeyboard() : mainKeyboard();
+
+  return bot.sendPhoto(chatId, qrUrl, {
+    caption: `ООО "Медицинская Среда"\n💰 Сумма: ${amount} ₽\n🔗 Ссылка: ${link}`,
+    reply_markup: keyboard.reply_markup
+  });
+}
 
   // ---- История ----
   if (text === '📜 История') {
@@ -227,4 +231,5 @@ bot.on('message', (msg) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
