@@ -229,8 +229,22 @@ bot.on('message', (msg) => {
   }
 });
 
+// ================== HTTP SERVER (TEST) ==================
+const app = express();
+
+const PORT = process.env.PORT || 3000;
+
+app.get('/ping', (req, res) => {
+  res.send('OK');
+});
+
+app.listen(PORT, () => {
+  console.log('🌐 HTTP server started on port', PORT);
+});
+
 // ================== ОШИБКИ ==================
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
