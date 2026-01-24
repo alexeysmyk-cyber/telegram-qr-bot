@@ -8,7 +8,12 @@ const BASE_PARAMS = { type: '01', bank: '100000000111', sum: '0', cur: 'RUB', cr
 // ================== ИМПОРТЫ ==================
 const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
-const express = require('express');
+const app = express();
+
+app.use((req, res, next) => {
+  console.log(`🌐 HTTP ${req.method} ${req.url}`);
+  next();
+});
 const bodyParser = require('body-parser');
 
 // ================== БОТ ==================
@@ -246,5 +251,6 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
