@@ -65,7 +65,24 @@ let db = loadDB();
 
 // ================== КНОПКИ ==================
 function showNotifyMenu(chatId) {
+  if (!db.notify_settings[chatId]) {
+    db.notify_settings[chatId] = {};
+  }
+
   const s = db.notify_settings[chatId];
+
+  // автозаполнение отсутствующих полей
+  if (!('visit_create' in s)) s.visit_create = 'none';
+  if (!('visit_update' in s)) s.visit_update = 'none';
+  if (!('visit_cancel' in s)) s.visit_cancel = 'none';
+  if (!('visit_finish' in s)) s.visit_finish = 'none';
+
+  if (!('patient_create' in s)) s.patient_create = false;
+
+  if (!('invoice_create' in s)) s.invoice_create = false;
+  if (!('invoice_pay' in s)) s.invoice_pay = false;
+  if (!('lab_partial' in s)) s.lab_partial = false;
+  if (!('lab_full' in s)) s.lab_full = false;
 
   function threeLabel(v) {
     if (v === 'self') return '👤';
@@ -235,7 +252,7 @@ bot.on('callback_query', (query) => {
           visit_cancel: "none",
           visit_finish: "none",
           invoice_create: false,
-          patient_create: "false",
+          patient_create: false,
           invoice_pay: false,
           lab_partial: false,
           lab_full: false
@@ -524,6 +541,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
