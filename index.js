@@ -241,20 +241,32 @@ bot.on('message', (msg) => {
 // ================== HTTP SERVER (TEST) ==================
 
 
-const PORT = process.env.PORT || 3000;
+// ================== HTTP SERVER (ДЛЯ WEBHOOK ОТ СЕРВИСОВ) ==================
+
+const PORT = process.env.PORT; // ❗ НЕ ставим 3000 вручную
 
 app.get('/ping', (req, res) => {
   res.send('OK');
 });
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log('🌐 HTTP server started on port', PORT);
 });
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.warn('⚠️ Port already in use, HTTP server not started (but bot continues working)');
+  } else {
+    console.error('HTTP server error:', err);
+  }
+});
+
 
 // ================== ОШИБКИ ==================
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
