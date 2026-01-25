@@ -138,10 +138,9 @@ function mainKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['➕ Создать платёж'],
-        ['📜 История'],
-        ['🔔 Уведомления']
-      ],
+        ['➕ Создать платёж' , '📜 История'],
+        ['🔔 Уведомления', '🆔 Мой ID в МИС']
+         ],
       resize_keyboard: true
     }
   };
@@ -792,6 +791,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
