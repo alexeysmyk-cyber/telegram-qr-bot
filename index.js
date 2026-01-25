@@ -155,160 +155,173 @@ bot.onText(/\/start/, (msg) => {
 
 // ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
 // ================== CALLBACK (Разрешить/Запретить/Удалить + Уведомления) ==================
+// ================== CALLBACK ==================
 bot.on('callback_query', (query) => {
   const data = query.data;
-  const chatIdAdmin = query.from.id;
+  const fromId = query.from.id;
 
+  // игнор пустых заголовков
   if (data === 'noop') {
-  return bot.answerCallbackQuery(query.id);
-}
-
-  if (chatIdAdmin !== ADMIN_CHAT_ID) {
-    return bot.answerCallbackQuery(query.id, { text: '❌ Только админ может управлять доступом' });
+    return bot.answerCallbackQuery(query.id);
   }
 
-  // ---- Доступ к боту ----
-  if (data.startsWith('allow_')) {
-    const chatId = Number(data.split('_')[1]);
-    if (!db.whitelist.includes(chatId)) db.whitelist.push(chatId);
-    db.pending = db.pending.filter(id => id !== chatId);
-    saveDB(db);
+  // ================== АДМИНСКИЕ ДЕЙСТВИЯ ==================
 
-    bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
-    bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту. Выберите действие:', mainKeyboard());
-  }
+  if (
+    data.startsWith('allow_') ||
+    data.startsWith('deny_') ||
+    data.startsWith('remove_') ||
+    data.startsWith('notify_allow_') ||
+    data.startsWith('notify_deny_') ||
+    data.startsWith('notify_remove_')
+  ) {
 
-  else if (data.startsWith('deny_')) {
-    const chatId = Number(data.split('_')[1]);
-    db.pending = db.pending.filter(id => id !== chatId);
-    saveDB(db);
-
-    bot.answerCallbackQuery(query.id, { text: '❌ Пользователь запрещен' });
-    bot.sendMessage(chatId, '❌ Администратор отклонил доступ к боту');
-  }
-
-  else if (data.startsWith('remove_')) {
-    const chatId = Number(data.split('_')[1]);
-    db.whitelist = db.whitelist.filter(id => id !== chatId);
-    saveDB(db);
-
-    bot.answerCallbackQuery(query.id, { text: '🗑 Доступ удален' });
-    bot.sendMessage(chatId, '🗑 Ваш доступ к боту был удален администратором');
-  }
-
-  // ================== 🔔 ДОСТУП К УВЕДОМЛЕНИЯМ (ШАГ 5) ==================
-
-  else if (data.startsWith('notify_allow_')) {
-    const chatId = Number(data.split('_')[2]);
-
-    if (!db.notify_whitelist.includes(chatId)) {
-      db.notify_whitelist.push(chatId);
+    // проверка что это админ
+    if (fromId !== ADMIN_CHAT_ID) {
+      return bot.answerCallbackQuery(query.id, { text: '❌ Только администратор может управлять доступами' });
     }
 
-    db.notify_pending = db.notify_pending.filter(id => id !== chatId);
-    if (!db.notify_settings[chatId]) {
-  db.notify_settings[chatId] = {
-    // 3 варианта
-    visit_create: "none",
-    patient_create: "none",
-    visit_update: "none",
-    visit_cancel: "none",
-    visit_finish: "none",
+    // ---- Доступ к боту ----
+    if (data.startsWith('allow_')) {
+      const chatId = Number(data.split('_')[1]);
+      if (!db.whitelist.includes(chatId)) db.whitelist.push(chatId);
+      db.pending = db.pending.filter(id => id !== chatId);
+      saveDB(db);
+
+      bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
+      bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту. Выберите действие:', mainKeyboard());
+    }
+
+    else if (data.startsWith('deny_')) {
+      const chatId = Number(data.split('_')[1]);
+      db.pending = db.pending.filter(id => id !== chatId);
+      saveDB(db);
+
+      bot.answerCallbackQuery(query.id, { text: '❌ Пользователь запрещен' });
+      bot.sendMessage(chatId, '❌ Администратор отклонил доступ к боту');
+    }
+
+    else if (data.startsWith('remove_')) {
+      const chatId = Number(data.split('_')[1]);
+      db.whitelist = db.whitelist.filter(id => id !== chatId);
+      saveDB(db);
+
+      bot.answerCallbackQuery(query.id, { text: '🗑 Доступ удален' });
+      bot.sendMessage(chatId, '🗑 Ваш доступ к боту был удален администратором');
+    }
+
+    // ---- Уведомления: разрешить / запретить / удалить ----
+    else if (data.startsWith('notify_allow_')) {
+      const chatId = Number(data.split('_')[2]);
+
+      if (!db.notify_whitelist.includes(chatId)) {
+        db.notify_whitelist.push(chatId);
+      }
+
+      if (!db.notify_settings[chatId]) {
+        db.notify_settings[chatId] = {
+          visit_create: "none",
+          patient_create: "none",
+          visit_update: "none",
+          visit_cancel: "none",
+          visit_finish: "none",
+          invoice_create: false,
+          invoice_pay: false,
+          lab_partial: false,
+          lab_full: false
+        };
+      }
+
+      db.notify_pending = db.notify_pending.filter(id => id !== chatId);
+      saveDB(db);
+
+      bot.answerCallbackQuery(query.id, { text: '✅ Уведомления разрешены' });
+      bot.sendMessage(chatId, '🔔 Администратор разрешил вам доступ к уведомлениям.\nТеперь вы можете их настроить.');
+    }
+
+    else if (data.startsWith('notify_deny_')) {
+      const chatId = Number(data.split('_')[2]);
+      db.notify_pending = db.notify_pending.filter(id => id !== chatId);
+      saveDB(db);
+
+      bot.answerCallbackQuery(query.id, { text: '❌ Уведомления запрещены' });
+      bot.sendMessage(chatId, '❌ Администратор отклонил ваш запрос на уведомления.');
+    }
+
+    else if (data.startsWith('notify_remove_')) {
+      const chatId = Number(data.split('_')[2]);
+      db.notify_whitelist = db.notify_whitelist.filter(id => id !== chatId);
+      saveDB(db);
+
+      bot.answerCallbackQuery(query.id, { text: '🗑 Уведомления отключены' });
+      bot.sendMessage(chatId, '🔕 Администратор отключил вам доступ к уведомлениям.');
+    }
+
+    return;
+  }
+
+  // ================== ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ УВЕДОМЛЕНИЙ ==================
+
+  // выбор события
+  if (data.startsWith('set_')) {
+    const key = data.replace('set_', '');
+    const chatId = fromId;
+
+    const threeMode = ['visit_create','patient_create','visit_update','visit_cancel','visit_finish'];
+
+    if (threeMode.includes(key)) {
+      return bot.sendMessage(chatId, 'Выберите режим уведомлений:', {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '👤 Только для себя', callback_data: `mode_${key}_self` },
+              { text: '👥 Для всех', callback_data: `mode_${key}_all` }
+            ],
+            [
+              { text: '🔕 Не получать', callback_data: `mode_${key}_none` }
+            ]
+          ]
+        }
+      });
+    }
 
     // 2 варианта
-    invoice_create: false,
-    invoice_pay: false,
-    lab_partial: false,
-    lab_full: false
-  };
-}
-    saveDB(db);
-
-    bot.answerCallbackQuery(query.id, { text: '✅ Уведомления разрешены' });
-    bot.sendMessage(chatId, '🔔 Администратор разрешил вам доступ к уведомлениям.\nТеперь вы сможете их настроить.');
-  }
-
-  else if (data.startsWith('notify_deny_')) {
-    const chatId = Number(data.split('_')[2]);
-
-    db.notify_pending = db.notify_pending.filter(id => id !== chatId);
-    saveDB(db);
-
-    bot.answerCallbackQuery(query.id, { text: '❌ Уведомления запрещены' });
-    bot.sendMessage(chatId, '❌ Администратор отклонил ваш запрос на уведомления.');
-  }
-else if (data.startsWith('notify_remove_')) {
-  const chatId = Number(data.split('_')[2]);
-
-  db.notify_whitelist = db.notify_whitelist.filter(id => id !== chatId);
-  saveDB(db);
-
-  bot.answerCallbackQuery(query.id, { text: '🗑 Доступ к уведомлениям удалён' });
-  bot.sendMessage(chatId, '🔕 Администратор отключил вам доступ к уведомлениям.');
-}
-
-else if (data.startsWith('set_')) {
-  const key = data.replace('set_', '');
-  const chatId = query.from.id;
-
-  const threeMode = ['visit_create','patient_create','visit_update','visit_cancel','visit_finish'];
-
-  if (threeMode.includes(key)) {
-    return bot.sendMessage(chatId, 'Выберите режим уведомлений:', {
+    return bot.sendMessage(chatId, 'Получать уведомления?', {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: '👤 Только для себя', callback_data: `mode_${key}_self` },
-            { text: '👥 Для всех', callback_data: `mode_${key}_all` }
-          ],
-          [
-            { text: '🔕 Не получать', callback_data: `mode_${key}_none` }
+            { text: '✅ Получать', callback_data: `mode_${key}_on` },
+            { text: '❌ Не получать', callback_data: `mode_${key}_off` }
           ]
         ]
       }
     });
   }
 
-  // 2 варианта
-  return bot.sendMessage(chatId, 'Получать уведомления?', {
-    reply_markup: {
-      inline_keyboard: [
-        [
-          { text: '✅ Получать', callback_data: `mode_${key}_on` },
-          { text: '❌ Не получать', callback_data: `mode_${key}_off` }
-        ]
-      ]
+  // сохранение выбора
+  if (data.startsWith('mode_')) {
+    const parts = data.split('_');
+    const key = parts[1];
+    const mode = parts[2];
+    const chatId = fromId;
+
+    if (!db.notify_settings[chatId]) return;
+
+    if (['self','all','none'].includes(mode)) {
+      db.notify_settings[chatId][key] = mode;
     }
-  });
-}
 
-else if (data.startsWith('mode_')) {
-  const parts = data.split('_');
-  const key = parts[1];
-  const mode = parts[2];
-  const chatId = query.from.id;
+    if (mode === 'on') db.notify_settings[chatId][key] = true;
+    if (mode === 'off') db.notify_settings[chatId][key] = false;
 
-  if (!db.notify_settings[chatId]) return;
+    saveDB(db);
 
-  // 3 варианта
-  if (['self','all','none'].includes(mode)) {
-    db.notify_settings[chatId][key] = mode;
+    bot.answerCallbackQuery(query.id, { text: '✅ Настройка сохранена' });
+    showNotifyMenu(chatId);
+    return;
   }
 
-  // 2 варианта
-  if (mode === 'on') db.notify_settings[chatId][key] = true;
-  if (mode === 'off') db.notify_settings[chatId][key] = false;
-
-  saveDB(db);
-
-  bot.answerCallbackQuery(query.id, { text: '✅ Настройка сохранена' });
-  showNotifyMenu(chatId);
-}
-
-  
-  
 });
-
 
 // ================== СООБЩЕНИЯ ==================
 bot.on('message', (msg) => {
@@ -479,6 +492,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
