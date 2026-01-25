@@ -377,6 +377,7 @@ if (data.startsWith('mode_')) {
   showNotifyMenu(chatId);
   return;
 }
+});
 
 
 // ================== СООБЩЕНИЯ ==================
@@ -548,6 +549,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
