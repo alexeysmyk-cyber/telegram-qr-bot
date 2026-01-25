@@ -34,6 +34,7 @@ function loadDB() {
   pending: [],
   notify_pending: [],
   notify_settings: {}, 
+  notify_admin_limits: {}, 
   users: {}
 };
 
@@ -49,6 +50,7 @@ function loadDB() {
       if (!db.notify_whitelist) db.notify_whitelist = [];
       if (!db.notify_pending) db.notify_pending = [];
       if (!db.notify_settings) db.notify_settings = {};
+      if (!db.notify_admin_limits) db.notify_admin_limits = {};
     } catch (e) {
       console.error('❌ DB parse error, recreating');
     }
@@ -219,6 +221,90 @@ bot.on('callback_query', (query) => {
     });
   }
 
+    // ================== АДМИН: ВЫБОР ПОЛЬЗОВАТЕЛЯ ==================
+
+  if (data.startsWith('admin_user_')) {
+    const userId = Number(data.replace('admin_user_', ''));
+    const username = db.users[userId] || userId;
+
+    if (!db.notify_admin_limits[userId]) {
+      db.notify_admin_limits[userId] = {};
+    }
+
+    const limits = db.notify_admin_limits[userId];
+
+    function limitLabel(key) {
+      return limits[key] === false ? '🚫 запрещено' : '✅ разрешено';
+    }
+
+    const buttons = [
+      [{ text: `🩺 Создание визита — ${limitLabel('visit_create')}`, callback_data: `admin_limit_${userId}_visit_create` }],
+      [{ text: `👤 Создание пациента — ${limitLabel('patient_create')}`, callback_data: `admin_limit_${userId}_patient_create` }],
+      [{ text: `✏️ Обновление визита — ${limitLabel('visit_update')}`, callback_data: `admin_limit_${userId}_visit_update` }],
+      [{ text: `❌ Отмена визита — ${limitLabel('visit_cancel')}`, callback_data: `admin_limit_${userId}_visit_cancel` }],
+      [{ text: `✅ Завершение визита — ${limitLabel('visit_finish')}`, callback_data: `admin_limit_${userId}_visit_finish` }],
+
+      [{ text: `🧾 Создание счёта — ${limitLabel('invoice_create')}`, callback_data: `admin_limit_${userId}_invoice_create` }],
+      [{ text: `💳 Оплата счёта — ${limitLabel('invoice_pay')}`, callback_data: `admin_limit_${userId}_invoice_pay` }],
+      [{ text: `🧪 Частичная готовность — ${limitLabel('lab_partial')}`, callback_data: `admin_limit_${userId}_lab_partial` }],
+      [{ text: `🔬 Полная готовность — ${limitLabel('lab_full')}`, callback_data: `admin_limit_${userId}_lab_full` }],
+
+      [{ text: '⬅️ Назад', callback_data: 'admin_notify_users' }]
+    ];
+
+    return bot.sendMessage(fromId, `👤 ${username} — ограничения уведомлений`, {
+      reply_markup: { inline_keyboard: buttons }
+    });
+  }
+
+  // ================== АДМИН: ПЕРЕКЛЮЧЕНИЕ ОГРАНИЧЕНИЙ ==================
+
+  if (data.startsWith('admin_limit_')) {
+    // формат: admin_limit_<userId>_<key>
+    const parts = data.split('_');
+    const userId = Number(parts[2]);
+    const key = parts.slice(3).join('_'); // visit_create и т.п.
+
+    if (!db.notify_admin_limits[userId]) {
+      db.notify_admin_limits[userId] = {};
+    }
+
+    // переключаем: если было false → удаляем (разрешаем), иначе запрещаем
+    if (db.notify_admin_limits[userId][key] === false) {
+      delete db.notify_admin_limits[userId][key];
+    } else {
+      db.notify_admin_limits[userId][key] = false;
+    }
+
+    saveDB(db);
+
+    // обновляем экран пользователя
+    const username = db.users[userId] || userId;
+    const limits = db.notify_admin_limits[userId];
+
+    function limitLabel(key) {
+      return limits[key] === false ? '🚫 запрещено' : '✅ разрешено';
+    }
+
+    const buttons = [
+      [{ text: `🩺 Создание визита — ${limitLabel('visit_create')}`, callback_data: `admin_limit_${userId}_visit_create` }],
+      [{ text: `👤 Создание пациента — ${limitLabel('patient_create')}`, callback_data: `admin_limit_${userId}_patient_create` }],
+      [{ text: `✏️ Обновление визита — ${limitLabel('visit_update')}`, callback_data: `admin_limit_${userId}_visit_update` }],
+      [{ text: `❌ Отмена визита — ${limitLabel('visit_cancel')}`, callback_data: `admin_limit_${userId}_visit_cancel` }],
+      [{ text: `✅ Завершение визита — ${limitLabel('visit_finish')}`, callback_data: `admin_limit_${userId}_visit_finish` }],
+
+      [{ text: `🧾 Создание счёта — ${limitLabel('invoice_create')}`, callback_data: `admin_limit_${userId}_invoice_create` }],
+      [{ text: `💳 Оплата счёта — ${limitLabel('invoice_pay')}`, callback_data: `admin_limit_${userId}_invoice_pay` }],
+      [{ text: `🧪 Частичная готовность — ${limitLabel('lab_partial')}`, callback_data: `admin_limit_${userId}_lab_partial` }],
+      [{ text: `🔬 Полная готовность — ${limitLabel('lab_full')}`, callback_data: `admin_limit_${userId}_lab_full` }],
+
+      [{ text: '⬅️ Назад', callback_data: 'admin_notify_users' }]
+    ];
+
+    return bot.sendMessage(fromId, `👤 ${username} — ограничения уведомлений`, {
+      reply_markup: { inline_keyboard: buttons }
+    });
+  }
 
 
   
@@ -594,6 +680,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
