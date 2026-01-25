@@ -132,13 +132,14 @@ function adminKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['➕ Создать платёж', '📋 Управление whitelist'],
-        ['📜 История', '🗑 Очистить историю']
+        ['➕ Создать платёж', '📋 Управление доступами'],
+        ['📜 История', '🔔 Уведомления (админ)']
       ],
       resize_keyboard: true
     }
   };
 }
+
 
 // ================== /start ==================
 bot.onText(/\/start/, (msg) => {
@@ -192,6 +193,35 @@ bot.on('callback_query', (query) => {
     return bot.answerCallbackQuery(query.id);
   }
 
+    // ================== АДМИН-МЕНЮ УВЕДОМЛЕНИЙ ==================
+
+  if (data === 'admin_notify_self') {
+    // админ настраивает себя как обычный пользователь
+    return showNotifyMenu(fromId);
+  }
+
+  if (data === 'admin_notify_users') {
+    const buttons = [];
+
+    if (db.notify_whitelist.length === 0) {
+      return bot.sendMessage(fromId, '📭 Нет пользователей с доступом к уведомлениям');
+    }
+
+    db.notify_whitelist.forEach(id => {
+      const username = db.users[id] || id;
+      buttons.push([
+        { text: `👤 ${username}`, callback_data: `admin_user_${id}` }
+      ]);
+    });
+
+    return bot.sendMessage(fromId, '👥 Пользователи с доступом к уведомлениям:', {
+      reply_markup: { inline_keyboard: buttons }
+    });
+  }
+
+
+
+  
   // ================== АДМИНСКИЕ ДЕЙСТВИЯ ==================
 
   if (
@@ -391,8 +421,23 @@ bot.on('message', (msg) => {
 
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
-  // ---- Меню админа: управление whitelist и история ----
+  // ---- Меню админа: 
   if (chatId === ADMIN_CHAT_ID) {
+
+     if (text === '🔔 Уведомления (админ)') {
+      return bot.sendMessage(chatId, '🔔 Управление уведомлениями', {
+        reply_markup: {
+          inline_keyboard: [
+            [{ text: '👤 Мои настройки', callback_data: 'admin_notify_self' }],
+            [{ text: '👥 Пользователи', callback_data: 'admin_notify_users' }]
+          ]
+        }
+      });
+    }
+
+
+
+    
    if (text === '📋 Управление whitelist') {
   const buttons = [];
 
@@ -549,6 +594,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
