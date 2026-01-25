@@ -67,21 +67,31 @@ let db = loadDB();
 function showNotifyMenu(chatId) {
   const s = db.notify_settings[chatId];
 
+  function threeLabel(v) {
+    if (v === 'self') return '👤';
+    if (v === 'all') return '👥';
+    return '🔕';
+  }
+
+  function twoLabel(v) {
+    return v ? '✅' : '🔕';
+  }
+
   const buttons = [
 
-    [{ text: '🩺 Создание визита', callback_data: 'set_visit_create' }],
-    [{ text: '👤 Создание пациента', callback_data: 'set_patient_create' }],
-    [{ text: '✏️ Обновление визита', callback_data: 'set_visit_update' }],
-    [{ text: '❌ Отмена визита', callback_data: 'set_visit_cancel' }],
-    [{ text: '✅ Завершение визита', callback_data: 'set_visit_finish' }],
+    [{ text: `🩺 Создание визита — ${threeLabel(s.visit_create)}`, callback_data: 'set_visit_create' }],
+    [{ text: `👤 Создание пациента — ${twoLabel(s.patient_create)}`, callback_data: 'set_patient_create' }],
+    [{ text: `✏️ Обновление визита — ${threeLabel(s.visit_update)}`, callback_data: 'set_visit_update' }],
+    [{ text: `❌ Отмена визита — ${threeLabel(s.visit_cancel)}`, callback_data: 'set_visit_cancel' }],
+    [{ text: `✅ Завершение визита — ${threeLabel(s.visit_finish)}`, callback_data: 'set_visit_finish' }],
 
-    [{ text: '🧾 Создание счёта', callback_data: 'set_invoice_create' }],
-    [{ text: '💳 Оплата счёта физ-лица', callback_data: 'set_invoice_pay' }],
-    [{ text: '🧪 Частичная готовность анализов', callback_data: 'set_lab_partial' }],
-    [{ text: '🔬 Полная готовность анализов', callback_data: 'set_lab_full' }]
+    [{ text: `🧾 Создание счёта — ${twoLabel(s.invoice_create)}`, callback_data: 'set_invoice_create' }],
+    [{ text: `💳 Оплата счёта физ-лица — ${twoLabel(s.invoice_pay)}`, callback_data: 'set_invoice_pay' }],
+    [{ text: `🧪 Частичная готовность анализов — ${twoLabel(s.lab_partial)}`, callback_data: 'set_lab_partial' }],
+    [{ text: `🔬 Полная готовность анализов — ${twoLabel(s.lab_full)}`, callback_data: 'set_lab_full' }]
   ];
 
-  bot.sendMessage(chatId, '⚙️ Настройки уведомлений\n\nВыберите событие для настройки:', {
+  bot.sendMessage(chatId, '⚙️ Настройки уведомлений\n\nТекущие состояния показаны справа:', {
     reply_markup: { inline_keyboard: buttons }
   });
 }
@@ -263,41 +273,62 @@ bot.on('callback_query', (query) => {
   // ================== ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ УВЕДОМЛЕНИЙ ==================
 
   // выбор события
-  if (data.startsWith('set_')) {
-    const key = data.replace('set_', '');
-    const chatId = fromId;
+if (data.startsWith('set_')) {
+  const key = data.replace('set_', '');
+  const chatId = fromId;
+  const s = db.notify_settings[chatId];
 
-    const threeMode = ['visit_create','visit_update','visit_cancel','visit_finish'];
+  const threeMode = ['visit_create','visit_update','visit_cancel','visit_finish'];
 
+  // ----- 3 варианта -----
+  if (threeMode.includes(key)) {
+    const current = s[key]; // self / all / none
 
-    if (threeMode.includes(key)) {
-      return bot.sendMessage(chatId, 'Выберите режим уведомлений:', {
-        reply_markup: {
-          inline_keyboard: [
-            [
-              { text: '👤 Только для себя', callback_data: `mode_${key}_self` },
-              { text: '👥 Для всех', callback_data: `mode_${key}_all` }
-            ],
-            [
-              { text: '🔕 Не получать', callback_data: `mode_${key}_none` }
-            ]
-          ]
-        }
-      });
-    }
-
-    // 2 варианта
-    return bot.sendMessage(chatId, 'Получать уведомления?', {
+    return bot.sendMessage(chatId, 'Выберите режим уведомлений:', {
       reply_markup: {
         inline_keyboard: [
           [
-            { text: '✅ Получать', callback_data: `mode_${key}_on` },
-            { text: '❌ Не получать', callback_data: `mode_${key}_off` }
+            {
+              text: (current === 'self' ? '✅ ' : '') + '👤 Только для себя',
+              callback_data: `mode_${key}_self`
+            },
+            {
+              text: (current === 'all' ? '✅ ' : '') + '👥 Для всех',
+              callback_data: `mode_${key}_all`
+            }
+          ],
+          [
+            {
+              text: (current === 'none' ? '✅ ' : '') + '🔕 Не получать',
+              callback_data: `mode_${key}_none`
+            }
           ]
         ]
       }
     });
   }
+
+  // ----- 2 варианта -----
+  const current = s[key]; // true / false
+
+  return bot.sendMessage(chatId, 'Получать уведомления?', {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          {
+            text: (current === true ? '✅ ' : '') + 'Получать',
+            callback_data: `mode_${key}_on`
+          },
+          {
+            text: (current === false ? '✅ ' : '') + 'Не получать',
+            callback_data: `mode_${key}_off`
+          }
+        ]
+      ]
+    }
+  });
+}
+
 
   // сохранение выбора
   if (data.startsWith('mode_')) {
@@ -493,6 +524,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
