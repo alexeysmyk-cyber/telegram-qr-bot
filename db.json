@@ -6,6 +6,7 @@
     5280146224,
     648009056
   ],
+  "notify_whitelist": [],
   "history": {
     "133334492": [
       {
@@ -61,6 +62,7 @@
     "5900607039": null
   },
   "pending": [],
+  "notify_pending": [],
   "users": {
     "133334492": "Dr_EkaterinaSmyk",
     "648009056": "ssierrraa",
