@@ -46,11 +46,28 @@ function loadDB() {
       if (!db.history) db.history = {};
       if (!db.state) db.state = {};
       if (!db.pending) db.pending = [];
-      if (!db.users) db.users = {};
-      if (!db.notify_whitelist) db.notify_whitelist = [];
+     if (!db.users) db.users = {};
+// защита старого формата users (если там был просто username)
+for (const id in db.users) {
+  if (typeof db.users[id] === 'string') {
+    db.users[id] = {
+      username: db.users[id],
+      mis_id: null
+    };
+  } else {
+    if (!('mis_id' in db.users[id])) {
+      db.users[id].mis_id = null;
+    }
+  }
+}
+
+if (!db.notify_whitelist) db.notify_whitelist = [];
       if (!db.notify_pending) db.notify_pending = [];
       if (!db.notify_settings) db.notify_settings = {};
       if (!db.notify_admin_limits) db.notify_admin_limits = {};
+
+
+      
     } catch (e) {
       console.error('❌ DB parse error, recreating');
     }
@@ -152,7 +169,10 @@ bot.onText(/\/start/, (msg) => {
 
     if (!db.pending.includes(chatId)) {
       db.pending.push(chatId);
-      db.users[chatId] = username;
+      db.users[chatId] = {
+  username: username,
+  mis_id: null
+};
       saveDB(db);
 
       bot.sendMessage(ADMIN_CHAT_ID,
@@ -772,6 +792,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
