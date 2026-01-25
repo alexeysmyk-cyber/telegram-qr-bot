@@ -133,6 +133,10 @@ bot.on('callback_query', (query) => {
   const data = query.data;
   const chatIdAdmin = query.from.id;
 
+  if (data === 'noop') {
+  return bot.answerCallbackQuery(query.id);
+}
+
   if (chatIdAdmin !== ADMIN_CHAT_ID) {
     return bot.answerCallbackQuery(query.id, { text: '❌ Только админ может управлять доступом' });
   }
@@ -191,7 +195,18 @@ bot.on('callback_query', (query) => {
     bot.answerCallbackQuery(query.id, { text: '❌ Уведомления запрещены' });
     bot.sendMessage(chatId, '❌ Администратор отклонил ваш запрос на уведомления.');
   }
+else if (data.startsWith('notify_remove_')) {
+  const chatId = Number(data.split('_')[2]);
 
+  db.notify_whitelist = db.notify_whitelist.filter(id => id !== chatId);
+  saveDB(db);
+
+  bot.answerCallbackQuery(query.id, { text: '🗑 Доступ к уведомлениям удалён' });
+  bot.sendMessage(chatId, '🔕 Администратор отключил вам доступ к уведомлениям.');
+}
+
+
+  
 });
 
 
@@ -208,35 +223,48 @@ bot.on('message', (msg) => {
 
   // ---- Меню админа: управление whitelist и история ----
   if (chatId === ADMIN_CHAT_ID) {
-    if (text === '📋 Управление whitelist') {
-      const buttons = [];
+   if (text === '📋 Управление whitelist') {
+  const buttons = [];
 
-      db.pending.forEach(id => {
-        const username = db.users[id] || id;
-        buttons.push([
-          { text: `Разрешить ${username}`, callback_data: `allow_${id}` },
-          { text: `Запретить ${username}`, callback_data: `deny_${id}` }
-        ]);
-      });
+  // ---- Заявки на доступ к боту ----
+  if (db.pending.length > 0) {
+    buttons.push([{ text: '⏳ Заявки на доступ к QR', callback_data: 'noop' }]);
 
-      db.whitelist.filter(id => id !== ADMIN_CHAT_ID).forEach(id => {
-        const username = db.users[id] || id;
-        buttons.push([{ text: `Удалить ${username}`, callback_data: `remove_${id}` }]);
-      });
+    db.pending.forEach(id => {
+      const username = db.users[id] || id;
+      buttons.push([
+        { text: `✅ ${username}`, callback_data: `allow_${id}` },
+        { text: `❌ ${username}`, callback_data: `deny_${id}` }
+      ]);
+    });
+  }
 
-      return bot.sendMessage(chatId, '👥 Управление whitelist', { reply_markup: { inline_keyboard: buttons } });
-    }
+  // ---- Доступ к QR (боту) ----
+  buttons.push([{ text: '📌 Доступ к QR', callback_data: 'noop' }]);
 
-    if (text === '📜 История') {
-      const allHistory = Object.keys(db.history)
-        .map(cid => {
-          const username = db.users[cid] || cid;
-          const history = db.history[cid].map(h => `${h.amount} ₽ — ${h.date}`).join('\n');
-          return `@${username}:\n${history}`;
-        }).join('\n\n');
+  db.whitelist
+    .filter(id => id !== ADMIN_CHAT_ID)
+    .forEach(id => {
+      const username = db.users[id] || id;
+      buttons.push([
+        { text: `❌ Убрать QR у ${username}`, callback_data: `remove_${id}` }
+      ]);
+    });
 
-      return bot.sendMessage(chatId, allHistory || '📭 История пуста');
-    }
+  // ---- Доступ к уведомлениям ----
+  buttons.push([{ text: '🔔 Доступ к уведомлениям', callback_data: 'noop' }]);
+
+  db.notify_whitelist.forEach(id => {
+    const username = db.users[id] || id;
+    buttons.push([
+      { text: `❌ Убрать уведомления у ${username}`, callback_data: `notify_remove_${id}` }
+    ]);
+  });
+
+  return bot.sendMessage(chatId, '👥 Управление доступами', {
+    reply_markup: { inline_keyboard: buttons }
+  });
+}
 
     if (text === '🗑 Очистить историю') {
       db.history = {};
@@ -350,6 +378,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
