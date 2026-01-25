@@ -26,7 +26,16 @@ console.log('🤖 Bot started (polling mode)');
 
 // ================== БАЗА ДАННЫХ ==================
 function loadDB() {
-  let db = { whitelist: [ADMIN_CHAT_ID], history: {}, state: {}, pending: [], users: {} };
+  let db = {
+  whitelist: [ADMIN_CHAT_ID],
+  notify_whitelist: [],
+  history: {},
+  state: {},
+  pending: [],
+  notify_pending: [],
+  users: {}
+};
+
   if (fs.existsSync(DB_FILE)) {
     try {
       const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
@@ -36,6 +45,8 @@ function loadDB() {
       if (!db.state) db.state = {};
       if (!db.pending) db.pending = [];
       if (!db.users) db.users = {};
+      if (!db.notify_whitelist) db.notify_whitelist = [];
+      if (!db.notify_pending) db.notify_pending = [];
     } catch (e) {
       console.error('❌ DB parse error, recreating');
     }
@@ -56,7 +67,8 @@ function mainKeyboard() {
     reply_markup: {
       keyboard: [
         ['➕ Создать платёж'],
-        ['📜 История']
+        ['📜 История'],
+        ['🔔 Уведомления']
       ],
       resize_keyboard: true
     }
@@ -116,6 +128,7 @@ bot.onText(/\/start/, (msg) => {
 });
 
 // ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
+// ================== CALLBACK (Разрешить/Запретить/Удалить + Уведомления) ==================
 bot.on('callback_query', (query) => {
   const data = query.data;
   const chatIdAdmin = query.from.id;
@@ -124,27 +137,63 @@ bot.on('callback_query', (query) => {
     return bot.answerCallbackQuery(query.id, { text: '❌ Только админ может управлять доступом' });
   }
 
+  // ---- Доступ к боту ----
   if (data.startsWith('allow_')) {
     const chatId = Number(data.split('_')[1]);
     if (!db.whitelist.includes(chatId)) db.whitelist.push(chatId);
     db.pending = db.pending.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '✅ Пользователь разрешен' });
     bot.sendMessage(chatId, '✅ Администратор разрешил вам доступ к боту. Выберите действие:', mainKeyboard());
-  } else if (data.startsWith('deny_')) {
+  }
+
+  else if (data.startsWith('deny_')) {
     const chatId = Number(data.split('_')[1]);
     db.pending = db.pending.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '❌ Пользователь запрещен' });
     bot.sendMessage(chatId, '❌ Администратор отклонил доступ к боту');
-  } else if (data.startsWith('remove_')) {
+  }
+
+  else if (data.startsWith('remove_')) {
     const chatId = Number(data.split('_')[1]);
     db.whitelist = db.whitelist.filter(id => id !== chatId);
     saveDB(db);
+
     bot.answerCallbackQuery(query.id, { text: '🗑 Доступ удален' });
     bot.sendMessage(chatId, '🗑 Ваш доступ к боту был удален администратором');
   }
+
+  // ================== 🔔 ДОСТУП К УВЕДОМЛЕНИЯМ (ШАГ 5) ==================
+
+  else if (data.startsWith('notify_allow_')) {
+    const chatId = Number(data.split('_')[2]);
+
+    if (!db.notify_whitelist.includes(chatId)) {
+      db.notify_whitelist.push(chatId);
+    }
+
+    db.notify_pending = db.notify_pending.filter(id => id !== chatId);
+    saveDB(db);
+
+    bot.answerCallbackQuery(query.id, { text: '✅ Уведомления разрешены' });
+    bot.sendMessage(chatId, '🔔 Администратор разрешил вам доступ к уведомлениям.\nТеперь вы сможете их настроить.');
+  }
+
+  else if (data.startsWith('notify_deny_')) {
+    const chatId = Number(data.split('_')[2]);
+
+    db.notify_pending = db.notify_pending.filter(id => id !== chatId);
+    saveDB(db);
+
+    bot.answerCallbackQuery(query.id, { text: '❌ Уведомления запрещены' });
+    bot.sendMessage(chatId, '❌ Администратор отклонил ваш запрос на уведомления.');
+  }
+
 });
+
 
 // ================== СООБЩЕНИЯ ==================
 bot.on('message', (msg) => {
@@ -195,7 +244,42 @@ bot.on('message', (msg) => {
       return bot.sendMessage(chatId, '🗑 История очищена');
     }
   }
+ if (text === '🔔 Уведомления') {
 
+    // если уже есть доступ
+    if (db.notify_whitelist.includes(chatId)) {
+      return bot.sendMessage(chatId, '🔔 У вас уже есть доступ к уведомлениям.\n(Настройки появятся позже)');
+    }
+
+    // если заявка уже отправлена
+    if (db.notify_pending.includes(chatId)) {
+      return bot.sendMessage(chatId, '⏳ Заявка на уведомления уже отправлена. Ожидайте решения администратора.');
+    }
+
+    // отправляем заявку админу
+    const username = db.users[chatId] || msg.from.username || msg.from.first_name;
+
+    db.notify_pending.push(chatId);
+    saveDB(db);
+
+    bot.sendMessage(ADMIN_CHAT_ID,
+      `🔔 Пользователь @${username} (chatId=${chatId}) запрашивает доступ к уведомлениям.`,
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ Разрешить уведомления', callback_data: `notify_allow_${chatId}` },
+              { text: '❌ Запретить', callback_data: `notify_deny_${chatId}` }
+            ]
+          ]
+        }
+      }
+    );
+
+    return bot.sendMessage(chatId, '📨 Заявка на получение уведомлений отправлена администратору.');
+  }
+
+  
   // ---- Создание платежа ----
   if (text === '➕ Создать платёж') {
     db.state[chatId] = 'WAIT_SUM';
@@ -266,6 +350,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
