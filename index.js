@@ -348,29 +348,36 @@ if (data.startsWith('set_')) {
 
 
   // сохранение выбора
-  if (data.startsWith('mode_')) {
-    const parts = data.split('_');
-    const key = parts[1];
-    const mode = parts[2];
-    const chatId = fromId;
+if (data.startsWith('mode_')) {
+  const parts = data.split('_');
 
-    if (!db.notify_settings[chatId]) return;
+  // mode_visit_create_self
+  // parts = ["mode","visit","create","self"]
 
-    if (['self','all','none'].includes(mode)) {
-      db.notify_settings[chatId][key] = mode;
-    }
+  const key = parts[1] + '_' + parts[2];   // visit_create
+  const mode = parts[3];                  // self / all / none / on / off
+  const chatId = fromId;
 
-    if (mode === 'on') db.notify_settings[chatId][key] = true;
-    if (mode === 'off') db.notify_settings[chatId][key] = false;
-
-    saveDB(db);
-
-    bot.answerCallbackQuery(query.id, { text: '✅ Настройка сохранена' });
-    showNotifyMenu(chatId);
-    return;
+  if (!db.notify_settings[chatId]) {
+    db.notify_settings[chatId] = {};
   }
 
-});
+  // 3 варианта
+  if (['self','all','none'].includes(mode)) {
+    db.notify_settings[chatId][key] = mode;
+  }
+
+  // 2 варианта
+  if (mode === 'on') db.notify_settings[chatId][key] = true;
+  if (mode === 'off') db.notify_settings[chatId][key] = false;
+
+  saveDB(db);
+
+  bot.answerCallbackQuery(query.id, { text: '✅ Настройка сохранена' });
+  showNotifyMenu(chatId);
+  return;
+}
+
 
 // ================== СООБЩЕНИЯ ==================
 bot.on('message', (msg) => {
@@ -541,6 +548,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
