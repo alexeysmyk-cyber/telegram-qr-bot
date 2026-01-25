@@ -33,6 +33,7 @@ function loadDB() {
   state: {},
   pending: [],
   notify_pending: [],
+  notify_settings: {}, 
   users: {}
 };
 
@@ -47,6 +48,7 @@ function loadDB() {
       if (!db.users) db.users = {};
       if (!db.notify_whitelist) db.notify_whitelist = [];
       if (!db.notify_pending) db.notify_pending = [];
+      if (!db.notify_settings) db.notify_settings = {};
     } catch (e) {
       console.error('❌ DB parse error, recreating');
     }
@@ -62,6 +64,30 @@ function saveDB(db) {
 let db = loadDB();
 
 // ================== КНОПКИ ==================
+function showNotifyMenu(chatId) {
+  const s = db.notify_settings[chatId];
+
+  const buttons = [
+
+    [{ text: '🩺 Создание визита', callback_data: 'set_visit_create' }],
+    [{ text: '👤 Создание пациента', callback_data: 'set_patient_create' }],
+    [{ text: '✏️ Обновление визита', callback_data: 'set_visit_update' }],
+    [{ text: '❌ Отмена визита', callback_data: 'set_visit_cancel' }],
+    [{ text: '✅ Завершение визита', callback_data: 'set_visit_finish' }],
+
+    [{ text: '🧾 Создание счёта', callback_data: 'set_invoice_create' }],
+    [{ text: '💳 Оплата счёта физ-лица', callback_data: 'set_invoice_pay' }],
+    [{ text: '🧪 Частичная готовность анализов', callback_data: 'set_lab_partial' }],
+    [{ text: '🔬 Полная готовность анализов', callback_data: 'set_lab_full' }]
+  ];
+
+  bot.sendMessage(chatId, '⚙️ Настройки уведомлений\n\nВыберите событие для настройки:', {
+    reply_markup: { inline_keyboard: buttons }
+  });
+}
+
+
+
 function mainKeyboard() {
   return {
     reply_markup: {
@@ -180,6 +206,22 @@ bot.on('callback_query', (query) => {
     }
 
     db.notify_pending = db.notify_pending.filter(id => id !== chatId);
+    if (!db.notify_settings[chatId]) {
+  db.notify_settings[chatId] = {
+    // 3 варианта
+    visit_create: "none",
+    patient_create: "none",
+    visit_update: "none",
+    visit_cancel: "none",
+    visit_finish: "none",
+
+    // 2 варианта
+    invoice_create: false,
+    invoice_pay: false,
+    lab_partial: false,
+    lab_full: false
+  };
+}
     saveDB(db);
 
     bot.answerCallbackQuery(query.id, { text: '✅ Уведомления разрешены' });
@@ -205,7 +247,65 @@ else if (data.startsWith('notify_remove_')) {
   bot.sendMessage(chatId, '🔕 Администратор отключил вам доступ к уведомлениям.');
 }
 
+else if (data.startsWith('set_')) {
+  const key = data.replace('set_', '');
+  const chatId = query.from.id;
 
+  const threeMode = ['visit_create','patient_create','visit_update','visit_cancel','visit_finish'];
+
+  if (threeMode.includes(key)) {
+    return bot.sendMessage(chatId, 'Выберите режим уведомлений:', {
+      reply_markup: {
+        inline_keyboard: [
+          [
+            { text: '👤 Только для себя', callback_data: `mode_${key}_self` },
+            { text: '👥 Для всех', callback_data: `mode_${key}_all` }
+          ],
+          [
+            { text: '🔕 Не получать', callback_data: `mode_${key}_none` }
+          ]
+        ]
+      }
+    });
+  }
+
+  // 2 варианта
+  return bot.sendMessage(chatId, 'Получать уведомления?', {
+    reply_markup: {
+      inline_keyboard: [
+        [
+          { text: '✅ Получать', callback_data: `mode_${key}_on` },
+          { text: '❌ Не получать', callback_data: `mode_${key}_off` }
+        ]
+      ]
+    }
+  });
+}
+
+else if (data.startsWith('mode_')) {
+  const parts = data.split('_');
+  const key = parts[1];
+  const mode = parts[2];
+  const chatId = query.from.id;
+
+  if (!db.notify_settings[chatId]) return;
+
+  // 3 варианта
+  if (['self','all','none'].includes(mode)) {
+    db.notify_settings[chatId][key] = mode;
+  }
+
+  // 2 варианта
+  if (mode === 'on') db.notify_settings[chatId][key] = true;
+  if (mode === 'off') db.notify_settings[chatId][key] = false;
+
+  saveDB(db);
+
+  bot.answerCallbackQuery(query.id, { text: '✅ Настройка сохранена' });
+  showNotifyMenu(chatId);
+}
+
+  
   
 });
 
@@ -272,19 +372,15 @@ bot.on('message', (msg) => {
       return bot.sendMessage(chatId, '🗑 История очищена');
     }
   }
- if (text === '🔔 Уведомления') {
+if (text === '🔔 Уведомления') {
 
-    // если уже есть доступ
-    if (db.notify_whitelist.includes(chatId)) {
-      return bot.sendMessage(chatId, '🔔 У вас уже есть доступ к уведомлениям.\n(Настройки появятся позже)');
-    }
+  // нет доступа
+  if (!db.notify_whitelist.includes(chatId)) {
 
-    // если заявка уже отправлена
     if (db.notify_pending.includes(chatId)) {
       return bot.sendMessage(chatId, '⏳ Заявка на уведомления уже отправлена. Ожидайте решения администратора.');
     }
 
-    // отправляем заявку админу
     const username = db.users[chatId] || msg.from.username || msg.from.first_name;
 
     db.notify_pending.push(chatId);
@@ -306,6 +402,11 @@ bot.on('message', (msg) => {
 
     return bot.sendMessage(chatId, '📨 Заявка на получение уведомлений отправлена администратору.');
   }
+
+  // есть доступ → показываем меню настроек
+  return showNotifyMenu(chatId);
+}
+
 
   
   // ---- Создание платежа ----
@@ -378,6 +479,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
