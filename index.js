@@ -195,6 +195,23 @@ bot.on('callback_query', (query) => {
     return bot.answerCallbackQuery(query.id);
   }
 
+    // ================== АДМИН: ОЧИСТКА ИСТОРИИ ==================
+
+  if (data === 'admin_clear_history') {
+
+    // защита: только админ
+    if (fromId !== ADMIN_CHAT_ID) {
+      return bot.answerCallbackQuery(query.id, { text: '❌ Только администратор может это сделать' });
+    }
+
+    db.history = {};
+    saveDB(db);
+
+    bot.answerCallbackQuery(query.id, { text: '🗑 История очищена' });
+
+    return bot.sendMessage(fromId, '🗑 Вся история успешно очищена');
+  }
+
     // ================== АДМИН-МЕНЮ УВЕДОМЛЕНИЙ ==================
 
   if (data === 'admin_notify_self') {
@@ -644,13 +661,50 @@ if (text === '🔔 Уведомления') {
 }
 
   // ---- История ----
-  if (text === '📜 История') {
-    const history = db.history[chatId] || [];
-    if (history.length === 0) return bot.sendMessage(chatId, '📭 История пуста');
+// ---- История ----
+if (text === '📜 История') {
 
-    const textHistory = history.map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`).join('\n');
-    return bot.sendMessage(chatId, `📜 История:\n\n${textHistory}`);
+  // 👑 Админ — видит историю всех + кнопку очистки
+  if (chatId === ADMIN_CHAT_ID) {
+
+    const allHistory = Object.keys(db.history)
+      .map(cid => {
+        const username = db.users[cid] || cid;
+        const history = db.history[cid];
+
+        if (!history || history.length === 0) return null;
+
+        const list = history
+          .map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`)
+          .join('\n');
+
+        return `👤 @${username}:\n${list}`;
+      })
+      .filter(Boolean)
+      .join('\n\n');
+
+    return bot.sendMessage(chatId, allHistory || '📭 История пуста', {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '🗑 Очистить всю историю', callback_data: 'admin_clear_history' }]
+        ]
+      }
+    });
   }
+
+  // 👤 Обычный пользователь — только своя история
+  const history = db.history[chatId] || [];
+  if (history.length === 0) {
+    return bot.sendMessage(chatId, '📭 История пуста');
+  }
+
+  const textHistory = history
+    .map((h, i) => `${i + 1}. ${h.amount} ₽ — ${h.date}`)
+    .join('\n');
+
+  return bot.sendMessage(chatId, `📜 Ваша история:\n\n${textHistory}`);
+}
+
 });
 
 // ================== HTTP SERVER (TEST) ==================
@@ -681,6 +735,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
