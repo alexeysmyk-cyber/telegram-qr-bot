@@ -221,11 +221,11 @@ bot.on('callback_query', (query) => {
       if (!db.notify_settings[chatId]) {
         db.notify_settings[chatId] = {
           visit_create: "none",
-          patient_create: "none",
           visit_update: "none",
           visit_cancel: "none",
           visit_finish: "none",
           invoice_create: false,
+          patient_create: "false",
           invoice_pay: false,
           lab_partial: false,
           lab_full: false
@@ -267,7 +267,8 @@ bot.on('callback_query', (query) => {
     const key = data.replace('set_', '');
     const chatId = fromId;
 
-    const threeMode = ['visit_create','patient_create','visit_update','visit_cancel','visit_finish'];
+    const threeMode = ['visit_create','visit_update','visit_cancel','visit_finish'];
+
 
     if (threeMode.includes(key)) {
       return bot.sendMessage(chatId, 'Выберите режим уведомлений:', {
@@ -492,6 +493,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
