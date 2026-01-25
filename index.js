@@ -524,7 +524,8 @@ bot.on('message', (msg) => {
 
 
     
-   if (text === '📋 Управление whitelist') {
+  if (text === '📋 Управление доступами') {
+
   const buttons = [];
 
   // ---- Заявки на доступ к боту ----
@@ -680,6 +681,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
