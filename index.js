@@ -241,7 +241,7 @@ bot.on('message', (msg) => {
 // ================== HTTP SERVER (TEST) ==================
 
 
-const PORT = process.env.PORT || 443;
+const PORT = process.env.PORT || 3000;
 
 app.get('/ping', (req, res) => {
   res.send('OK');
@@ -255,6 +255,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
