@@ -185,7 +185,7 @@ bot.onText(/\/start/, (msg) => {
 
 // ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
 // ================== CALLBACK (Разрешить/Запретить/Удалить + Уведомления) ==================
-// ================== CALLBACK ==================
+
 bot.on('callback_query', (query) => {
   const data = query.data;
   const fromId = query.from.id;
@@ -196,10 +196,33 @@ bot.on('callback_query', (query) => {
   }
 
     // ================== АДМИН: ОЧИСТКА ИСТОРИИ ==================
+  // ================== АДМИН: ПОДТВЕРЖДЕНИЕ ОЧИСТКИ ИСТОРИИ ==================
 
-  if (data === 'admin_clear_history') {
+  if (data === 'admin_clear_history_ask') {
 
     // защита: только админ
+    if (fromId !== ADMIN_CHAT_ID) {
+      return bot.answerCallbackQuery(query.id, { text: '❌ Только администратор может это сделать' });
+    }
+
+    return bot.sendMessage(fromId,
+      '⚠️ Вы уверены, что хотите удалить ВСЮ историю?\n\nЭто действие нельзя отменить.',
+      {
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ Да, удалить', callback_data: 'admin_clear_history_yes' },
+              { text: '❌ Отмена', callback_data: 'admin_clear_history_no' }
+            ]
+          ]
+        }
+      }
+    );
+  }
+
+  // подтверждение "ДА"
+  if (data === 'admin_clear_history_yes') {
+
     if (fromId !== ADMIN_CHAT_ID) {
       return bot.answerCallbackQuery(query.id, { text: '❌ Только администратор может это сделать' });
     }
@@ -211,6 +234,20 @@ bot.on('callback_query', (query) => {
 
     return bot.sendMessage(fromId, '🗑 Вся история успешно очищена');
   }
+
+  // отмена
+  if (data === 'admin_clear_history_no') {
+
+    if (fromId !== ADMIN_CHAT_ID) {
+      return bot.answerCallbackQuery(query.id, { text: '❌ Только администратор может это сделать' });
+    }
+
+    bot.answerCallbackQuery(query.id, { text: 'Отменено' });
+
+    return bot.sendMessage(fromId, '❎ Очистка истории отменена');
+  }
+
+ 
 
     // ================== АДМИН-МЕНЮ УВЕДОМЛЕНИЙ ==================
 
@@ -686,7 +723,7 @@ if (text === '📜 История') {
     return bot.sendMessage(chatId, allHistory || '📭 История пуста', {
       reply_markup: {
         inline_keyboard: [
-          [{ text: '🗑 Очистить всю историю', callback_data: 'admin_clear_history' }]
+          [{ text: '🗑 Очистить всю историю', callback_data: 'admin_clear_history_ask' }]
         ]
       }
     });
@@ -735,6 +772,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
