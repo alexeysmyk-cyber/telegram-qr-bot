@@ -4,10 +4,12 @@
     133334492,
     5900607039,
     5280146224,
-    648009056
+    648009056,
+    7485978153
   ],
   "notify_whitelist": [
-     1582980728
+    1582980728,
+    7485978153
   ],
   "history": {
     "133334492": [
@@ -61,7 +63,8 @@
     "133334492": null,
     "648009056": null,
     "1582980728": null,
-    "5900607039": null
+    "5900607039": null,
+    "7485978153": null
   },
   "pending": [],
   "notify_pending": [],
@@ -76,9 +79,24 @@
       "invoice_pay": false,
       "lab_partial": false,
       "lab_full": false
+    },
+    "7485978153": {
+      "visit_create": "self",
+      "visit_update": "none",
+      "visit_cancel": "none",
+      "visit_finish": "none",
+      "invoice_create": false,
+      "patient_create": false,
+      "invoice_pay": false,
+      "lab_partial": false,
+      "lab_full": false
     }
   },
-  "notify_admin_limits": {},
+  "notify_admin_limits": {
+    "1582980728": {
+      "visit_cancel": false
+    }
+  },
   "users": {
     "133334492": {
       "username": "Dr_EkaterinaSmyk",
@@ -95,6 +113,10 @@
     "5280146224": {
       "username": "MarinaTribelgorn",
       "mis_id": null
+    },
+    "7485978153": {
+      "username": 7485978153,
+      "mis_id": "43347"
     }
   }
 }
