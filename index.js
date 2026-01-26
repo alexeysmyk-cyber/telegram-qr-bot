@@ -645,7 +645,7 @@ if (db.state[chatId] === 'WAIT_MIS_ID') {
   db.state[chatId] = null;
   saveDB(db);
 
-await bot.sendMessage(chatId,
+bot.sendMessage(chatId,
   `✅ ID в МИС сохранён: ${misId}\n\nТеперь уведомления могут фильтроваться по вам.`
 );
 
@@ -909,6 +909,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
