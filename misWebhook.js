@@ -48,15 +48,13 @@ async function handleMisWebhook(req, res) {
   const event = req.body.event;
   const data = req.body.data || {};
 
-  // ===== ОПРЕДЕЛЯЕМ ТИП СОБЫТИЯ =====
+  // ===== ОПРЕДЕЛЯЕМ ТИП СОБЫТИЯ И КЛЮЧ ФИЛЬТРА =====
   let key = null;
 
-  if (event === 'create_appointment') {
-    key = 'visit_create';
-  }
-  else if (event === 'create_patient') {
-    key = 'patient_create';
-  }
+  if (event === 'create_appointment') key = 'visit_create';
+  else if (event === 'create_patient') key = 'patient_create';
+  else if (event === 'create_invoice') key = 'invoice_create';
+  else if (event === 'full_payment_invoice') key = 'invoice_pay';
   else {
     return res.send('OK (event ignored)');
   }
@@ -95,7 +93,6 @@ async function handleMisWebhook(req, res) {
   // ===== СОЗДАНИЕ ПАЦИЕНТА =====
   else if (event === 'create_patient') {
 
-    const number = data.number;
     const lastName = data.last_name;
     const firstName = data.first_name;
     const thirdName = data.third_name;
@@ -104,8 +101,6 @@ async function handleMisWebhook(req, res) {
     const gender = data.gender;
     const mobile = data.mobile;
     const patientId = data.patient_id;
-    const dateCreated = data.date_created;
-    const timeCreated = data.time_created;
 
     if (!lastName && !firstName) {
       console.log('⚠️ Нет ФИО пациента, пропуск (patient)');
@@ -114,24 +109,85 @@ async function handleMisWebhook(req, res) {
 
     message = `👤 Новый пациент\n\n`;
 
-    if (lastName || firstName) {
-      message += `ФИО: ${lastName || ''} ${firstName || ''} ${thirdName || ''}\n`;
-    }
-
+    message += `ФИО: ${lastName || ''} ${firstName || ''} ${thirdName || ''}\n`;
     if (birthDate) message += `🎂 Дата рождения: ${birthDate}\n`;
     if (age) message += `📊 Возраст: ${age}\n`;
     if (gender) message += `⚥ Пол: ${gender}\n`;
     if (mobile) message += `📞 Телефон: ${mobile}\n`;
-
-    if (number) message += `🆔 Номер пациента: ${number}\n`;
     if (patientId) message += `🆔 ID пациента в МИС: ${patientId}\n`;
-
-    if (dateCreated || timeCreated) {
-      message += `\n📅 Создан: ${dateCreated || ''} ${timeCreated || ''}\n`;
-    }
   }
 
-  // ===== ЛОГИКА УВЕДОМЛЕНИЙ (ИЗ БОТА) =====
+  // ===== 🧾 СОЗДАНИЕ СЧЁТА =====
+  else if (event === 'create_invoice') {
+
+    const number = data.number;
+    const date = data.date;
+    const value = data.value;
+    const status = data.status;
+
+    const patient = data.patient;
+    const patientBirth = data.patient_birth_date;
+    const patientGender = data.patient_gender;
+    const patientMobile = data.patient_mobile;
+    const patientEmail = data.patient_email;
+
+    if (!number && !patient) {
+      console.log('⚠️ Нет данных по счёту, пропуск (invoice)');
+      return res.send('OK (no data)');
+    }
+
+    message = `🧾 Создан новый счёт\n\n`;
+
+    if (number) message += `🆔 Счёт №: ${number}\n`;
+    if (date) message += `📅 Дата: ${date}\n`;
+    if (value) message += `💰 Сумма: ${value} ₽\n`;
+    if (status) message += `📌 Статус: ${status}\n`;
+
+    message += `\n👤 Пациент:\n`;
+
+    if (patient) message += `ФИО: ${patient}\n`;
+    if (patientBirth) message += `🎂 Дата рождения: ${patientBirth}\n`;
+    if (patientGender) message += `⚥ Пол: ${patientGender}\n`;
+    if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
+    if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
+  }
+
+  // ===== 💳 ПОЛНАЯ ОПЛАТА СЧЁТА =====
+  else if (event === 'full_payment_invoice') {
+
+    const number = data.number;
+    const date = data.date;
+    const value = data.value;
+    const status = data.status;
+
+    const patient = data.patient;
+    const patientBirth = data.patient_birth_date;
+    const patientGender = data.patient_gender;
+    const patientMobile = data.patient_mobile;
+    const patientEmail = data.patient_email;
+
+    if (!number && !patient) {
+      console.log('⚠️ Нет данных по оплате счёта, пропуск (invoice pay)');
+      return res.send('OK (no data)');
+    }
+
+    message = `💳 Счёт полностью оплачен\n\n`;
+
+    if (number) message += `🆔 Счёт №: ${number}\n`;
+    if (date) message += `📅 Дата оплаты: ${date}\n`;
+    if (value) message += `💰 Оплачено: ${value} ₽\n`;
+    if (status) message += `📌 Статус: ${status}\n`;
+
+    message += `\n👤 Пациент:\n`;
+
+    if (patient) message += `ФИО: ${patient}\n`;
+    if (patientBirth) message += `🎂 Дата рождения: ${patientBirth}\n`;
+    if (patientGender) message += `⚥ Пол: ${patientGender}\n`;
+    if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
+    if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
+  }
+
+  // ===== ЛОГИКА УВЕДОМЛЕНИЙ (НЕ ЛОМАЛ) =====
 
   const db = loadDB();
   if (!db) {
@@ -152,10 +208,10 @@ async function handleMisWebhook(req, res) {
 
     if (!mode || mode === 'none') continue;
 
-    // 👤 Только для себя (ТОЛЬКО ДЛЯ ВИЗИТОВ)
+    // 👤 self работает ТОЛЬКО для визитов
     if (mode === 'self') {
 
-      if (event === 'create_patient') continue;
+      if (event !== 'create_appointment') continue;
 
       if (!user || !user.mis_id) continue;
       if (!doctorId) continue;
