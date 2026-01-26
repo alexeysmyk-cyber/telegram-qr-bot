@@ -683,7 +683,18 @@ if (text === '🔔 Уведомления') {
       return bot.sendMessage(chatId, '⏳ Заявка на уведомления уже отправлена. Ожидайте решения администратора.');
     }
 
-    const username = db.users[chatId] || msg.from.username || msg.from.first_name;
+    let username = chatId;
+
+if (db.users[chatId]) {
+  if (typeof db.users[chatId] === 'string') {
+    username = db.users[chatId];
+  } else {
+    username = db.users[chatId].username || chatId;
+  }
+} else {
+  username = msg.from.username || msg.from.first_name || chatId;
+}
+
 
     db.notify_pending.push(chatId);
     saveDB(db);
@@ -828,6 +839,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
