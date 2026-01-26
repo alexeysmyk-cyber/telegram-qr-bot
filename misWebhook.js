@@ -95,7 +95,7 @@ else {
     return res.send('OK');
   }
 
-  const key = 'visit_create';
+
 
   for (const chatId of db.notify_whitelist || []) {
 
