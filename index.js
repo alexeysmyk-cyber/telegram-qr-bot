@@ -10,6 +10,7 @@ const TelegramBot = require('node-telegram-bot-api');
 const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
+const { handleMisWebhook } = require('./misWebhook');
 
 const app = express();
 
@@ -893,6 +894,9 @@ const PORT = process.env.PORT; // ❗ НЕ ставим 3000 вручную
 app.get('/ping', (req, res) => {
   res.send('OK');
 });
+app.post('/mis', async (req, res) => {
+  await handleMisWebhook(req, res);
+});
 
 const server = app.listen(PORT, () => {
   console.log('🌐 HTTP server started on port', PORT);
@@ -911,6 +915,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
