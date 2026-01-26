@@ -92,7 +92,7 @@ async function handleMisWebhook(req, res) {
     if (source) message += `🌐 Источник: ${source}\n`;
   }
 
-  // ===== 🔥 СОЗДАНИЕ ПАЦИЕНТА =====
+  // ===== СОЗДАНИЕ ПАЦИЕНТА =====
   else if (event === 'create_patient') {
 
     const number = data.number;
@@ -107,7 +107,6 @@ async function handleMisWebhook(req, res) {
     const dateCreated = data.date_created;
     const timeCreated = data.time_created;
 
-    // минимальная проверка для пациента
     if (!lastName && !firstName) {
       console.log('⚠️ Нет ФИО пациента, пропуск (patient)');
       return res.send('OK (no data)');
@@ -122,7 +121,6 @@ async function handleMisWebhook(req, res) {
     if (birthDate) message += `🎂 Дата рождения: ${birthDate}\n`;
     if (age) message += `📊 Возраст: ${age}\n`;
     if (gender) message += `⚥ Пол: ${gender}\n`;
-
     if (mobile) message += `📞 Телефон: ${mobile}\n`;
 
     if (number) message += `🆔 Номер пациента: ${number}\n`;
@@ -133,7 +131,7 @@ async function handleMisWebhook(req, res) {
     }
   }
 
-  // ===== ЛОГИКА УВЕДОМЛЕНИЙ (ИЗ БОТА, НЕ ТРОГАЛ) =====
+  // ===== ЛОГИКА УВЕДОМЛЕНИЙ (ИЗ БОТА) =====
 
   const db = loadDB();
   if (!db) {
@@ -150,14 +148,13 @@ async function handleMisWebhook(req, res) {
     // 🔒 Админ запретил этот тип?
     if (limits[key] === false) continue;
 
-    const mode = settings[key]; // visit: self / all / none, patient: true / false
+    const mode = settings[key];
 
     if (!mode || mode === 'none') continue;
 
     // 👤 Только для себя (ТОЛЬКО ДЛЯ ВИЗИТОВ)
     if (mode === 'self') {
 
-      // для пациентов self не применяется
       if (event === 'create_patient') continue;
 
       if (!user || !user.mis_id) continue;
@@ -169,13 +166,6 @@ async function handleMisWebhook(req, res) {
     // ✅ Всё ок — отправляем
     await send(chatId, message);
   }
-
-  res.send('OK');
-}
-
-module.exports = { handleMisWebhook };
-
-
 
   res.send('OK');
 }
