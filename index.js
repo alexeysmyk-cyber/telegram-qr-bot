@@ -82,6 +82,18 @@ function saveDB(db) {
 
 let db = loadDB();
 
+function getUsername(id) {
+  if (db.users[id]) {
+    if (typeof db.users[id] === 'string') {
+      return db.users[id];
+    } else {
+      return db.users[id].username || id;
+    }
+  }
+  return id;
+}
+
+
 // ================== КНОПКИ ==================
 function showNotifyMenu(chatId) {
   if (!db.notify_settings[chatId]) {
@@ -282,12 +294,14 @@ bot.on('callback_query', (query) => {
       return bot.sendMessage(fromId, '📭 Нет пользователей с доступом к уведомлениям');
     }
 
-    db.notify_whitelist.forEach(id => {
-      const username = db.users[id] || id;
-      buttons.push([
-        { text: `👤 ${username}`, callback_data: `admin_user_${id}` }
-      ]);
-    });
+db.notify_whitelist.forEach(id => {
+
+const username = getUsername(id);
+
+  buttons.push([
+    { text: `👤 ${username}`, callback_data: `admin_user_${id}` }
+  ]);
+});
 
     return bot.sendMessage(fromId, '👥 Пользователи с доступом к уведомлениям:', {
       reply_markup: { inline_keyboard: buttons }
@@ -298,7 +312,8 @@ bot.on('callback_query', (query) => {
 
   if (data.startsWith('admin_user_')) {
     const userId = Number(data.replace('admin_user_', ''));
-    const username = db.users[userId] || userId;
+ const username = getUsername(userId);
+
 
     if (!db.notify_admin_limits[userId]) {
       db.notify_admin_limits[userId] = {};
@@ -352,7 +367,8 @@ bot.on('callback_query', (query) => {
     saveDB(db);
 
     // обновляем экран пользователя
-    const username = db.users[userId] || userId;
+const username = getUsername(userId);
+
     const limits = db.notify_admin_limits[userId];
 
     function limitLabel(key) {
@@ -429,6 +445,14 @@ bot.on('callback_query', (query) => {
     // ---- Уведомления: разрешить / запретить / удалить ----
     else if (data.startsWith('notify_allow_')) {
       const chatId = Number(data.split('_')[2]);
+if (!db.users[chatId]) {
+  db.users[chatId] = { username: null, mis_id: null };
+}
+
+if (!db.users[chatId].username) {
+  db.users[chatId].username = getUsername(chatId);
+}
+
 
       if (!db.notify_whitelist.includes(chatId)) {
         db.notify_whitelist.push(chatId);
@@ -477,6 +501,29 @@ bot.on('callback_query', (query) => {
   }
 
   // ================== ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ УВЕДОМЛЕНИЙ ==================
+// ================== M I S   I D ==================
+
+if (data === 'mis_edit') {
+  db.state[fromId] = 'WAIT_MIS_ID';
+  saveDB(db);
+
+  bot.answerCallbackQuery(query.id);
+
+  return bot.sendMessage(fromId,
+    '🆔 Введите новый ID в МИС:'
+  );
+}
+
+if (data === 'mis_delete') {
+  if (db.users[fromId]) {
+    db.users[fromId].mis_id = null;
+    saveDB(db);
+  }
+
+  bot.answerCallbackQuery(query.id, { text: '🗑 ID удалён' });
+
+  return bot.sendMessage(fromId, '🗑 Ваш ID в МИС удалён.');
+}
 
   // выбор события
 if (data.startsWith('set_')) {
@@ -580,6 +627,31 @@ bot.on('message', (msg) => {
 
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
+  // ---- Ожидание ввода MIS ID ----
+if (db.state[chatId] === 'WAIT_MIS_ID') {
+
+  const misId = text.trim();
+
+  // простая проверка — только цифры
+  if (!/^\d+$/.test(misId)) {
+    return bot.sendMessage(chatId, '❌ ID должен состоять только из цифр. Попробуйте ещё раз:');
+  }
+
+  if (!db.users[chatId]) {
+    db.users[chatId] = { username: getUsername(chatId), mis_id: null };
+  }
+
+  db.users[chatId].mis_id = misId;
+  db.state[chatId] = null;
+  saveDB(db);
+
+await bot.sendMessage(chatId,
+  `✅ ID в МИС сохранён: ${misId}\n\nТеперь уведомления могут фильтроваться по вам.`
+);
+
+const keyboard = (chatId === ADMIN_CHAT_ID) ? adminKeyboard() : mainKeyboard();
+return bot.sendMessage(chatId, 'Выберите действие:', keyboard);
+
   // ---- Меню админа: 
   if (chatId === ADMIN_CHAT_ID) {
 
@@ -606,14 +678,7 @@ if (text === '📋 Управление доступами') {
 
     db.pending.forEach(id => {
 
-      let username = id;
-      if (db.users[id]) {
-        if (typeof db.users[id] === 'string') {
-          username = db.users[id];
-        } else {
-          username = db.users[id].username || id;
-        }
-      }
+const username = getUsername(id);
 
       buttons.push([
         { text: `✅ ${username}`, callback_data: `allow_${id}` },
@@ -629,14 +694,7 @@ if (text === '📋 Управление доступами') {
     .filter(id => id !== ADMIN_CHAT_ID)
     .forEach(id => {
 
-      let username = id;
-      if (db.users[id]) {
-        if (typeof db.users[id] === 'string') {
-          username = db.users[id];
-        } else {
-          username = db.users[id].username || id;
-        }
-      }
+const username = getUsername(id);
 
       buttons.push([
         { text: `❌ Убрать QR у ${username}`, callback_data: `remove_${id}` }
@@ -648,14 +706,7 @@ if (text === '📋 Управление доступами') {
 
   db.notify_whitelist.forEach(id => {
 
-    let username = id;
-    if (db.users[id]) {
-      if (typeof db.users[id] === 'string') {
-        username = db.users[id];
-      } else {
-        username = db.users[id].username || id;
-      }
-    }
+const username = getUsername(id);
 
     buttons.push([
       { text: `❌ Убрать уведомления у ${username}`, callback_data: `notify_remove_${id}` }
@@ -683,18 +734,7 @@ if (text === '🔔 Уведомления') {
       return bot.sendMessage(chatId, '⏳ Заявка на уведомления уже отправлена. Ожидайте решения администратора.');
     }
 
-    let username = chatId;
-
-if (db.users[chatId]) {
-  if (typeof db.users[chatId] === 'string') {
-    username = db.users[chatId];
-  } else {
-    username = db.users[chatId].username || chatId;
-  }
-} else {
-  username = msg.from.username || msg.from.first_name || chatId;
-}
-
+const username = getUsername(chatId);
 
     db.notify_pending.push(chatId);
     saveDB(db);
@@ -719,6 +759,43 @@ if (db.users[chatId]) {
   // есть доступ → показываем меню настроек
   return showNotifyMenu(chatId);
 }
+
+  // ---- Мой ID в МИС ----
+if (text === '🆔 Мой ID в МИС') {
+
+  // гарантируем, что пользователь есть в базе
+  if (!db.users[chatId]) {
+    db.users[chatId] = { username: getUsername(chatId), mis_id: null };
+    saveDB(db);
+  }
+
+  const currentId = db.users[chatId].mis_id;
+
+  // если ID ещё не задан
+  if (!currentId) {
+    db.state[chatId] = 'WAIT_MIS_ID';
+    saveDB(db);
+
+    return bot.sendMessage(chatId,
+      '🆔 Введите ваш ID в МИС (например doctor_id из системы):\n\n' +
+      'Он будет использоваться для фильтрации уведомлений.'
+    );
+  }
+
+  // если уже есть ID
+  return bot.sendMessage(chatId,
+    `🆔 Ваш текущий ID в МИС: ${currentId}\n\nЧто вы хотите сделать?`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: '✏️ Изменить ID', callback_data: 'mis_edit' }],
+          [{ text: '❌ Удалить ID', callback_data: 'mis_delete' }]
+        ]
+      }
+    }
+  );
+}
+
 
 
   
@@ -765,14 +842,7 @@ if (text === '📜 История') {
       .map(cid => {
 
         // 🔥 правильно получаем username
-        let username = cid;
-        if (db.users[cid]) {
-          if (typeof db.users[cid] === 'string') {
-            username = db.users[cid];
-          } else {
-            username = db.users[cid].username || cid;
-          }
-        }
+     const username = getUsername(cid);
 
         const history = db.history[cid];
         if (!history || history.length === 0) return null;
@@ -839,6 +909,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
