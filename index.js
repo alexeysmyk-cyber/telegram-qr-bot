@@ -876,9 +876,6 @@ if (text === '📜 История') {
     .join('\n');
 
   return bot.sendMessage(chatId, `📜 Ваша история:\n\n${textHistory}`);
-}
-
-
 });
 
 // ================== HTTP SERVER (TEST) ==================
@@ -909,6 +906,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
