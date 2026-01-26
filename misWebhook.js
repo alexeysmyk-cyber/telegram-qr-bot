@@ -52,9 +52,17 @@ async function handleMisWebhook(req, res) {
   const data = req.body.data || {};
 
   // --- ПОКА ОБРАБАТЫВАЕМ ТОЛЬКО СОЗДАНИЕ ВИЗИТА ---
-  if (event !== 'create_appointment') {
-    return res.send('OK (event ignored)');
-  }
+let key = null;
+
+if (event === 'create_appointment') {
+  key = 'visit_create';
+}
+else if (event === 'create_patient') {
+  key = 'patient_create';
+}
+else {
+  return res.send('OK (event ignored)');
+}
 
   const timeStart = data.time_start;
   const room = data.room;
