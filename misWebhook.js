@@ -1,3 +1,8 @@
+console.log('==== MIS WEBHOOK RECEIVED ====');
+console.log('Headers:', req.headers);
+console.log('RAW BODY:', req.body);
+console.log('EVENT FIELD:', req.body && req.body.event);
+
 const axios = require('axios');
 const fs = require('fs');
 
