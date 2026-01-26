@@ -6,7 +6,9 @@
     5280146224,
     648009056
   ],
-  "notify_whitelist": [],
+  "notify_whitelist": [
+     1582980728
+  ],
   "history": {
     "133334492": [
       {
@@ -63,10 +65,36 @@
   },
   "pending": [],
   "notify_pending": [],
+  "notify_settings": {
+    "1582980728": {
+      "visit_create": "all",
+      "visit_update": "none",
+      "visit_cancel": "none",
+      "visit_finish": "none",
+      "patient_create": false,
+      "invoice_create": false,
+      "invoice_pay": false,
+      "lab_partial": false,
+      "lab_full": false
+    }
+  },
+  "notify_admin_limits": {},
   "users": {
-    "133334492": "Dr_EkaterinaSmyk",
-    "648009056": "ssierrraa",
-    "5900607039": "SPBPeptides",
-    "5280146224": "MarinaTribelgorn"
+    "133334492": {
+      "username": "Dr_EkaterinaSmyk",
+      "mis_id": null
+    },
+    "648009056": {
+      "username": "ssierrraa",
+      "mis_id": null
+    },
+    "5900607039": {
+      "username": "SPBPeptides",
+      "mis_id": null
+    },
+    "5280146224": {
+      "username": "MarinaTribelgorn",
+      "mis_id": null
+    }
   }
 }
