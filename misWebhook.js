@@ -64,20 +64,24 @@ else {
   return res.send('OK (event ignored)');
 }
 
+ // ===== СОЗДАНИЕ ВИЗИТА =====
+if (event === 'create_appointment') {
+
   const timeStart = data.time_start;
   const room = data.room;
   const doctor = data.doctor;
-  const doctorId = data.doctor_id;   // 🔥 обязательно нужен для режима "self"
+  doctorId = data.doctor_id;
   const patientName = data.patient_name;
   const patientPhone = data.patient_phone;
   const source = data.source || '';
 
+  // 🔥 ПРОВЕРКА ТОЛЬКО ДЛЯ ВИЗИТОВ
   if (!doctor && !patientName) {
-    console.log('⚠️ Нет нужных данных, пропуск');
+    console.log('⚠️ Нет нужных данных, пропуск (appointment)');
     return res.send('OK (no data)');
   }
 
-  let message = `🆕 Новый визит\n\n`;
+  message = `🆕 Новый визит\n\n`;
 
   if (timeStart) message += `📅 Время: ${timeStart}\n`;
   if (room) message += `🚪 Кабинет: ${room}\n`;
@@ -86,7 +90,7 @@ else {
   if (patientName) message += `👤 Пациент: ${patientName}\n`;
   if (patientPhone) message += `📞 Телефон: ${patientPhone}\n`;
   if (source) message += `🌐 Источник: ${source}\n`;
-
+}
   // ===== ЛОГИКА УВЕДОМЛЕНИЙ (ИЗ БОТА) =====
 
   const db = loadDB();
