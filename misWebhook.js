@@ -1,7 +1,4 @@
-console.log('==== MIS WEBHOOK RECEIVED ====');
-console.log('Headers:', req.headers);
-console.log('RAW BODY:', req.body);
-console.log('EVENT FIELD:', req.body && req.body.event);
+
 
 const axios = require('axios');
 const fs = require('fs');
@@ -36,7 +33,10 @@ async function send(chatId, text) {
 
 // ===== ОСНОВНОЙ ОБРАБОТЧИК WEBHOOK =====
 async function handleMisWebhook(req, res) {
-
+console.log('==== MIS WEBHOOK RECEIVED ====');
+console.log('Headers:', req.headers);
+console.log('RAW BODY:', req.body);
+console.log('EVENT FIELD:', req.body && req.body.event);
   console.log('==== MIS WEBHOOK RECEIVED ====');
   console.log('Body:', req.body);
 
