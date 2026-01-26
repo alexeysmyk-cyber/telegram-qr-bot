@@ -597,16 +597,24 @@ bot.on('message', (msg) => {
 
 
     
-  if (text === '📋 Управление доступами') {
-
+if (text === '👥 Управление доступами') {
   const buttons = [];
 
-  // ---- Заявки на доступ к боту ----
+  // ---- Заявки на доступ к QR ----
   if (db.pending.length > 0) {
     buttons.push([{ text: '⏳ Заявки на доступ к QR', callback_data: 'noop' }]);
 
     db.pending.forEach(id => {
-      const username = db.users[id] || id;
+
+      let username = id;
+      if (db.users[id]) {
+        if (typeof db.users[id] === 'string') {
+          username = db.users[id];
+        } else {
+          username = db.users[id].username || id;
+        }
+      }
+
       buttons.push([
         { text: `✅ ${username}`, callback_data: `allow_${id}` },
         { text: `❌ ${username}`, callback_data: `deny_${id}` }
@@ -620,7 +628,16 @@ bot.on('message', (msg) => {
   db.whitelist
     .filter(id => id !== ADMIN_CHAT_ID)
     .forEach(id => {
-      const username = db.users[id] || id;
+
+      let username = id;
+      if (db.users[id]) {
+        if (typeof db.users[id] === 'string') {
+          username = db.users[id];
+        } else {
+          username = db.users[id].username || id;
+        }
+      }
+
       buttons.push([
         { text: `❌ Убрать QR у ${username}`, callback_data: `remove_${id}` }
       ]);
@@ -630,7 +647,16 @@ bot.on('message', (msg) => {
   buttons.push([{ text: '🔔 Доступ к уведомлениям', callback_data: 'noop' }]);
 
   db.notify_whitelist.forEach(id => {
-    const username = db.users[id] || id;
+
+    let username = id;
+    if (db.users[id]) {
+      if (typeof db.users[id] === 'string') {
+        username = db.users[id];
+      } else {
+        username = db.users[id].username || id;
+      }
+    }
+
     buttons.push([
       { text: `❌ Убрать уведомления у ${username}`, callback_data: `notify_remove_${id}` }
     ]);
@@ -640,6 +666,7 @@ bot.on('message', (msg) => {
     reply_markup: { inline_keyboard: buttons }
   });
 }
+
 
     if (text === '🗑 Очистить историю') {
       db.history = {};
@@ -801,6 +828,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
