@@ -15,6 +15,7 @@ const { handleMisWebhook } = require('./misWebhook');
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.use((req, res, next) => {
   console.log(`🌐 HTTP ${req.method} ${req.url}`);
@@ -915,6 +916,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
