@@ -2,7 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 
 // ===== НАСТРОЙКИ =====
-const BOT_TOKEN = process.env.BOT_TOKEN || 'ТУТ_ТВОЙ_BOT_TOKEN';
+const BOT_TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
 const SECRET_KEY = 'SredaSecretKey';
 const DB_FILE = './db.json';
 
