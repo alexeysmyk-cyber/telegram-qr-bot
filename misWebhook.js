@@ -159,7 +159,9 @@ async function handleMisWebhook(req, res) {
     const date = data.date;
     const value = data.value;
     const status = data.status;
+    const paymentType = data.payment_type_name; 
 
+    
     const patient = data.patient;
     const patientBirth = data.patient_birth_date;
     const patientGender = data.patient_gender;
@@ -177,7 +179,8 @@ async function handleMisWebhook(req, res) {
     if (date) message += `📅 Дата оплаты: ${date}\n`;
     if (value) message += `💰 Оплачено: ${value} ₽\n`;
     if (status) message += `📌 Статус: ${status}\n`;
-
+    if (paymentType) message += `💳 Способ оплаты: ${paymentType}\n`;  
+    
     message += `\n👤 Пациент:\n`;
 
     if (patient) message += `ФИО: ${patient}\n`;
