@@ -725,9 +725,18 @@ if (text === '📜 История') {
 
     const allHistory = Object.keys(db.history)
       .map(cid => {
-        const username = db.users[cid] || cid;
-        const history = db.history[cid];
 
+        // 🔥 правильно получаем username
+        let username = cid;
+        if (db.users[cid]) {
+          if (typeof db.users[cid] === 'string') {
+            username = db.users[cid];
+          } else {
+            username = db.users[cid].username || cid;
+          }
+        }
+
+        const history = db.history[cid];
         if (!history || history.length === 0) return null;
 
         const list = history
@@ -761,6 +770,7 @@ if (text === '📜 История') {
   return bot.sendMessage(chatId, `📜 Ваша история:\n\n${textHistory}`);
 }
 
+
 });
 
 // ================== HTTP SERVER (TEST) ==================
@@ -791,6 +801,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
