@@ -49,6 +49,8 @@ async function handleMisWebhook(req, res) {
   const event = req.body.event;
   const data = req.body.data || {};
 
+  console.log('🔥 START HANDLE EVENT:', event);
+
   // ===== ОПРЕДЕЛЯЕМ ТИП СОБЫТИЯ И КЛЮЧ ФИЛЬТРА =====
   let key = null;
 
@@ -195,6 +197,8 @@ async function handleMisWebhook(req, res) {
 // 🔬 ПОЛНАЯ ГОТОВНОСТЬ АНАЛИЗОВ
 // ============================================================
 else if (event === 'full_ready_lab_result') {
+
+  console.log('🔥 ВОШЛИ В БЛОК full_ready_lab_result');
 
   const appointmentId = data.appointment_id;
   const lab = data.lab;
