@@ -1,24 +1,33 @@
 console.log('🧪 misApi.js загружается');
+
 const axios = require('axios');
 const qs = require('querystring');
 
-// ===== ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ =====
+// ===== ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ (ТВОИ ИМЕНА) =====
 const API_KEY = process.env.API_KEY;
-const BASE_URL = process.env.BASE_URL;   // https://app.rnova.org/api/public
-console.log('🧪 MIS_API_KEY:', process.env.MIS_API_KEY);
-console.log('🧪 MIS_BASE_URL:', process.env.MIS_BASE_URL);
+const BASE_URL = process.env.BASE_URL;   // например: https://app.rnova.org/api/public
 
-// итоговый URL:
-// https://app.rnova.org/api/public/getAppointment
-const GET_APPOINTMENT_URL = `https://app.rnova.org/api/public/getAppointments`;
+console.log('🧪 API_KEY =', API_KEY);
+console.log('🧪 BASE_URL =', BASE_URL);
 
-if (!API_KEY || !BASE_URL) {
-  console.error('❌ НЕ ЗАДАНЫ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ MIS_API_KEY или MIS_BASE_URL');
+if (!API_KEY) {
+  console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ API_KEY');
 }
+
+if (!BASE_URL) {
+  console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ BASE_URL');
+}
+
+// итоговый URL
+const GET_APPOINTMENT_URL = `${BASE_URL}/getAppointments`;
+
+console.log('🧪 GET_APPOINTMENT_URL =', GET_APPOINTMENT_URL);
 
 // ===== ПОЛУЧЕНИЕ ВИЗИТА ПО appointment_id =====
 async function getAppointmentById(appointmentId) {
   try {
+
+    console.log('➡️ misApi: отправляем запрос getAppointments, appointment_id =', appointmentId);
 
     const body = qs.stringify({
       api_key: API_KEY,
@@ -37,6 +46,8 @@ async function getAppointmentById(appointmentId) {
     );
 
     const result = response.data;
+
+    console.log('⬅️ misApi: ответ от МИС:', result);
 
     // проверка формата ответа
     if (!result || typeof result.error === 'undefined') {
@@ -58,10 +69,14 @@ async function getAppointmentById(appointmentId) {
     }
 
     // 🔥 берём первый визит
-    return list[0];
+    const appointment = list[0];
+
+    console.log('✅ misApi: визит получен:', appointment.id);
+
+    return appointment;
 
   } catch (e) {
-    console.error('❌ Ошибка запроса getAppointments:', e.message);
+    console.error('🔥 ОШИБКА В misApi.getAppointmentById:', e);
     return null;
   }
 }
