@@ -1,54 +1,79 @@
 const fs = require('fs');
 const path = require('path');
 
-// та же папка, куда мы сохраняем PDF
 const LAB_DIR = path.join(__dirname, 'data');
+const DB_FILE = path.join(__dirname, 'db.json');
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
+const LAB_HISTORY_KEEP = 90 * 24 * 60 * 60 * 1000; // 90 дней
 
 function cleanupLabs() {
 
-  // если папки нет — просто выходим
-  if (!fs.existsSync(LAB_DIR)) {
-    console.log('⚠️ Папка с анализами не найдена, пропуск очистки:', LAB_DIR);
-    return;
-  }
+  console.log('🧹 Запуск авто-очистки анализов и истории...');
 
   const now = Date.now();
 
-  let files;
+  // ===== 1. ЧИСТКА ФАЙЛОВ PDF =====
+
+  if (fs.existsSync(LAB_DIR)) {
+
+    const files = fs.readdirSync(LAB_DIR);
+
+    for (const file of files) {
+
+      const filePath = path.join(LAB_DIR, file);
+
+      let stat;
+      try {
+        stat = fs.statSync(filePath);
+      } catch {
+        continue;
+      }
+
+      if (!stat.isFile()) continue;
+
+      if (now - stat.mtimeMs > WEEK) {
+        try {
+          fs.unlinkSync(filePath);
+          console.log('🗑 Удалён старый файл анализа:', file);
+        } catch (e) {
+          console.error('❌ Не удалось удалить файл:', file, e.message);
+        }
+      }
+    }
+  }
+
+  // ===== 2. ЧИСТКА lab_history В DB =====
+
+  if (!fs.existsSync(DB_FILE)) return;
+
+  let db;
   try {
-    files = fs.readdirSync(LAB_DIR);
+    db = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
   } catch (e) {
-    console.error('❌ Не удалось прочитать папку анализов:', e.message);
+    console.error('❌ Не удалось прочитать DB для очистки истории:', e.message);
     return;
   }
 
-  for (const file of files) {
+  if (!Array.isArray(db.lab_history)) {
+    console.log('ℹ️ lab_history отсутствует, чистка не требуется');
+    return;
+  }
 
-    const filePath = path.join(LAB_DIR, file);
+  const before = db.lab_history.length;
 
-    let stat;
-    try {
-      stat = fs.statSync(filePath);
-    } catch (e) {
-      console.error('❌ Не удалось получить информацию о файле:', file, e.message);
-      continue;
-    }
+  db.lab_history = db.lab_history.filter(item => {
+    if (!item.date) return false;
+    return (now - new Date(item.date).getTime()) < LAB_HISTORY_KEEP;
+  });
 
-    // пропускаем не-файлы (на случай папок)
-    if (!stat.isFile()) continue;
+  const after = db.lab_history.length;
 
-    // старше недели?
-    if (now - stat.mtimeMs > WEEK) {
-
-      try {
-        fs.unlinkSync(filePath);
-        console.log('🗑 Удалён старый файл анализа:', file);
-      } catch (e) {
-        console.error('❌ Не удалось удалить файл:', file, e.message);
-      }
-    }
+  if (before !== after) {
+    fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
+    console.log(`🧹 lab_history очищен: было ${before}, стало ${after}`);
+  } else {
+    console.log('ℹ️ lab_history чистить не нужно');
   }
 }
 
