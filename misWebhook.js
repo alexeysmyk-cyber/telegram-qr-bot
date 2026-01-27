@@ -1,6 +1,8 @@
 const axios = require('axios');
 const fs = require('fs');
+console.log('➡️ СЕЙЧАС БУДЕМ ВЫЗЫВАТЬ getAppointmentById');
 const { getAppointmentById } = require('./misApi');
+
 
 // ===== НАСТРОЙКИ =====
 const BOT_TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
