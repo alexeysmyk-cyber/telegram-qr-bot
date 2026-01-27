@@ -7,8 +7,6 @@ const qs = require('querystring');
 const API_KEY = process.env.API_KEY;
 const BASE_URL = process.env.BASE_URL;   // например: https://app.rnova.org/api/public
 
-console.log('🧪 API_KEY =', API_KEY);
-console.log('🧪 BASE_URL =', BASE_URL);
 
 if (!API_KEY) {
   console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ API_KEY');
