@@ -222,8 +222,3 @@ async function handleMisWebhook(req, res) {
 }
 
 module.exports = { handleMisWebhook };
-
-  res.send('OK');
-}
-
-module.exports = { handleMisWebhook };
