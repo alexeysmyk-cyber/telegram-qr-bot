@@ -1,5 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
+const { getAppointmentById } = require('./misApi');
 
 // ===== НАСТРОЙКИ =====
 const BOT_TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
@@ -55,6 +56,7 @@ async function handleMisWebhook(req, res) {
   else if (event === 'create_patient') key = 'patient_create';
   else if (event === 'create_invoice') key = 'invoice_create';
   else if (event === 'full_payment_invoice') key = 'invoice_pay';
+  else if (event === 'full_ready_lab_result') key = 'lab_full';
   else {
     return res.send('OK (event ignored)');
   }
@@ -189,7 +191,56 @@ async function handleMisWebhook(req, res) {
     if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
     if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
   }
+// ============================================================
+// 🔬 ПОЛНАЯ ГОТОВНОСТЬ АНАЛИЗОВ
+// ============================================================
+else if (event === 'full_ready_lab_result') {
 
+  const appointmentId = data.appointment_id;
+  const lab = data.lab;
+  const date = data.date;
+  const services = data.services || [];
+
+  if (!appointmentId) {
+    console.log('⚠️ Нет appointment_id, пропуск (lab_full)');
+    return res.send('OK (no data)');
+  }
+
+  // 🔥 получаем визит из МИС через API
+  const appointment = await getAppointmentById(appointmentId);
+
+  if (!appointment) {
+    console.log('❌ Не удалось получить визит из МИС (lab_full)');
+    return res.send('OK');
+  }
+
+  const patientName = appointment.patient_name;
+  const doctor = appointment.doctor;
+  doctorId = appointment.doctor_id;        // 🔥 ДЛЯ SELF-ФИЛЬТРА
+  const timeStart = appointment.time_start;
+  const room = appointment.room;
+
+  message = `🔬 Анализы полностью готовы\n\n`;
+
+  if (patientName) message += `👤 Пациент: ${patientName}\n`;
+  if (doctor) message += `👨‍⚕️ Врач: ${doctor}\n`;
+  if (timeStart) message += `📅 Визит: ${timeStart}\n`;
+  if (room) message += `🚪 Кабинет: ${room}\n`;
+  if (lab) message += `🏥 Лаборатория: ${lab}\n`;
+
+  if (services.length > 0) {
+    message += `\n🧪 Исследования:\n`;
+    services.forEach(s => {
+      message += `• ${s}\n`;
+    });
+  }
+
+  message += `\n📎 Результаты готовы в МИС`;
+}
+
+
+
+  
   // ===== ЛОГИКА УВЕДОМЛЕНИЙ (НЕ ЛОМАЛ) =====
 
   const db = loadDB();
