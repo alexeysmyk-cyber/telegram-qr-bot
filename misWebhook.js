@@ -2,6 +2,7 @@ const axios = require('axios');
 const fs = require('fs');
 console.log('➡️ СЕЙЧАС БУДЕМ ВЫЗЫВАТЬ getAppointmentById');
 const { getAppointmentById } = require('./misApi');
+console.log('🧪 misApi import typeof:', typeof getAppointmentById);
 
 
 // ===== НАСТРОЙКИ =====
