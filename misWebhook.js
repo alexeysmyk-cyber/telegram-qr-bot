@@ -213,7 +213,18 @@ else if (event === 'full_ready_lab_result') {
   }
 
   // 🔥 получаем визит из МИС через API
-  const appointment = await getAppointmentById(appointmentId);
+  let appointment = null;
+
+try {
+  console.log('➡️ СЕЙЧАС БУДЕМ ВЫЗЫВАТЬ getAppointmentById');
+  appointment = await getAppointmentById(appointmentId);
+  console.log('⬅️ ВЕРНУЛСЯ ИЗ getAppointmentById, результат:', appointment);
+}
+catch (e) {
+  console.error('🔥 ОШИБКА ПРИ ВЫЗОВЕ getAppointmentById:', e);
+  return res.send('OK');
+}
+
 
   if (!appointment) {
     console.log('❌ Не удалось получить визит из МИС (lab_full)');
