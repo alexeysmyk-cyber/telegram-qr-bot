@@ -11,14 +11,26 @@ const DB_FILE = path.join(__dirname, 'db.json');
 
 // ===== ЗАГРУЗКА / СОХРАНЕНИЕ БАЗЫ =====
 function loadDB() {
-  if (!fs.existsSync(DB_FILE)) return null;
+  if (!fs.existsSync(DB_FILE)) {
+    console.error('❌ DB FILE NOT FOUND:', DB_FILE);
+    return null;
+  }
+
   try {
-    return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
+    const raw = fs.readFileSync(DB_FILE, 'utf8');
+
+    if (!raw || raw.trim().length === 0) {
+      console.error('❌ DB FILE IS EMPTY, REFUSING TO OVERWRITE');
+      return null;
+    }
+
+    return JSON.parse(raw);
   } catch (e) {
     console.error('❌ Ошибка чтения DB:', e.message);
     return null;
   }
 }
+
 
 function saveDB(db) {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
