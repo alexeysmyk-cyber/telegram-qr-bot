@@ -81,6 +81,133 @@ async function handleMisWebhook(req, res) {
   let message = '';
   let doctorId = null;
 
+  // ===== СОЗДАНИЕ ВИЗИТА =====
+if (event === 'create_appointment') {
+
+  const timeStart = data.time_start;
+  const room = data.room;
+  const doctor = data.doctor;
+  doctorId = data.doctor_id;
+  const patientName = data.patient_name;
+  const patientPhone = data.patient_phone;
+  const source = data.source || '';
+
+  if (!doctor && !patientName) {
+    console.log('⚠️ Нет нужных данных, пропуск (appointment)');
+    return res.send('OK (no data)');
+  }
+
+  message = `🆕 Новый визит\n\n`;
+
+  if (timeStart) message += `📅 Время: ${timeStart}\n`;
+  if (room) message += `🚪 Кабинет: ${room}\n`;
+  if (doctor) message += `👨‍⚕️ Врач: ${doctor}\n\n`;
+
+  if (patientName) message += `👤 Пациент: ${patientName}\n`;
+  if (patientPhone) message += `📞 Телефон: ${patientPhone}\n`;
+  if (source) message += `🌐 Источник: ${source}\n`;
+}
+
+// ===== СОЗДАНИЕ ПАЦИЕНТА =====
+else if (event === 'create_patient') {
+
+  const lastName = data.last_name;
+  const firstName = data.first_name;
+  const thirdName = data.third_name;
+  const birthDate = data.birth_date;
+  const age = data.age;
+  const gender = data.gender;
+  const mobile = data.mobile;
+  const patientId = data.patient_id;
+
+  if (!lastName && !firstName) {
+    console.log('⚠️ Нет ФИО пациента, пропуск (patient)');
+    return res.send('OK (no data)');
+  }
+
+  message = `👤 Новый пациент\n\n`;
+
+  message += `ФИО: ${lastName || ''} ${firstName || ''} ${thirdName || ''}\n`;
+  if (birthDate) message += `🎂 Дата рождения: ${birthDate}\n`;
+  if (age) message += `📊 Возраст: ${age}\n`;
+  if (gender) message += `⚥ Пол: ${gender}\n`;
+  if (mobile) message += `📞 Телефон: ${mobile}\n`;
+  if (patientId) message += `🆔 ID пациента в МИС: ${patientId}\n`;
+}
+
+// ===== 🧾 СОЗДАНИЕ СЧЁТА =====
+else if (event === 'create_invoice') {
+
+  const number = data.number;
+  const date = data.date;
+  const value = data.value;
+  const status = data.status;
+
+  const patient = data.patient;
+  const patientBirth = data.patient_birth_date;
+  const patientGender = data.patient_gender;
+  const patientMobile = data.patient_mobile;
+  const patientEmail = data.patient_email;
+
+  if (!number && !patient) {
+    console.log('⚠️ Нет данных по счёту, пропуск (invoice)');
+    return res.send('OK (no data)');
+  }
+
+  message = `🧾 Создан новый счёт\n\n`;
+
+  if (number) message += `🆔 Счёт №: ${number}\n`;
+  if (date) message += `📅 Дата: ${date}\n`;
+  if (value) message += `💰 Сумма: ${value} ₽\n`;
+  if (status) message += `📌 Статус: ${status}\n`;
+
+  message += `\n👤 Пациент:\n`;
+
+  if (patient) message += `ФИО: ${patient}\n`;
+  if (patientBirth) message += `🎂 Дата рождения: ${patientBirth}\n`;
+  if (patientGender) message += `⚥ Пол: ${patientGender}\n`;
+  if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
+  if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
+}
+
+// ===== 💳 ПОЛНАЯ ОПЛАТА СЧЁТА =====
+else if (event === 'full_payment_invoice') {
+
+  const number = data.number;
+  const date = data.date;
+  const value = data.value;
+  const status = data.status;
+  const paymentType = data.payment_type_name;
+
+  const patient = data.patient;
+  const patientBirth = data.patient_birth_date;
+  const patientGender = data.patient_gender;
+  const patientMobile = data.patient_mobile;
+  const patientEmail = data.patient_email;
+
+  if (!number && !patient) {
+    console.log('⚠️ Нет данных по оплате счёта, пропуск (invoice pay)');
+    return res.send('OK (no data)');
+  }
+
+  message = `💳 Счёт полностью оплачен\n\n`;
+
+  if (number) message += `🆔 Счёт №: ${number}\n`;
+  if (date) message += `📅 Дата оплаты: ${date}\n`;
+  if (value) message += `💰 Оплачено: ${value} ₽\n`;
+  if (status) message += `📌 Статус: ${status}\n`;
+  if (paymentType) message += `💳 Способ оплаты: ${paymentType}\n`;
+
+  message += `\n👤 Пациент:\n`;
+
+  if (patient) message += `ФИО: ${patient}\n`;
+  if (patientBirth) message += `🎂 Дата рождения: ${patientBirth}\n`;
+  if (patientGender) message += `⚥ Пол: ${patientGender}\n`;
+  if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
+  if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
+}
+
+
   // ============================================================
   // 🔬 ГОТОВНОСТЬ АНАЛИЗОВ (ПОЛНАЯ И ЧАСТИЧНАЯ)
   // ============================================================
