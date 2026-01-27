@@ -283,7 +283,7 @@ else if (event === 'full_payment_invoice') {
 
       try {
         if (fileInfo) {
-       if (fileInfo) {
+     
 
   const FormData = require('form-data');
 
