@@ -30,55 +30,71 @@ console.log('🤖 Bot started (polling mode)');
 
 // ================== БАЗА ДАННЫХ ==================
 function loadDB() {
-  let db = {
-  whitelist: [ADMIN_CHAT_ID],
-  notify_whitelist: [],
-  history: {},
-  state: {},
-  pending: [],
-  notify_pending: [],
-  notify_settings: {}, 
-  notify_admin_limits: {}, 
-  users: {}
-};
 
-  if (fs.existsSync(DB_FILE)) {
-    try {
-      const data = JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
-      db = { ...db, ...data };
-      if (!db.whitelist) db.whitelist = [ADMIN_CHAT_ID];
-      if (!db.history) db.history = {};
-      if (!db.state) db.state = {};
-      if (!db.pending) db.pending = [];
-     if (!db.users) db.users = {};
-// защита старого формата users (если там был просто username)
-for (const id in db.users) {
-  if (typeof db.users[id] === 'string') {
-    db.users[id] = {
-      username: db.users[id],
-      mis_id: null
-    };
-  } else {
-    if (!('mis_id' in db.users[id])) {
-      db.users[id].mis_id = null;
+  // базовая структура ТОЛЬКО как шаблон
+  let base = {
+    whitelist: [ADMIN_CHAT_ID],
+    notify_whitelist: [],
+    history: {},
+    state: {},
+    pending: [],
+    notify_pending: [],
+    notify_settings: {}, 
+    notify_admin_limits: {}, 
+    users: {}
+  };
+
+  if (!fs.existsSync(DB_FILE)) {
+    console.error('❌ DB FILE NOT FOUND:', DB_FILE);
+    return base;   // но НЕ сохраняем!
+  }
+
+  try {
+    const raw = fs.readFileSync(DB_FILE, 'utf8');
+
+    if (!raw || raw.trim().length === 0) {
+      console.error('❌ DB FILE IS EMPTY — REFUSING TO OVERWRITE');
+      return base;
     }
+
+    const data = JSON.parse(raw);
+
+    // аккуратно объединяем шаблон и реальные данные
+    let db = { ...base, ...data };
+
+    if (!db.whitelist) db.whitelist = [ADMIN_CHAT_ID];
+    if (!db.history) db.history = {};
+    if (!db.state) db.state = {};
+    if (!db.pending) db.pending = [];
+    if (!db.users) db.users = {};
+
+    // защита старого формата users
+    for (const id in db.users) {
+      if (typeof db.users[id] === 'string') {
+        db.users[id] = {
+          username: db.users[id],
+          mis_id: null
+        };
+      } else {
+        if (!('mis_id' in db.users[id])) {
+          db.users[id].mis_id = null;
+        }
+      }
+    }
+
+    if (!db.notify_whitelist) db.notify_whitelist = [];
+    if (!db.notify_pending) db.notify_pending = [];
+    if (!db.notify_settings) db.notify_settings = {};
+    if (!db.notify_admin_limits) db.notify_admin_limits = {};
+
+    return db;   // 🔥 ВАЖНО: НЕ СОХРАНЯЕМ ТУТ
+
+  } catch (e) {
+    console.error('❌ DB parse error — refusing to recreate DB:', e.message);
+    return base;
   }
 }
 
-if (!db.notify_whitelist) db.notify_whitelist = [];
-      if (!db.notify_pending) db.notify_pending = [];
-      if (!db.notify_settings) db.notify_settings = {};
-      if (!db.notify_admin_limits) db.notify_admin_limits = {};
-
-
-      
-    } catch (e) {
-      console.error('❌ DB parse error, recreating');
-    }
-  }
-  saveDB(db);
-  return db;
-}
 
 function saveDB(db) {
   fs.writeFileSync(DB_FILE, JSON.stringify(db, null, 2));
@@ -951,6 +967,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
