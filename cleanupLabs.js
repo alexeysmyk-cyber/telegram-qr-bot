@@ -5,7 +5,7 @@ const LAB_DIR = path.join(__dirname, 'data');
 const DB_FILE = path.join(__dirname, 'db.json');
 
 const WEEK = 7 * 24 * 60 * 60 * 1000;
-const LAB_HISTORY_KEEP = 90 * 24 * 60 * 60 * 1000; // 90 дней
+const LAB_HISTORY_KEEP = 30 * 24 * 60 * 60 * 1000; // 🔥 30 ДНЕЙ
 
 function cleanupLabs() {
 
@@ -13,7 +13,7 @@ function cleanupLabs() {
 
   const now = Date.now();
 
-  // ===== 1. ЧИСТКА ФАЙЛОВ PDF =====
+  // ===== 1. ЧИСТКА PDF ФАЙЛОВ (7 ДНЕЙ) =====
 
   if (fs.existsSync(LAB_DIR)) {
 
@@ -43,7 +43,7 @@ function cleanupLabs() {
     }
   }
 
-  // ===== 2. ЧИСТКА lab_history В DB =====
+  // ===== 2. ЧИСТКА lab_history (30 ДНЕЙ) =====
 
   if (!fs.existsSync(DB_FILE)) return;
 
@@ -78,3 +78,4 @@ function cleanupLabs() {
 }
 
 module.exports = { cleanupLabs };
+
