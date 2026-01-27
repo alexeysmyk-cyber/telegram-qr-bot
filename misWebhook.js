@@ -260,6 +260,99 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
     });
   }
 
+  // ===== ЛОГИКА УВЕДОМЛЕНИЙ (ФИЛЬТРЫ ИЗ БД) =====
+
+  const db = loadDB();
+  if (!db) {
+    console.error('❌ База не загружена (анализы)');
+    return res.send('OK');
+  }
+
+  for (const chatId of db.notify_whitelist || []) {
+
+    const settings = db.notify_settings[chatId] || {};
+    const limits = db.notify_admin_limits[chatId] || {};
+
+    // 🔒 Админ запретил этот тип?
+    if (limits[key] === false) continue;
+
+    const enabled = settings[key]; // true / false
+
+    if (!enabled) continue;
+
+    // ===== СОХРАНЕНИЕ PDF (ЕСЛИ ЕСТЬ) =====
+
+    let fileInfo = null;
+
+    if (data.files && Array.isArray(data.files) && data.files.length > 0) {
+      try {
+        const { saveLabFile } = require('./labFiles');
+        fileInfo = saveLabFile(data.files[0], appointmentId);
+        console.log('📎 PDF анализов сохранён:', fileInfo.fileName);
+      } catch (e) {
+        console.error('❌ Ошибка сохранения PDF:', e.message);
+      }
+    }
+
+    // ===== ОТПРАВКА В TELEGRAM =====
+
+    try {
+
+      if (fileInfo) {
+
+        const fs = require('fs');
+        const path = require('path');
+
+        await axios.post(
+          `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
+          {
+            chat_id: chatId,
+            document: fs.createReadStream(fileInfo.filePath),
+            caption: message,
+            reply_markup: {
+              inline_keyboard: [
+                [
+                  {
+                    text: '📥 Скачать результат',
+                    callback_data: `download_lab_${fileInfo.fileName}`
+                  }
+                ]
+              ]
+            }
+          },
+          { headers: { 'Content-Type': 'multipart/form-data' } }
+        );
+
+      } else {
+        await send(chatId, message);
+      }
+
+      // ===== ЛОГ В БД: КОМУ ЧТО ОТПРАВИЛИ =====
+
+      if (!db.lab_history) db.lab_history = [];
+
+      db.lab_history.push({
+        event,
+        appointment_id: appointmentId,
+        patient: patientName,
+        doctor: doctorName,
+        file: fileInfo ? fileInfo.fileName : null,
+        sent_to: chatId,
+        date: new Date().toISOString()
+      });
+
+      saveDB(db);
+
+      console.log('📨 Анализы отправлены пользователю', chatId);
+
+    } catch (e) {
+      console.error('❌ Ошибка отправки анализов в Telegram:', e.message);
+    }
+  }
+
+  return res.send('OK');
+}
+
   // ===== ЛОГИКА УВЕДОМЛЕНИЙ (КАК В БОТЕ) =====
 
   const db = loadDB();
