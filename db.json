@@ -74,11 +74,11 @@
       "visit_update": "none",
       "visit_cancel": "none",
       "visit_finish": "none",
-      "patient_create": false,
-      "invoice_create": false,
-      "invoice_pay": false,
-      "lab_partial": false,
-      "lab_full": false
+      "patient_create": true,
+      "invoice_create": true,
+      "invoice_pay": true,
+      "lab_partial": true,
+      "lab_full": true
     },
     "7485978153": {
       "visit_create": "self",
