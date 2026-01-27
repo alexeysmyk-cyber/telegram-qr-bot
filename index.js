@@ -220,7 +220,7 @@ bot.onText(/\/start/, (msg) => {
 // ================== CALLBACK (Разрешить/Запретить/Удалить) ==================
 // ================== CALLBACK (Разрешить/Запретить/Удалить + Уведомления) ==================
 
-bot.on('callback_query', (query) => {
+bot.on('callback_query', async (query) => {
   const data = query.data;
   const fromId = query.from.id;
 
@@ -950,6 +950,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
