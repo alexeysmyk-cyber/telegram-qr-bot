@@ -60,6 +60,7 @@ async function handleMisWebhook(req, res) {
   else if (event === 'create_invoice') key = 'invoice_create';
   else if (event === 'full_payment_invoice') key = 'invoice_pay';
   else if (event === 'full_ready_lab_result') key = 'lab_full';
+  else if (event === 'part_ready_lab_result') key = 'lab_partial'; 
   else {
     return res.send('OK (event ignored)');
   }
@@ -197,62 +198,96 @@ async function handleMisWebhook(req, res) {
 // ============================================================
 // 🔬 ПОЛНАЯ ГОТОВНОСТЬ АНАЛИЗОВ
 // ============================================================
-else if (event === 'full_ready_lab_result') {
+// ===== ГОТОВНОСТЬ АНАЛИЗОВ (ПОЛНАЯ И ЧАСТИЧНАЯ) =====
+if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
 
-  console.log('🔥 ВОШЛИ В БЛОК full_ready_lab_result');
+  console.log('🔥 ВОШЛИ В БЛОК ГОТОВНОСТИ АНАЛИЗОВ:', event);
 
   const appointmentId = data.appointment_id;
-  const lab = data.lab;
-  const date = data.date;
+  const lab = data.lab || '';
+  const date = data.date || '';
   const services = data.services || [];
 
   if (!appointmentId) {
-    console.log('⚠️ Нет appointment_id, пропуск (lab_full)');
-    return res.send('OK (no data)');
+    console.log('⚠️ Нет appointment_id, пропуск анализов');
+    return res.send('OK');
   }
 
-  // 🔥 получаем визит из МИС через API
+  // какой тип события
+  const isFull = (event === 'full_ready_lab_result');
+
+  // ключ настроек из БД
+  const key = isFull ? 'lab_full' : 'lab_partial';
+
+  // заголовок сообщения
+  const title = isFull
+    ? '🔬 Анализы полностью готовы'
+    : '🧪 Частично выполненные анализы';
+
+  // получаем визит из МИС
   let appointment = null;
 
-try {
-  console.log('➡️ СЕЙЧАС БУДЕМ ВЫЗЫВАТЬ getAppointmentById');
-  appointment = await getAppointmentById(appointmentId);
-  console.log('⬅️ ВЕРНУЛСЯ ИЗ getAppointmentById, результат:', appointment);
-}
-catch (e) {
-  console.error('🔥 ОШИБКА ПРИ ВЫЗОВЕ getAppointmentById:', e);
-  return res.send('OK');
-}
-
+  try {
+    console.log('➡️ СЕЙЧАС БУДЕМ ВЫЗЫВАТЬ getAppointmentById');
+    appointment = await getAppointmentById(appointmentId);
+    console.log('⬅️ ВЕРНУЛСЯ ИЗ getAppointmentById');
+  }
+  catch (e) {
+    console.error('🔥 ОШИБКА ПРИ ПОЛУЧЕНИИ ВИЗИТА (анализы):', e);
+    return res.send('OK');
+  }
 
   if (!appointment) {
-    console.log('❌ Не удалось получить визит из МИС (lab_full)');
+    console.error('❌ Не удалось получить визит из МИС (', key, ')');
     return res.send('OK');
   }
 
   const patientName = appointment.patient_name;
-  const doctor = appointment.doctor;
-  doctorId = appointment.doctor_id;        // 🔥 ДЛЯ SELF-ФИЛЬТРА
-  const timeStart = appointment.time_start;
-  const room = appointment.room;
+  const doctorName = appointment.doctor;
 
-  message = `🔬 Анализы полностью готовы\n\n`;
+  // формируем сообщение
+  let message = `${title}\n\n`;
 
   if (patientName) message += `👤 Пациент: ${patientName}\n`;
-  if (doctor) message += `👨‍⚕️ Врач: ${doctor}\n`;
-  if (timeStart) message += `📅 Визит: ${timeStart}\n`;
-  if (room) message += `🚪 Кабинет: ${room}\n`;
-  if (lab) message += `🏥 Лаборатория: ${lab}\n`;
+  if (doctorName) message += `👨‍⚕️ Врач: ${doctorName}\n`;
+  if (lab) message += `🧪 Лаборатория: ${lab}\n`;
+  if (date) message += `📅 Дата: ${date}\n`;
 
-  if (services.length > 0) {
-    message += `\n🧪 Исследования:\n`;
+  if (Array.isArray(services) && services.length > 0) {
+    message += `\n📋 Исследования:\n`;
     services.forEach(s => {
       message += `• ${s}\n`;
     });
   }
 
-  message += `\n📎 Результаты готовы в МИС`;
+  // ===== ЛОГИКА УВЕДОМЛЕНИЙ (КАК В БОТЕ) =====
+
+  const db = loadDB();
+  if (!db) {
+    console.error('❌ База не загружена (анализы)');
+    return res.send('OK');
+  }
+
+  for (const chatId of db.notify_whitelist || []) {
+
+    const settings = db.notify_settings[chatId] || {};
+    const limits = db.notify_admin_limits[chatId] || {};
+
+    // 🔒 админ запретил этот тип
+    if (limits[key] === false) continue;
+
+    const enabled = settings[key];   // true / false
+
+    if (enabled !== true) continue;
+
+    // ✅ отправляем
+    console.log('📨 Отправляем уведомление (анализы) пользователю', chatId);
+    await send(chatId, message);
+  }
+
+  return res.send('OK');
 }
+
 
 
 
