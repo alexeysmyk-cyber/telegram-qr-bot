@@ -7,7 +7,7 @@ const BASE_URL = process.env.BASE_URL;   // https://app.rnova.org/api/public
 
 // итоговый URL:
 // https://app.rnova.org/api/public/getAppointment
-const GET_APPOINTMENT_URL = `${BASE_URL}/getAppointments`;
+const GET_APPOINTMENT_URL = `https://app.rnova.org/api/public/getAppointments`;
 
 if (!API_KEY || !BASE_URL) {
   console.error('❌ НЕ ЗАДАНЫ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ MIS_API_KEY или MIS_BASE_URL');
