@@ -1,11 +1,14 @@
 const fs = require('fs');
 const path = require('path');
 
-const LAB_DIR = path.join(__dirname, 'files', 'labs');
+// 👉 ПАПКА ДЛЯ ХРАНЕНИЯ АНАЛИЗОВ
+// будет: /app/data
+const LAB_DIR = path.join(__dirname, 'data');
 
-// гарантируем папку
+// гарантируем, что папка существует
 if (!fs.existsSync(LAB_DIR)) {
   fs.mkdirSync(LAB_DIR, { recursive: true });
+  console.log('📂 Создана папка для анализов:', LAB_DIR);
 }
 
 // сохранить PDF из base64
@@ -14,6 +17,8 @@ function saveLabFile(base64, appointmentId) {
 
   const fileName = `lab_${appointmentId}_${Date.now()}.pdf`;
   const filePath = path.join(LAB_DIR, fileName);
+
+  console.log('📂 СОХРАНЯЕМ ФАЙЛ АНАЛИЗОВ В:', filePath);
 
   fs.writeFileSync(filePath, buffer);
 
