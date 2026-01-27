@@ -283,30 +283,26 @@ else if (event === 'full_payment_invoice') {
 
       try {
         if (fileInfo) {
-          const path = require('path');
+       if (fileInfo) {
 
-          await axios.post(
-            `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
-            {
-              chat_id: chatId,
-              document: fs.createReadStream(fileInfo.filePath),
-              caption: message,
-              reply_markup: {
-                inline_keyboard: [
-                  [
-                    {
-                      text: '📥 Скачать результат',
-                      callback_data: `download_lab_${fileInfo.fileName}`
-                    }
-                  ]
-                ]
-              }
-            },
-            { headers: { 'Content-Type': 'multipart/form-data' } }
-          );
-        } else {
-          await send(chatId, message);
-        }
+  const FormData = require('form-data');
+
+  const form = new FormData();
+  form.append('chat_id', chatId);
+  form.append('document', fs.createReadStream(fileInfo.filePath));
+  form.append('caption', message);
+
+  await axios.post(
+    `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
+    form,
+    { headers: form.getHeaders() }
+  );
+
+} else {
+  // 🔔 если PDF нет — просто уведомление текстом
+  await send(chatId, message);
+}
+
 
         if (!db.lab_history) db.lab_history = [];
 
