@@ -1,5 +1,3 @@
-console.log('🧪 misApi.js загружается');
-
 const axios = require('axios');
 const qs = require('querystring');
 
