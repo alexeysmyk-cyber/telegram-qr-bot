@@ -12,6 +12,7 @@ const fs = require('fs');
 const express = require('express');
 const bodyParser = require('body-parser');
 const { handleMisWebhook } = require('./misWebhook');
+const { cleanupLabs } = require('./cleanup');
 
 const app = express();
 
@@ -952,6 +953,17 @@ app.post('/mis', async (req, res) => {
 
 const server = app.listen(PORT, () => {
   console.log('🌐 HTTP server started on port', PORT);
+
+  // ===== АВТООЧИСТКА АНАЛИЗОВ И ИСТОРИИ =====
+
+// запуск сразу при старте
+cleanupLabs();
+
+// запуск каждые 12 часов
+setInterval(() => {
+  cleanupLabs();
+}, 12 * 60 * 60 * 1000);
+
 });
 
 server.on('error', (err) => {
@@ -967,6 +979,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
