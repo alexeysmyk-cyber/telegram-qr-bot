@@ -1,8 +1,6 @@
 const axios = require('axios');
 const fs = require('fs');
-console.log('➡️ СЕЙЧАС БУДЕМ ВЫЗЫВАТЬ getAppointmentById');
 const { getAppointmentById } = require('./misApi');
-console.log('🧪 misApi import typeof:', typeof getAppointmentById);
 
 
 // ===== НАСТРОЙКИ =====
@@ -47,7 +45,7 @@ async function handleMisWebhook(req, res) {
 
   console.log('EVENT FIELD:', req.body && req.body.event);
   console.log('==== MIS WEBHOOK RECEIVED ====');
-  console.log('Body:', req.body);
+  ;
 
   const event = req.body.event;
   const data = req.body.data || {};
