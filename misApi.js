@@ -1,9 +1,12 @@
+console.log('🧪 misApi.js загружается');
 const axios = require('axios');
 const qs = require('querystring');
 
 // ===== ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ =====
 const API_KEY = process.env.API_KEY;
 const BASE_URL = process.env.BASE_URL;   // https://app.rnova.org/api/public
+console.log('🧪 MIS_API_KEY:', process.env.MIS_API_KEY);
+console.log('🧪 MIS_BASE_URL:', process.env.MIS_BASE_URL);
 
 // итоговый URL:
 // https://app.rnova.org/api/public/getAppointment
