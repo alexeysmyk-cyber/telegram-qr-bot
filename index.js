@@ -1,7 +1,8 @@
 // ================== НАСТРОЙКИ ==================
 const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
 const ADMIN_CHAT_ID = 1582980728; 
-const DB_FILE = './db.json';
+const path = require('path');
+const DB_FILE = path.join(__dirname, 'db.json');
 const BASE_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
 const BASE_PARAMS = { type: '01', bank: '100000000111', sum: '0', cur: 'RUB', crc: '2ddf' };
 
@@ -950,6 +951,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
