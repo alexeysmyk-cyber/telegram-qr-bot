@@ -7,7 +7,7 @@ const BASE_URL = process.env.BASE_URL;   // https://app.rnova.org/api/public
 
 // итоговый URL:
 // https://app.rnova.org/api/public/getAppointment
-const GET_APPOINTMENT_URL = `${BASE_URL}/getAppointment`;
+const GET_APPOINTMENT_URL = `${BASE_URL}/getAppointments`;
 
 if (!API_KEY || !BASE_URL) {
   console.error('❌ НЕ ЗАДАНЫ ПЕРЕМЕННЫЕ ОКРУЖЕНИЯ MIS_API_KEY или MIS_BASE_URL');
@@ -43,7 +43,7 @@ async function getAppointmentById(appointmentId) {
 
     // ошибка от МИС
     if (result.error !== 0) {
-      console.error('❌ Ошибка от МИС getAppointment:', result.data);
+      console.error('❌ Ошибка от МИС getAppointments:', result.data);
       return null;
     }
 
@@ -58,7 +58,7 @@ async function getAppointmentById(appointmentId) {
     return list[0];
 
   } catch (e) {
-    console.error('❌ Ошибка запроса getAppointment:', e.message);
+    console.error('❌ Ошибка запроса getAppointments:', e.message);
     return null;
   }
 }
