@@ -224,6 +224,35 @@ bot.on('callback_query', (query) => {
   const data = query.data;
   const fromId = query.from.id;
 
+  // ===== СКАЧИВАНИЕ PDF АНАЛИЗОВ =====
+if (data.startsWith('download_lab_')) {
+
+  const path = require('path');
+  const fs = require('fs');
+
+  const fileName = data.replace('download_lab_', '');
+  const filePath = path.join(__dirname, 'files', 'labs', fileName);
+
+  if (!fs.existsSync(filePath)) {
+    return bot.answerCallbackQuery(query.id, {
+      text: '❌ Файл уже удалён (старше 7 дней)',
+      show_alert: true
+    });
+  }
+
+  try {
+    await bot.sendDocument(fromId, filePath);
+    return bot.answerCallbackQuery(query.id);
+  } catch (e) {
+    console.error('❌ Ошибка отправки PDF:', e.message);
+    return bot.answerCallbackQuery(query.id, {
+      text: '❌ Не удалось отправить файл',
+      show_alert: true
+    });
+  }
+}
+
+
   // игнор пустых заголовков
   if (data === 'noop') {
     return bot.answerCallbackQuery(query.id);
@@ -587,6 +616,10 @@ if (data.startsWith('set_')) {
 
 
   // сохранение выбора
+
+
+
+  
 if (data.startsWith('mode_')) {
   const parts = data.split('_');
 
@@ -917,6 +950,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
