@@ -3,12 +3,12 @@ const fs = require('fs');
 const { getAppointmentById } = require('./misApi');
 
 // ===== НАСТРОЙКИ =====
-const TOKEN = process.env.BOT_TOKEN;
+const BOT_TOKEN = process.env.BOT_TOKEN;
 
-if (!TOKEN) {
+if (!BOT_TOKEN) {
   console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ BOT_TOKEN');
-  process.exit(1);
 }
+
 
 const SECRET_KEY = 'SredaSecretKey';
 const path = require('path');
