@@ -43,7 +43,7 @@ async function getAppointmentById(appointmentId) {
 
     const result = response.data;
 
-    console.log('⬅️ misApi: ответ от МИС:', result);
+//    console.log('⬅️ misApi: ответ от МИС:', result);
 
     // проверка формата ответа
     if (!result || typeof result.error === 'undefined') {
