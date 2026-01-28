@@ -146,12 +146,10 @@ function showNotifyMenu(chatId) {
   }
 
   const buttons = [
-
-    [{ text: `🩺 Создание визита — ${threeLabel(s.visit_create)}`, callback_data: 'set_visit_create' }],
     [{ text: `👤 Создание пациента — ${twoLabel(s.patient_create)}`, callback_data: 'set_patient_create' }],
+    [{ text: `🩺 Создание визита — ${threeLabel(s.visit_create)}`, callback_data: 'set_visit_create' }],
     [{ text: `❌ Отмена визита — ${threeLabel(s.visit_cancel)}`, callback_data: 'set_visit_cancel' }],
     [{ text: `✅ Завершение визита — ${threeLabel(s.visit_finish)}`, callback_data: 'set_visit_finish' }],
-
     [{ text: `🧾 Создание счёта — ${twoLabel(s.invoice_create)}`, callback_data: 'set_invoice_create' }],
     [{ text: `💳 Оплата счёта физ-лица — ${twoLabel(s.invoice_pay)}`, callback_data: 'set_invoice_pay' }],
     [{ text: `🧪 Частичная готовность анализов — ${twoLabel(s.lab_partial)}`, callback_data: 'set_lab_partial' }],
@@ -977,6 +975,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
