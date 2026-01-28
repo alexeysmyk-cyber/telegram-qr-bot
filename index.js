@@ -378,7 +378,6 @@ const username = getUsername(id);
     const buttons = [
       [{ text: `🩺 Создание визита — ${limitLabel('visit_create')}`, callback_data: `admin_limit_${userId}_visit_create` }],
       [{ text: `👤 Создание пациента — ${limitLabel('patient_create')}`, callback_data: `admin_limit_${userId}_patient_create` }],
-      [{ text: `✏️ Обновление визита — ${limitLabel('visit_update')}`, callback_data: `admin_limit_${userId}_visit_update` }],
       [{ text: `❌ Отмена визита — ${limitLabel('visit_cancel')}`, callback_data: `admin_limit_${userId}_visit_cancel` }],
       [{ text: `✅ Завершение визита — ${limitLabel('visit_finish')}`, callback_data: `admin_limit_${userId}_visit_finish` }],
 
@@ -428,7 +427,6 @@ const username = getUsername(userId);
     const buttons = [
       [{ text: `🩺 Создание визита — ${limitLabel('visit_create')}`, callback_data: `admin_limit_${userId}_visit_create` }],
       [{ text: `👤 Создание пациента — ${limitLabel('patient_create')}`, callback_data: `admin_limit_${userId}_patient_create` }],
-      [{ text: `✏️ Обновление визита — ${limitLabel('visit_update')}`, callback_data: `admin_limit_${userId}_visit_update` }],
       [{ text: `❌ Отмена визита — ${limitLabel('visit_cancel')}`, callback_data: `admin_limit_${userId}_visit_cancel` }],
       [{ text: `✅ Завершение визита — ${limitLabel('visit_finish')}`, callback_data: `admin_limit_${userId}_visit_finish` }],
 
@@ -979,6 +977,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
