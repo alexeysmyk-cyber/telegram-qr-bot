@@ -81,9 +81,11 @@ else if (event === 'full_payment_invoice') key = 'invoice_pay';
 else if (event === 'full_ready_lab_result') key = 'lab_full';
 else if (event === 'part_ready_lab_result') key = 'lab_partial';
 else if (event === 'cancel_appointment') key = 'visit_cancel';
-else if (event !== 'update_appointment') {
+else if (event === 'update_appointment') key = 'visit_finish';
+else {
   return res.send('OK (event ignored)');
 }
+
 
 
   let message = '';
