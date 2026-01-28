@@ -172,13 +172,14 @@ function mainKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['💰 Финансы', '🔔 Уведомления'],
-        ['🆔 Мой ID в МИС']
+        ['💰 Финансы', '⚙️ Настройки'],
+        ['🏥 Работа в МИС']
       ],
       resize_keyboard: true
     }
   };
 }
+
 
 function financeKeyboard() {
   return {
@@ -693,6 +694,34 @@ bot.on('message', (msg) => {
 
   if (!db.whitelist.includes(chatId) && chatId !== ADMIN_CHAT_ID) return;
 
+
+  // ===== ГЛАВНОЕ МЕНЮ =====
+
+  if (text === '💰 Финансы') {
+    return bot.sendMessage(chatId, '💰 Финансы', financeKeyboard());
+  }
+
+  if (text === '⚙️ Настройки') {
+    return bot.sendMessage(chatId, '⚙️ Настройки', settingsKeyboard());
+  }
+
+  if (text === '🏥 Работа в МИС') {
+    return bot.sendMessage(
+      chatId,
+      '🏥 Раздел «Работа в МИС» находится в разработке 👷‍♂️'
+    );
+  }
+
+  if (text === '⬅️ Назад') {
+    const keyboard = (chatId === ADMIN_CHAT_ID)
+      ? adminKeyboard()
+      : mainKeyboard();
+
+    return bot.sendMessage(chatId, 'Главное меню', keyboard);
+  }
+
+  
+  
   // ---- Ожидание ввода MIS ID ----
 if (db.state[chatId] === 'WAIT_MIS_ID') {
 
@@ -831,17 +860,6 @@ const username = getUsername(chatId);
 }
 // Обработка кнопкаи финансы и кнопки назад
   
-if (text === '💰 Финансы') {
-  return bot.sendMessage(chatId, '💰 Финансы', financeKeyboard());
-}
-
-  if (text === '⬅️ Назад') {
-  const keyboard = (chatId === ADMIN_CHAT_ID)
-    ? adminKeyboard()
-    : mainKeyboard();
-  return bot.sendMessage(chatId, 'Главное меню', keyboard);
-}
-
   
   // ---- Мой ID в МИС ----
 if (text === '🆔 Мой ID в МИС') {
@@ -1004,6 +1022,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
