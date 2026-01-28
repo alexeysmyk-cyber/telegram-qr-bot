@@ -74,17 +74,17 @@ async function handleMisWebhook(req, res) {
   // ===== ОПРЕДЕЛЯЕМ КЛЮЧ ФИЛЬТРА =====
   let key = null;
 
-  if (event === 'create_appointment') key = 'visit_create';
-  else if (event === 'create_patient') key = 'patient_create';
-  else if (event === 'create_invoice') key = 'invoice_create';
-  else if (event === 'full_payment_invoice') key = 'invoice_pay';
-  else if (event === 'full_ready_lab_result') key = 'lab_full';
-  else if (event === 'part_ready_lab_result') key = 'lab_partial';
-  else if (event === 'cancel_appointment') key = 'visit_cancel';
+if (event === 'create_appointment') key = 'visit_create';
+else if (event === 'create_patient') key = 'patient_create';
+else if (event === 'create_invoice') key = 'invoice_create';
+else if (event === 'full_payment_invoice') key = 'invoice_pay';
+else if (event === 'full_ready_lab_result') key = 'lab_full';
+else if (event === 'part_ready_lab_result') key = 'lab_partial';
+else if (event === 'cancel_appointment') key = 'visit_cancel';
+else if (event !== 'update_appointment') {
+  return res.send('OK (event ignored)');
+}
 
-  else {
-    return res.send('OK (event ignored)');
-  }
 
   let message = '';
   let doctorId = null;
@@ -224,6 +224,52 @@ else if (event === 'full_payment_invoice') {
   if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
   if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
 }
+
+// ===== ✅ ЗАВЕРШЕНИЕ ВИЗИТА =====
+else if (event === 'update_appointment') {
+
+  // ❗ data ВСЕГДА массив
+  if (!Array.isArray(data) || data.length === 0) {
+    console.log('⚠️ update_appointment: пустой data');
+    return res.send('OK');
+  }
+
+  const item = data[0];
+
+  // ❗ интересует ТОЛЬКО completed
+  if (item.status !== 'completed') {
+    return res.send('OK (status ignored)');
+  }
+  key = 'visit_finish'; // ← ВОТ ТУТ
+  const patientName = item.patient_name;
+  const doctorName = item.doctor;
+  const timeStart = item.time_start;
+  const timeEnd = item.time_end;
+  const room = item.room;
+
+  doctorId = item.doctor_id;
+
+  message = `✅ Визит завершён\n\n`;
+
+  if (patientName) message += `👤 Пациент: ${patientName}\n`;
+  if (doctorName) message += `👨‍⚕️ Врач: ${doctorName}\n`;
+
+  if (timeStart && timeEnd) {
+    message += `⏱ Время: ${timeStart} — ${timeEnd}\n`;
+  } else if (timeStart) {
+    message += `⏱ Начало: ${timeStart}\n`;
+  }
+
+  if (room) message += `🚪 Кабинет: ${room}\n`;
+
+  // ⛔ НЕ return здесь — пусть дойдёт до общей рассылки
+}
+
+
+
+
+  
+// ===== ❌ ОТМЕНА / 🔁 ПЕРЕНОС ВИЗИТА =====
 // ===== ❌ ОТМЕНА / 🔁 ПЕРЕНОС ВИЗИТА =====
 else if (event === 'cancel_appointment') {
 
@@ -232,6 +278,8 @@ else if (event === 'cancel_appointment') {
   const oldDoctor = data.doctor;
   const oldRoom = data.room;
   const movedTo = data.moved_to;
+
+  doctorId = data.doctor_id; // 🔥 ОБЯЗАТЕЛЬНО для self-фильтра
 
   // ==================================================
   // ❌ ИСТИННАЯ ОТМЕНА
@@ -245,54 +293,54 @@ else if (event === 'cancel_appointment') {
     if (oldDoctor) message += `👨‍⚕️ Врач: ${oldDoctor}\n`;
     if (oldRoom) message += `🚪 Кабинет: ${oldRoom}\n`;
 
-    return;
+  } else {
+
+    // ==================================================
+    // 🔁 ПЕРЕНОС ВИЗИТА
+    // ==================================================
+    console.log(
+      `↪️ Перенос визита: старый отменён, новый appointment_id=${movedTo}`
+    );
+
+    let newAppointment;
+    try {
+      newAppointment = await getAppointmentById(movedTo);
+    } catch (e) {
+      console.error('❌ Ошибка получения нового визита:', e.message);
+      return res.send('OK');
+    }
+
+    if (!newAppointment) {
+      console.error('❌ Новый визит не найден');
+      return res.send('OK');
+    }
+
+    message = `↪️ Визит перенесён\n\n`;
+
+    if (patientName) {
+      message += `👤 Пациент: ${patientName}\n\n`;
+    }
+
+    // ---------- ОТКУДА ----------
+    message += `❌ Отменён визит:\n`;
+    if (oldTime) message += `📅 Дата и время: ${oldTime}\n`;
+    if (oldDoctor) message += `👨‍⚕️ Врач: ${oldDoctor}\n`;
+    if (oldRoom) message += `🚪 Кабинет: ${oldRoom}\n`;
+
+    // ---------- КУДА ----------
+    message += `\n✅ Новый визит:\n`;
+    if (newAppointment.time_start) {
+      message += `📅 Дата и время: ${newAppointment.time_start}\n`;
+    }
+    if (newAppointment.doctor) {
+      message += `👨‍⚕️ Врач: ${newAppointment.doctor}\n`;
+    }
+    if (newAppointment.room) {
+      message += `🚪 Кабинет: ${newAppointment.room}\n`;
+    }
   }
 
-  // ==================================================
-  // 🔁 ПЕРЕНОС ВИЗИТА
-  // ==================================================
-  console.log(
-    `↪️ Перенос визита: старый отменён, новый appointment_id=${movedTo}`
-  );
-
-  let newAppointment;
-  try {
-    newAppointment = await getAppointmentById(movedTo);
-  } catch (e) {
-    console.error('❌ Ошибка получения нового визита:', e.message);
-    return res.send('OK');
-  }
-
-  if (!newAppointment) {
-    console.error('❌ Новый визит не найден');
-    return res.send('OK');
-  }
-
-  message = `↪️ Визит перенесён\n\n`;
-
-  if (patientName) {
-    message += `👤 Пациент: ${patientName}\n\n`;
-  }
-
-  // ---------- ОТКУДА ----------
-  message += `❌ Отменён визит:\n`;
-  if (oldTime) message += `📅 Дата и время: ${oldTime}\n`;
-  if (oldDoctor) message += `👨‍⚕️ Врач: ${oldDoctor}\n`;
-  if (oldRoom) message += `🚪 Кабинет: ${oldRoom}\n`;
-
-  // ---------- КУДА ----------
-  message += `\n✅ Новый визит:\n`;
-  if (newAppointment.time_start) {
-    message += `📅 Дата и время: ${newAppointment.time_start}\n`;
-  }
-  if (newAppointment.doctor) {
-    message += `👨‍⚕️ Врач: ${newAppointment.doctor}\n`;
-  }
-  if (newAppointment.room) {
-    message += `🚪 Кабинет: ${newAppointment.room}\n`;
-  }
-
-  return;
+  // ⛔ НЕ return — пусть уйдёт в общую рассылку
 }
 
 
@@ -439,13 +487,17 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
     const mode = settings[key];
     if (!mode || mode === 'none') continue;
 
-    if (mode === 'self') {
+if (mode === 'self') {
 
-      if (event !== 'create_appointment') continue;
-      if (!user || !user.mis_id) continue;
-      if (!doctorId) continue;
-      if (String(user.mis_id) !== String(doctorId)) continue;
-    }
+  // self работает для визитных событий
+  if (!['visit_create', 'visit_cancel', 'visit_finish'].includes(key)) {
+    continue;
+  }
+
+  if (!user || !user.mis_id) continue;
+  if (!doctorId) continue;
+  if (String(user.mis_id) !== String(doctorId)) continue;
+}
 
     await send(chatId, message);
   }
