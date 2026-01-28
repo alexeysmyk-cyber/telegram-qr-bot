@@ -131,6 +131,7 @@ function showNotifyMenu(chatId) {
   // автозаполнение отсутствующих полей
   if (!('visit_create' in s)) s.visit_create = 'none';
   if (!('visit_cancel' in s)) s.visit_cancel = 'none';
+  if (!('visit_move' in s)) s.visit_move = 'none';
   if (!('visit_finish' in s)) s.visit_finish = 'none';
 
   if (!('patient_create' in s)) s.patient_create = false;
@@ -154,6 +155,7 @@ function showNotifyMenu(chatId) {
     [{ text: `👤 Создание пациента — ${twoLabel(s.patient_create)}`, callback_data: 'set_patient_create' }],
     [{ text: `🩺 Создание визита — ${threeLabel(s.visit_create)}`, callback_data: 'set_visit_create' }],
     [{ text: `❌ Отмена визита — ${threeLabel(s.visit_cancel)}`, callback_data: 'set_visit_cancel' }],
+    [{ text: `🔁 Перенос визита — ${threeLabel(s.visit_move)}`, callback_data: 'set_visit_move' }],
     [{ text: `✅ Завершение визита — ${threeLabel(s.visit_finish)}`, callback_data: 'set_visit_finish' }],
     [{ text: `🧾 Создание счёта — ${twoLabel(s.invoice_create)}`, callback_data: 'set_invoice_create' }],
     [{ text: `💳 Оплата счёта физ-лица — ${twoLabel(s.invoice_pay)}`, callback_data: 'set_invoice_pay' }],
@@ -406,6 +408,7 @@ const username = getUsername(id);
       [{ text: `🩺 Создание визита — ${limitLabel('visit_create')}`, callback_data: `admin_limit_${userId}_visit_create` }],
       [{ text: `👤 Создание пациента — ${limitLabel('patient_create')}`, callback_data: `admin_limit_${userId}_patient_create` }],
       [{ text: `❌ Отмена визита — ${limitLabel('visit_cancel')}`, callback_data: `admin_limit_${userId}_visit_cancel` }],
+      [{ text: `🔁 Перенос визита — ${limitLabel('visit_move')}`, callback_data: `admin_limit_${userId}_visit_move` }],
       [{ text: `✅ Завершение визита — ${limitLabel('visit_finish')}`, callback_data: `admin_limit_${userId}_visit_finish` }],
 
       [{ text: `🧾 Создание счёта — ${limitLabel('invoice_create')}`, callback_data: `admin_limit_${userId}_invoice_create` }],
@@ -455,6 +458,7 @@ const username = getUsername(userId);
       [{ text: `🩺 Создание визита — ${limitLabel('visit_create')}`, callback_data: `admin_limit_${userId}_visit_create` }],
       [{ text: `👤 Создание пациента — ${limitLabel('patient_create')}`, callback_data: `admin_limit_${userId}_patient_create` }],
       [{ text: `❌ Отмена визита — ${limitLabel('visit_cancel')}`, callback_data: `admin_limit_${userId}_visit_cancel` }],
+      [{ text: `🔁 Перенос визита — ${limitLabel('visit_move')}`, callback_data: `admin_limit_${userId}_visit_move` }],
       [{ text: `✅ Завершение визита — ${limitLabel('visit_finish')}`, callback_data: `admin_limit_${userId}_visit_finish` }],
 
       [{ text: `🧾 Создание счёта — ${limitLabel('invoice_create')}`, callback_data: `admin_limit_${userId}_invoice_create` }],
@@ -538,6 +542,7 @@ if (!db.users[chatId].username) {
           visit_create: "none",
           visit_update: "none",
           visit_cancel: "none",
+          visit_move: "none",
           visit_finish: "none",
           invoice_create: false,
           patient_create: false,
@@ -606,7 +611,7 @@ if (data.startsWith('set_')) {
   const chatId = fromId;
   const s = db.notify_settings[chatId];
 
-  const threeMode = ['visit_create','visit_cancel','visit_finish'];
+  const threeMode = ['visit_create','visit_cancel','visit_move','visit_finish'];
 
   // ----- 3 варианта -----
   if (threeMode.includes(key)) {
@@ -1016,6 +1021,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
