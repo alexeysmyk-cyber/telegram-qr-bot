@@ -74,6 +74,8 @@ async function handleMisWebhook(req, res) {
   else if (event === 'full_payment_invoice') key = 'invoice_pay';
   else if (event === 'full_ready_lab_result') key = 'lab_full';
   else if (event === 'part_ready_lab_result') key = 'lab_partial';
+  else if (event === 'cancel_appointment') key = 'visit_cancel';
+
   else {
     return res.send('OK (event ignored)');
   }
@@ -216,8 +218,80 @@ else if (event === 'full_payment_invoice') {
   if (patientMobile) message += `📞 Телефон: ${patientMobile}\n`;
   if (patientEmail) message += `📧 Email: ${patientEmail}\n`;
 }
+// ===== ❌ ОТМЕНА / 🔁 ПЕРЕНОС ВИЗИТА =====
+else if (event === 'cancel_appointment') {
+
+  const patientName = data.patient_name;
+  const oldTime = data.time_start;
+  const oldDoctor = data.doctor;
+  const oldRoom = data.room;
+  const movedTo = data.moved_to;
+
+  // ==================================================
+  // ❌ ИСТИННАЯ ОТМЕНА
+  // ==================================================
+  if (!movedTo) {
+
+    message = `❌ Визит отменён\n\n`;
+
+    if (patientName) message += `👤 Пациент: ${patientName}\n`;
+    if (oldTime) message += `📅 Дата и время: ${oldTime}\n`;
+    if (oldDoctor) message += `👨‍⚕️ Врач: ${oldDoctor}\n`;
+    if (oldRoom) message += `🚪 Кабинет: ${oldRoom}\n`;
+
+    return;
+  }
+
+  // ==================================================
+  // 🔁 ПЕРЕНОС ВИЗИТА
+  // ==================================================
+  console.log(
+    `↪️ Перенос визита: старый отменён, новый appointment_id=${movedTo}`
+  );
+
+  let newAppointment;
+  try {
+    newAppointment = await getAppointmentById(movedTo);
+  } catch (e) {
+    console.error('❌ Ошибка получения нового визита:', e.message);
+    return res.send('OK');
+  }
+
+  if (!newAppointment) {
+    console.error('❌ Новый визит не найден');
+    return res.send('OK');
+  }
+
+  message = `↪️ Визит перенесён\n\n`;
+
+  if (patientName) {
+    message += `👤 Пациент: ${patientName}\n\n`;
+  }
+
+  // ---------- ОТКУДА ----------
+  message += `❌ Отменён визит:\n`;
+  if (oldTime) message += `📅 Дата и время: ${oldTime}\n`;
+  if (oldDoctor) message += `👨‍⚕️ Врач: ${oldDoctor}\n`;
+  if (oldRoom) message += `🚪 Кабинет: ${oldRoom}\n`;
+
+  // ---------- КУДА ----------
+  message += `\n✅ Новый визит:\n`;
+  if (newAppointment.time_start) {
+    message += `📅 Дата и время: ${newAppointment.time_start}\n`;
+  }
+  if (newAppointment.doctor) {
+    message += `👨‍⚕️ Врач: ${newAppointment.doctor}\n`;
+  }
+  if (newAppointment.room) {
+    message += `🚪 Кабинет: ${newAppointment.room}\n`;
+  }
+
+  return;
+}
 
 
+
+  
   // ============================================================
 // 🔬 ГОТОВНОСТЬ АНАЛИЗОВ (ПОЛНАЯ И ЧАСТИЧНАЯ)
 // ============================================================
