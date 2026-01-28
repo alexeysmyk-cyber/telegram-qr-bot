@@ -180,6 +180,20 @@ function mainKeyboard() {
   };
 }
 
+function settingsKeyboard() {
+  return {
+    reply_markup: {
+      keyboard: [
+        ['🔔 Уведомления'],
+        ['🆔 Мой ID в МИС'],
+        ['📢 Оповещения'],
+        ['⬅️ Назад']
+      ],
+      resize_keyboard: true
+    }
+  };
+}
+
 
 function financeKeyboard() {
   return {
@@ -1004,6 +1018,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
