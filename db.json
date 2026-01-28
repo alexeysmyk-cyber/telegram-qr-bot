@@ -72,7 +72,6 @@
   "notify_settings": {
     "1582980728": {
       "visit_create": "all",
-      "visit_update": "none",
       "visit_cancel": "none",
       "visit_finish": "none",
       "patient_create": true,
@@ -83,7 +82,6 @@
     },
     "7485978153": {
       "visit_create": "self",
-      "visit_update": "none",
       "visit_cancel": "none",
       "visit_finish": "none",
       "invoice_create": false,
