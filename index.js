@@ -3,6 +3,7 @@ const ADMIN_CHAT_ID = 1582980728;
 const SECRET_KEY = 'SredaSecretKey';
 const path = require('path');
 const DB_FILE = path.join(__dirname, 'db.json');
+const BASE_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
 const TOKEN = process.env.BOT_TOKEN;
 if (!TOKEN) {
   console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ BOT_TOKEN');
@@ -1003,6 +1004,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
