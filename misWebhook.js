@@ -72,7 +72,7 @@ async function handleMisWebhook(req, res) {
   console.log('🔥 START HANDLE EVENT:', event);
 
   // ===== ОПРЕДЕЛЯЕМ КЛЮЧ ФИЛЬТРА =====
- let key = null;
+let key = null;
 
 if (event === 'create_appointment') key = 'visit_create';
 else if (event === 'create_patient') key = 'patient_create';
@@ -80,8 +80,12 @@ else if (event === 'create_invoice') key = 'invoice_create';
 else if (event === 'full_payment_invoice') key = 'invoice_pay';
 else if (event === 'full_ready_lab_result') key = 'lab_full';
 else if (event === 'part_ready_lab_result') key = 'lab_partial';
-else if (event === 'cancel_appointment') key = 'visit_cancel'; // временно
-else if (event === 'update_appointment') key = 'visit_finish';
+else if (
+  event === 'cancel_appointment' ||
+  event === 'update_appointment'
+) {
+  // ❗ key будет определён внутри логики события
+}
 else {
   return res.send('OK (event ignored)');
 }
@@ -497,9 +501,10 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
 if (mode === 'self') {
 
   // self работает для визитных событий
-  if (!['visit_create', 'visit_cancel', 'visit_finish'].includes(key)) {
-    continue;
-  }
+  if (!['visit_create', 'visit_cancel', 'visit_move', 'visit_finish'].includes(key)) {
+  continue;
+}
+
 
   if (!user || !user.mis_id) continue;
   if (!doctorId) continue;
