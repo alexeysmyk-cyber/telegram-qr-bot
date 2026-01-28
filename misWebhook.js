@@ -404,7 +404,21 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
     message += `\n📋 Исследования:\n`;
     services.forEach(s => message += `• ${s}\n`);
   }
+// ===== 🧾 ИСТОРИЯ АНАЛИЗОВ — ПИШЕМ ВСЕГДА =====
+if (!db.lab_history) db.lab_history = [];
 
+db.lab_history.push({
+  event,
+  appointment_id: appointmentId,
+  patient: patientName,
+  doctor: doctorName,
+  file: fileInfo ? fileInfo.fileName : null,
+  date: new Date().toISOString()
+});
+
+saveDB(db);
+
+  
   // 🔐 защита от лимита Telegram
   function safeCaption(text) {
     return text.length > 900
@@ -426,6 +440,8 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
   const db = loadDB();
   if (!db) return res.send('OK');
 
+  
+
   for (const chatId of db.notify_whitelist || []) {
 
     const settings = db.notify_settings[chatId] || {};
@@ -434,47 +450,35 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
     if (limits[key] === false) continue;
     if (settings[key] !== true) continue;
 
-    let sent = false;
+  let sentPdf = false;
 
-    try {
-      if (fileInfo) {
-        const FormData = require('form-data');
-        const form = new FormData();
+if (fileInfo) {
+  try {
+    const FormData = require('form-data');
+    const form = new FormData();
 
-        form.append('chat_id', chatId);
-        form.append('document', fs.createReadStream(fileInfo.filePath));
-        form.append('caption', safeCaption(message));
+    form.append('chat_id', chatId);
+    form.append('document', fs.createReadStream(fileInfo.filePath));
+    form.append('caption', '📄 Результаты анализов'); // КОРОТКО
 
-        await axios.post(
-          `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
-          form,
-          { headers: form.getHeaders() }
-        );
+    await axios.post(
+      `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
+      form,
+      { headers: form.getHeaders() }
+    );
 
-        sent = true;
-      }
-    } catch (e) {
-      console.error('❌ Ошибка отправки PDF:', e.message);
-    }
+    sentPdf = true;
+  } catch (e) {
+    console.error('❌ Ошибка отправки PDF:', e.message);
+  }
+}
 
-    // 🔔 fallback — текст уходит ВСЕГДА
-    if (!sent) {
-      await send(chatId, message);
-    }
+// 📝 ТЕКСТ — ВСЕГДА ОТДЕЛЬНО
+await send(chatId, message);
+
 
     // 🧾 история пишется независимо от PDF
-    if (!db.lab_history) db.lab_history = [];
-    db.lab_history.push({
-      event,
-      appointment_id: appointmentId,
-      patient: patientName,
-      doctor: doctorName,
-      file: fileInfo ? fileInfo.fileName : null,
-      sent_to: chatId,
-      date: new Date().toISOString()
-    });
-
-    saveDB(db);
+  
   }
 
   return res.send('OK');
