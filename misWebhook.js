@@ -209,122 +209,127 @@ else if (event === 'full_payment_invoice') {
 
 
   // ============================================================
-  // 🔬 ГОТОВНОСТЬ АНАЛИЗОВ (ПОЛНАЯ И ЧАСТИЧНАЯ)
-  // ============================================================
-  if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
+// 🔬 ГОТОВНОСТЬ АНАЛИЗОВ (ПОЛНАЯ И ЧАСТИЧНАЯ)
+// ============================================================
 
-    const appointmentId = data.appointment_id;
-    const lab = data.lab || '';
-    const date = data.date || '';
-    const services = data.services || [];
+if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
 
-    if (!appointmentId) {
-      console.log('⚠️ Нет appointment_id, пропуск анализов');
-      return res.send('OK');
-    }
+  const appointmentId = data.appointment_id;
+  const lab = data.lab || '';
+  const date = data.date || '';
+  const services = data.services || [];
 
-    const isFull = (event === 'full_ready_lab_result');
-    const title = isFull
-      ? '🔬 Анализы полностью готовы'
-      : '🧪 Частично выполненные анализы';
-
-    let appointment = null;
-
-    try {
-      appointment = await getAppointmentById(appointmentId);
-    } catch (e) {
-      console.error('❌ Ошибка получения визита:', e.message);
-      return res.send('OK');
-    }
-
-    if (!appointment) {
-      console.error('❌ Не удалось получить визит из МИС');
-      return res.send('OK');
-    }
-
-    const patientName = appointment.patient_name;
-    const doctorName = appointment.doctor;
-
-    let message = `${title}\n\n`;
-
-    if (patientName) message += `👤 Пациент: ${patientName}\n`;
-    if (doctorName) message += `👨‍⚕️ Врач: ${doctorName}\n`;
-    if (lab) message += `🧪 Лаборатория: ${lab}\n`;
-    if (date) message += `📅 Дата: ${date}\n`;
-
-    if (Array.isArray(services) && services.length > 0) {
-      message += `\n📋 Исследования:\n`;
-      services.forEach(s => {
-        message += `• ${s}\n`;
-      });
-    }
-
-    const db = loadDB();
-    if (!db) return res.send('OK');
-
-    for (const chatId of db.notify_whitelist || []) {
-
-      const settings = db.notify_settings[chatId] || {};
-      const limits = db.notify_admin_limits[chatId] || {};
-
-      if (limits[key] === false) continue;
-      if (settings[key] !== true) continue;
-
-      let fileInfo = null;
-
-      if (data.files && Array.isArray(data.files) && data.files.length > 0) {
-        try {
-          const { saveLabFile } = require('./labFiles');
-          fileInfo = saveLabFile(data.files[0], appointmentId);
-        } catch (e) {
-          console.error('❌ Ошибка сохранения PDF:', e.message);
-        }
-      }
-
-      try {
-        if (fileInfo) {
-     
-
-  const FormData = require('form-data');
-
-  const form = new FormData();
-  form.append('chat_id', chatId);
-  form.append('document', fs.createReadStream(fileInfo.filePath));
-  form.append('caption', message);
-
-  await axios.post(
-    `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
-    form,
-    { headers: form.getHeaders() }
-  );
-
-} else {
-  // 🔔 если PDF нет — просто уведомление текстом
-  await send(chatId, message);
-}
-
-
-        if (!db.lab_history) db.lab_history = [];
-
-        db.lab_history.push({
-          event,
-          appointment_id: appointmentId,
-          patient: patientName,
-          doctor: doctorName,
-          file: fileInfo ? fileInfo.fileName : null,
-          sent_to: chatId,
-          date: new Date().toISOString()
-        });
-
-        saveDB(db);
-
-      } catch (e) {
-        console.error('❌ Ошибка отправки анализов:', e.message);
-      }
-    }
-
+  if (!appointmentId) {
+    console.log('⚠️ Нет appointment_id, пропуск анализов');
     return res.send('OK');
   }
+
+  const isFull = (event === 'full_ready_lab_result');
+  const title = isFull
+    ? '🔬 Анализы полностью готовы'
+    : '🧪 Частично выполненные анализы';
+
+  let appointment;
+  try {
+    appointment = await getAppointmentById(appointmentId);
+  } catch (e) {
+    console.error('❌ Ошибка получения визита:', e.message);
+    return res.send('OK');
+  }
+
+  if (!appointment) {
+    console.error('❌ Визит не найден');
+    return res.send('OK');
+  }
+
+  const patientName = appointment.patient_name;
+  const doctorName = appointment.doctor;
+
+  let message = `${title}\n\n`;
+  if (patientName) message += `👤 Пациент: ${patientName}\n`;
+  if (doctorName) message += `👨‍⚕️ Врач: ${doctorName}\n`;
+  if (lab) message += `🧪 Лаборатория: ${lab}\n`;
+  if (date) message += `📅 Дата: ${date}\n`;
+
+  if (Array.isArray(services) && services.length > 0) {
+    message += `\n📋 Исследования:\n`;
+    services.forEach(s => message += `• ${s}\n`);
+  }
+
+  // 🔐 защита от лимита Telegram
+  function safeCaption(text) {
+    return text.length > 900
+      ? text.slice(0, 900) + '\n\n… (сообщение сокращено)'
+      : text;
+  }
+
+  // ===== сохраняем PDF ОДИН РАЗ =====
+  let fileInfo = null;
+  if (Array.isArray(data.files) && data.files.length > 0) {
+    try {
+      const { saveLabFile } = require('./labFiles');
+      fileInfo = saveLabFile(data.files[0], appointmentId);
+    } catch (e) {
+      console.error('❌ Ошибка сохранения PDF:', e.message);
+    }
+  }
+
+  const db = loadDB();
+  if (!db) return res.send('OK');
+
+  for (const chatId of db.notify_whitelist || []) {
+
+    const settings = db.notify_settings[chatId] || {};
+    const limits = db.notify_admin_limits[chatId] || {};
+
+    if (limits[key] === false) continue;
+    if (settings[key] !== true) continue;
+
+    let sent = false;
+
+    try {
+      if (fileInfo) {
+        const FormData = require('form-data');
+        const form = new FormData();
+
+        form.append('chat_id', chatId);
+        form.append('document', fs.createReadStream(fileInfo.filePath));
+        form.append('caption', safeCaption(message));
+
+        await axios.post(
+          `https://api.telegram.org/bot${BOT_TOKEN}/sendDocument`,
+          form,
+          { headers: form.getHeaders() }
+        );
+
+        sent = true;
+      }
+    } catch (e) {
+      console.error('❌ Ошибка отправки PDF:', e.message);
+    }
+
+    // 🔔 fallback — текст уходит ВСЕГДА
+    if (!sent) {
+      await send(chatId, message);
+    }
+
+    // 🧾 история пишется независимо от PDF
+    if (!db.lab_history) db.lab_history = [];
+    db.lab_history.push({
+      event,
+      appointment_id: appointmentId,
+      patient: patientName,
+      doctor: doctorName,
+      file: fileInfo ? fileInfo.fileName : null,
+      sent_to: chatId,
+      date: new Date().toISOString()
+    });
+
+    saveDB(db);
+  }
+
+  return res.send('OK');
+}
 
   // ============================================================
   // 🔔 ВСЕ ОСТАЛЬНЫЕ СОБЫТИЯ (визит, пациент, счёт, оплата)
