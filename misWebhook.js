@@ -3,7 +3,13 @@ const fs = require('fs');
 const { getAppointmentById } = require('./misApi');
 
 // ===== НАСТРОЙКИ =====
-const BOT_TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
+const TOKEN = process.env.BOT_TOKEN;
+
+if (!TOKEN) {
+  console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ BOT_TOKEN');
+  process.exit(1);
+}
+
 const SECRET_KEY = 'SredaSecretKey';
 const path = require('path');
 const DB_FILE = path.join(__dirname, 'db.json');
