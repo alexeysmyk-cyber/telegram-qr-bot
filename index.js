@@ -1,5 +1,4 @@
 // ================== НАСТРОЙКИ ==================
-const TOKEN = '8482523179:AAFQzWkCz2LrkTWif6Jfn8sXQ-PVxbp0nvs';
 const ADMIN_CHAT_ID = 1582980728; 
 const path = require('path');
 const DB_FILE = path.join(__dirname, 'db.json');
@@ -979,6 +978,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
