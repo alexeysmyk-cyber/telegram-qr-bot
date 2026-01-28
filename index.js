@@ -184,10 +184,8 @@ function settingsKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['🔔 Уведомления'],
-        ['🆔 Мой ID в МИС'],
-        ['📢 Оповещения'],
-        ['⬅️ Назад']
+        ['🔔 Уведомления' , '🆔 Мой ID в МИС'],
+        ['📢 Оповещения' , '⬅️ Назад']
       ],
       resize_keyboard: true
     }
@@ -1018,6 +1016,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
