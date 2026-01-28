@@ -171,9 +171,22 @@ function mainKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['➕ Создать платёж' , '📜 История'],
-        ['🔔 Уведомления', '🆔 Мой ID в МИС']
-         ],
+        ['💰 Финансы', '🔔 Уведомления'],
+        ['🆔 Мой ID в МИС']
+      ],
+      resize_keyboard: true
+    }
+  };
+}
+
+function financeKeyboard() {
+  return {
+    reply_markup: {
+      keyboard: [
+        ['➕ Создать платёж'],
+        ['📜 История'],
+        ['⬅️ Назад']
+      ],
       resize_keyboard: true
     }
   };
@@ -815,7 +828,20 @@ const username = getUsername(chatId);
   // есть доступ → показываем меню настроек
   return showNotifyMenu(chatId);
 }
+// Обработка кнопкаи финансы и кнопки назад
+  
+if (text === '💰 Финансы') {
+  return bot.sendMessage(chatId, '💰 Финансы', financeKeyboard());
+}
 
+  if (text === '⬅️ Назад') {
+  const keyboard = (chatId === ADMIN_CHAT_ID)
+    ? adminKeyboard()
+    : mainKeyboard();
+  return bot.sendMessage(chatId, 'Главное меню', keyboard);
+}
+
+  
   // ---- Мой ID в МИС ----
 if (text === '🆔 Мой ID в МИС') {
 
@@ -977,6 +1003,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
