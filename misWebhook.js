@@ -82,7 +82,16 @@ async function handleMisWebhook(req, res) {
   let doctorId = null;
 
   // ===== СОЗДАНИЕ ВИЗИТА =====
+// ===== СОЗДАНИЕ ВИЗИТА =====
 if (event === 'create_appointment') {
+
+  // ❗ ФИЛЬТР ПЕРЕНОСОВ / КОПИЙ
+  if (data.moved_from) {
+    console.log(
+      `↪️ create_appointment проигнорирован (перенос визита), moved_from=${data.moved_from}`
+    );
+    return res.send('OK (appointment moved)');
+  }
 
   const timeStart = data.time_start;
   const room = data.room;
@@ -107,6 +116,7 @@ if (event === 'create_appointment') {
   if (patientPhone) message += `📞 Телефон: ${patientPhone}\n`;
   if (source) message += `🌐 Источник: ${source}\n`;
 }
+
 
 // ===== СОЗДАНИЕ ПАЦИЕНТА =====
 else if (event === 'create_patient') {
