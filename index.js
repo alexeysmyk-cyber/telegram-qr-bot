@@ -540,7 +540,6 @@ if (!db.users[chatId].username) {
       if (!db.notify_settings[chatId]) {
         db.notify_settings[chatId] = {
           visit_create: "none",
-          visit_update: "none",
           visit_cancel: "none",
           visit_move: "none",
           visit_finish: "none",
@@ -1021,6 +1020,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
