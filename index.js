@@ -615,6 +615,22 @@ if (data === 'alerts_setup') {
   });
 }
 
+  if (data === 'alerts_show') {
+  const config = db.scheduled_notifications?.[fromId]?.upcoming_visits;
+
+  if (!config || !config.enabled) {
+    return bot.sendMessage(fromId, '📭 Оповещения не настроены');
+  }
+
+  return bot.sendMessage(
+    fromId,
+    `📢 Предстоящие визиты:\n\n` +
+    `Режим: ${config.mode === 'self' ? '👤 только мои' : '👥 все'}\n` +
+    `Время: ⏰ ${config.time}`
+  );
+}
+
+
   if (data.startsWith('upcoming_mode_')) {
   const mode = data.endsWith('self') ? 'self' : 'all';
 
@@ -868,6 +884,10 @@ if (db.state[chatId] === 'WAIT_UPCOMING_TIME') {
     return bot.sendMessage(chatId, '❌ Формат HH:MM, например 07:00');
   }
 
+  if (!db.scheduled_notifications?.[chatId]?.upcoming_visits) {
+  return bot.sendMessage(chatId, '❌ Настройка не найдена, начните заново');
+}
+  
   db.scheduled_notifications[chatId].upcoming_visits.time = text;
   db.state[chatId] = null;
   saveDB(db);
@@ -1084,9 +1104,14 @@ setInterval(() => {
   cleanupLabs();
 }, 12 * 60 * 60 * 1000);
 
-  setInterval(() => {
-  runUpcomingVisitsNotifications();
-}, 60 * 1000); // проверяем раз в минуту
+ setInterval(() => {
+  runUpcomingVisitsNotifications({
+    loadDB,
+    saveDB,
+    formatDate
+  });
+}, 60 * 1000);
+
 
 
 });
@@ -1104,6 +1129,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
