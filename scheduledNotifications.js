@@ -16,7 +16,7 @@ async function runUpcomingVisitsNotifications({ loadDB, saveDB, formatDate }) {
 );
 
   const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
-  console.log('⏱ runUpcomingVisitsNotifications tick:', nowTime);
+//  console.log('⏱ runUpcomingVisitsNotifications tick:', nowTime);
   
 
   const db = loadDB();
