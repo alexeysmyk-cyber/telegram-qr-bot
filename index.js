@@ -278,7 +278,7 @@ if (data.startsWith('download_lab_')) {
   const fs = require('fs');
 
   const fileName = data.replace('download_lab_', '');
-  const filePath = path.join(__dirname, 'files', 'labs', fileName);
+  const filePath = path.join(__dirname, 'data',  fileName);
 
   if (!fs.existsSync(filePath)) {
     return bot.answerCallbackQuery(query.id, {
@@ -1020,6 +1020,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
