@@ -15,19 +15,20 @@ function initMisModule({
   // ===============================
   // 📌 КНОПКА "Работа в МИС"
   // ===============================
-  bot.on('message', (msg) => {
-    if (msg.text !== '🏥 Работа в МИС') return;
+bot.on('mis_upcoming', (msg) => {
+  const chatId = msg.chat.id;
 
-    const chatId = msg.chat.id;
-
-    bot.sendMessage(chatId, '🏥 Работа в МИС', {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: '📅 Предстоящие визиты', callback_data: 'mis_upcoming' }]
-        ]
-      }
-    });
+  bot.sendMessage(chatId, 'Для каких визитов?', {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '👤 Только мои', callback_data: 'mis_mode_self' }],
+        [{ text: '👥 Все клиники', callback_data: 'mis_mode_all' }]
+      ]
+    }
   });
+});
+
+      
 
   // ===============================
   // 📅 ПРЕДСТОЯЩИЕ ВИЗИТЫ
