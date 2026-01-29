@@ -112,6 +112,42 @@ if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
 
 
     // --- календарь ---
+// ===== Навигация по месяцам =====
+if (data.startsWith('mis_cal_prev_') || data.startsWith('mis_cal_next_')) {
+  const [, , dir, y, m] = data.split('_');
+  let year = Number(y);
+  let month = Number(m);
+
+  if (dir === 'prev') {
+    month--;
+    if (month < 0) {
+      month = 11;
+      year--;
+    }
+  } else {
+    month++;
+    if (month > 11) {
+      month = 0;
+      year++;
+    }
+  }
+
+  await bot.editMessageReplyMarkup(
+    {
+      inline_keyboard: buildCalendar(year, month)
+    },
+    {
+      chat_id: chatId,
+      message_id: query.message.message_id
+    }
+  );
+
+  return bot.answerCallbackQuery(query.id);
+}
+
+
+
+    
     if (data === 'mis_date_custom') {
       const now = new Date();
 
@@ -172,42 +208,73 @@ if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
 // 🗓 INLINE КАЛЕНДАРЬ
 // ===============================
 function buildCalendar(year, month) {
+  const today = new Date();
+  const isThisMonth =
+    today.getFullYear() === year && today.getMonth() === month;
+
+  const monthNames = [
+    'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
+    'Июль', 'Август', 'Сентябрь', 'Октябрь', 'Ноябрь', 'Декабрь'
+  ];
+
   const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const firstDay = new Date(year, month, 1).getDay() || 7;
+  let firstDay = new Date(year, month, 1).getDay();
+  if (firstDay === 0) firstDay = 7; // Вс → 7
 
-  const rows = [];
+  const keyboard = [];
 
-  rows.push([
+  // ===== Заголовок месяца =====
+  keyboard.push([
+    { text: '⬅️', callback_data: `mis_cal_prev_${year}_${month}` },
+    { text: `📅 ${monthNames[month]} ${year}`, callback_data: 'noop' },
+    { text: '➡️', callback_data: `mis_cal_next_${year}_${month}` }
+  ]);
+
+  // ===== Дни недели =====
+  keyboard.push([
     { text: 'Пн', callback_data: 'noop' },
     { text: 'Вт', callback_data: 'noop' },
     { text: 'Ср', callback_data: 'noop' },
     { text: 'Чт', callback_data: 'noop' },
     { text: 'Пт', callback_data: 'noop' },
-    { text: 'Сб', callback_data: 'noop' },
-    { text: 'Вс', callback_data: 'noop' }
+    { text: ' Сб', callback_data: 'noop' },
+    { text: ' Вс', callback_data: 'noop' }
   ]);
 
   let row = [];
+
+  // ===== Пустые ячейки =====
   for (let i = 1; i < firstDay; i++) {
     row.push({ text: ' ', callback_data: 'noop' });
   }
 
+  // ===== Дни =====
   for (let day = 1; day <= daysInMonth; day++) {
+    let text = String(day);
+
+    if (
+      isThisMonth &&
+      day === today.getDate()
+    ) {
+      text = `🟦 ${day}`; // подсветка сегодня
+    }
+
     row.push({
-      text: String(day),
+      text,
       callback_data: `mis_pick_date_${year}_${month}_${day}`
     });
 
     if (row.length === 7) {
-      rows.push(row);
+      keyboard.push(row);
       row = [];
     }
   }
 
-  if (row.length) rows.push(row);
+  if (row.length) keyboard.push(row);
 
-  return rows;
+  return keyboard;
 }
+
 
 // ===============================
 // 📡 ЗАПРОС + ОТПРАВКА ВИЗИТОВ
