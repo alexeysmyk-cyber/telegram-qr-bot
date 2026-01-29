@@ -409,19 +409,6 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
   const db = loadDB();
   if (!db) return res.send('OK');
   
-if (!db.lab_history) db.lab_history = [];
-
-db.lab_history.push({
-  event,
-  appointment_id: appointmentId,
-  patient: patientName,
-  doctor: doctorName,
-  file: fileInfo ? fileInfo.fileName : null,
-  date: new Date().toISOString()
-});
-
-saveDB(db);
-
   
   // 🔐 защита от лимита Telegram
   function safeCaption(text) {
@@ -440,6 +427,19 @@ saveDB(db);
       console.error('❌ Ошибка сохранения PDF:', e.message);
     }
   }
+
+  if (!db.lab_history) db.lab_history = [];
+
+db.lab_history.push({
+  event,
+  appointment_id: appointmentId,
+  patient: patientName,
+  doctor: doctorName,
+  file: fileInfo ? fileInfo.fileName : null,
+  date: new Date().toISOString()
+});
+
+saveDB(db);
  
 
   for (const chatId of db.notify_whitelist || []) {
