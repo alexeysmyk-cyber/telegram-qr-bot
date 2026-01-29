@@ -60,8 +60,8 @@ bot.on('mis_upcoming', (msg) => {
   reply_markup: {
     inline_keyboard: [
       [
-        { text: '📅 Сегодня', callback_data: 'mis_date_today' },
-        { text: '📅 Завтра', callback_data: 'mis_date_tomorrow' }
+        { text: '   📅 Сегодня   ', callback_data: 'mis_date_today' },
+        { text: '   📅 Завтра    ', callback_data: 'mis_date_tomorrow' }
       ],
       [
         { text: '🗓 Выбрать дату', callback_data: 'mis_date_custom' }
