@@ -199,7 +199,7 @@ function mainKeyboard() {
     reply_markup: {
       keyboard: [
         ['💰 Финансы', '⚙️ Настройки'],
-        ['🏥 Работа в МИС']
+        ['🏥 Работа в МИС','📅 Предстоящие визиты']
       ],
       resize_keyboard: true
     }
@@ -1298,6 +1298,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
