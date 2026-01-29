@@ -243,4 +243,7 @@ async function sendVisits({
   await bot.sendMessage(chatId, message.trim());
 }
 
-module.exports = { initMisModule };
+module.exports = {
+  initMisModule
+};
+
