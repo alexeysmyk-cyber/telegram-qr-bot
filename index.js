@@ -120,6 +120,17 @@ function getUsername(id) {
 }
 
 
+// ================== УТИЛИТЫ ДАТ ==================
+function formatDate(d, time) {
+  const [h, m] = time.split(':');
+  d.setHours(h, m, 0, 0);
+
+  return d
+    .toLocaleDateString('ru-RU')
+    .replace(/\//g, '.') + ' ' + time;
+}
+
+
 // ================== КНОПКИ ==================
 function showNotifyMenu(chatId) {
   if (!db.notify_settings[chatId]) {
@@ -1092,6 +1103,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
