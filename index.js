@@ -906,13 +906,6 @@ bot.on('message', (msg) => {
     return bot.sendMessage(chatId, '⚙️ Настройки', settingsKeyboard());
   }
 
-  if (text === '🏥 Работа в МИС') {
-    return bot.sendMessage(
-      chatId,
-      '🏥 Раздел «Работа в МИС» находится в разработке 👷‍♂️'
-    );
-  }
-
   if (text === '⬅️ Назад') {
     const keyboard = (chatId === ADMIN_CHAT_ID)
       ? adminKeyboard()
@@ -1265,6 +1258,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
