@@ -615,20 +615,77 @@ if (data === 'alerts_setup') {
   });
 }
 
-  if (data === 'alerts_show') {
-  const config = db.scheduled_notifications?.[fromId]?.upcoming_visits;
+if (data === 'alerts_show') {
+  const list = db.scheduled_notifications?.[fromId]?.upcoming_visits;
 
-  if (!config || !config.enabled) {
+  if (!Array.isArray(list) || list.length === 0) {
     return bot.sendMessage(fromId, '📭 Оповещения не настроены');
+  }
+
+  const buttons = list.map(o => ([
+    {
+      text: `📅 ${o.time} · ${o.mode === 'self' ? '👤 мои' : '👥 все'}`,
+      callback_data: `alert_view_${o.id}`
+    }
+  ]));
+
+  return bot.sendMessage(fromId, '📢 Ваши оповещения:', {
+    reply_markup: { inline_keyboard: buttons }
+  });
+}
+if (data.startsWith('alert_view_')) {
+  const alertId = data.replace('alert_view_', '');
+  const list = db.scheduled_notifications[fromId].upcoming_visits;
+  const alert = list.find(a => a.id === alertId);
+
+  if (!alert) {
+    return bot.sendMessage(fromId, '❌ Оповещение не найдено');
   }
 
   return bot.sendMessage(
     fromId,
-    `📢 Предстоящие визиты:\n\n` +
-    `Режим: ${config.mode === 'self' ? '👤 только мои' : '👥 все'}\n` +
-    `Время: ⏰ ${config.time}`
+    `📅 Предстоящие визиты\n\n` +
+    `⏰ Время: ${alert.time}\n` +
+    `Режим: ${alert.mode === 'self' ? '👤 только мои' : '👥 все'}\n` +
+    `Статус: ${alert.enabled ? '✅ включено' : '🔕 выключено'}`,
+    {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: alert.enabled ? '🔕 Отключить' : '🔔 Включить', callback_data: `alert_toggle_${alertId}` }],
+          [{ text: '🗑 Удалить', callback_data: `alert_delete_${alertId}` }],
+          [{ text: '⬅️ Назад', callback_data: 'alerts_show' }]
+        ]
+      }
+    }
   );
 }
+
+  if (data.startsWith('alert_toggle_')) {
+  const id = data.replace('alert_toggle_', '');
+  const list = db.scheduled_notifications[fromId].upcoming_visits;
+  const alert = list.find(a => a.id === id);
+
+  if (!alert) return;
+
+  alert.enabled = !alert.enabled;
+  saveDB(db);
+
+  return bot.answerCallbackQuery(query.id, { text: '✅ Статус изменён' });
+}
+  
+if (data.startsWith('alert_toggle_')) {
+  const id = data.replace('alert_toggle_', '');
+  const list = db.scheduled_notifications[fromId].upcoming_visits;
+  const alert = list.find(a => a.id === id);
+
+  if (!alert) return;
+
+  alert.enabled = !alert.enabled;
+  saveDB(db);
+
+  return bot.answerCallbackQuery(query.id, { text: '✅ Статус изменён' });
+}
+
 
 
   if (data.startsWith('upcoming_mode_')) {
@@ -637,11 +694,18 @@ if (data === 'alerts_setup') {
   if (!db.scheduled_notifications) db.scheduled_notifications = {};
   if (!db.scheduled_notifications[fromId]) db.scheduled_notifications[fromId] = {};
 
-  db.scheduled_notifications[fromId].upcoming_visits = {
-    enabled: true,
-    mode,
-    time: null
-  };
+if (!db.scheduled_notifications[fromId].upcoming_visits) {
+  db.scheduled_notifications[fromId].upcoming_visits = [];
+}
+
+db.scheduled_notifications[fromId].upcoming_visits.push({
+  id: 'uv_' + Date.now(),
+  enabled: true,
+  mode,
+  time: null,
+  last_sent: null
+});
+
 
   db.state[fromId] = 'WAIT_UPCOMING_TIME';
   saveDB(db);
@@ -1129,6 +1193,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
