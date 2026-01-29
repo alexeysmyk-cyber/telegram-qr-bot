@@ -166,6 +166,23 @@ if (data.startsWith('mis_cal_prev_') || data.startsWith('mis_cal_next_')) {
       });
     }
 
+if (data === 'mis_choose_date_again') {
+  await bot.answerCallbackQuery(query.id);
+
+  const now = new Date();
+
+  return bot.sendMessage(chatId, '🗓 Выберите дату', {
+    reply_markup: {
+      inline_keyboard: buildCalendar(
+        now.getFullYear(),
+        now.getMonth()
+      )
+    }
+  });
+}
+
+
+    
     // --- выбор даты в календаре ---
 if (data.startsWith('mis_pick_date_')) {
   // 🔒 закрываем callback СРАЗУ (чтобы кнопки не залипали)
@@ -368,7 +385,18 @@ async function sendVisits({
     }
   }
 
-  await bot.sendMessage(chatId, message.trim());
+ await bot.sendMessage(chatId, message.trim(), {
+  reply_markup: {
+    inline_keyboard: [
+      [
+        {
+          text: '🔄 Выбрать другую дату',
+          callback_data: 'mis_choose_date_again'
+        }
+      ]
+    ]
+  }
+});
 }
 
 module.exports = {
