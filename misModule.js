@@ -43,7 +43,7 @@ bot.on('mis_upcoming', (msg) => {
         reply_markup: {
           inline_keyboard: [
             [{ text: '👤 Только мои', callback_data: 'mis_mode_self' }],
-            [{ text: '👥 Все клиники', callback_data: 'mis_mode_all' }]
+            [{ text: '👥 Все врачи', callback_data: 'mis_mode_all' }]
           ]
         }
       });
