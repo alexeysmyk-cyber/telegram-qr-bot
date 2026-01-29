@@ -730,24 +730,30 @@ if (data.startsWith('alert_delete_')) {
   if (!db.scheduled_notifications) db.scheduled_notifications = {};
   if (!db.scheduled_notifications[fromId]) db.scheduled_notifications[fromId] = {};
 
+const alertId = 'uv_' + Date.now();
+
 if (!db.scheduled_notifications[fromId].upcoming_visits) {
   db.scheduled_notifications[fromId].upcoming_visits = [];
 }
 
 db.scheduled_notifications[fromId].upcoming_visits.push({
-  id: 'uv_' + Date.now(),
+  id: alertId,
   enabled: true,
   mode,
   time: null,
   last_sent: null
 });
 
+// 🔑 ВАЖНО
+db.state[fromId] = {
+  type: 'WAIT_UPCOMING_TIME',
+  alertId
+};
 
-  db.state[fromId] = 'WAIT_UPCOMING_TIME';
-  saveDB(db);
+saveDB(db);
 
-  return bot.sendMessage(fromId, '⏰ Во сколько присылать? (например 07:00)');
-}
+return bot.sendMessage(fromId, '⏰ Во сколько присылать? (например 07:00)');
+  }
 
   
   
@@ -979,21 +985,41 @@ bot.on('message', (msg) => {
   });
 }
   
-if (db.state[chatId] === 'WAIT_UPCOMING_TIME') {
+if (
+  db.state[chatId] &&
+  db.state[chatId].type === 'WAIT_UPCOMING_TIME'
+) {
   if (!/^\d{2}:\d{2}$/.test(text)) {
     return bot.sendMessage(chatId, '❌ Формат HH:MM, например 07:00');
   }
 
-  if (!db.scheduled_notifications?.[chatId]?.upcoming_visits) {
-  return bot.sendMessage(chatId, '❌ Настройка не найдена, начните заново');
-}
-  
-  db.scheduled_notifications[chatId].upcoming_visits.time = text;
+  const { alertId } = db.state[chatId];
+
+  const list = db.scheduled_notifications?.[chatId]?.upcoming_visits;
+  if (!Array.isArray(list)) {
+    db.state[chatId] = null;
+    saveDB(db);
+    return;
+  }
+
+  const alert = list.find(a => a.id === alertId);
+  if (!alert) {
+    db.state[chatId] = null;
+    saveDB(db);
+    return bot.sendMessage(chatId, '❌ Оповещение не найдено');
+  }
+
+  alert.time = text;
   db.state[chatId] = null;
   saveDB(db);
 
-  return bot.sendMessage(chatId, '✅ Оповещение настроено');
+  return bot.sendMessage(
+    chatId,
+    `✅ Оповещение сохранено\n\n⏰ ${text}\n` +
+    `Режим: ${alert.mode === 'self' ? '👤 только мои' : '👥 все'}`
+  );
 }
+
 
   
 
@@ -1229,6 +1255,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
