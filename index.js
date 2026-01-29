@@ -582,6 +582,48 @@ if (!db.users[chatId].username) {
   // ================== ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ УВЕДОМЛЕНИЙ ==================
 // ================== M I S   I D ==================
 
+if (data === 'alerts_setup') {
+  return bot.sendMessage(fromId, '⚙️ Что настроим?', {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '📅 Предстоящие визиты', callback_data: 'setup_upcoming_visits' }]
+      ]
+    }
+  });
+}
+
+  if (data === 'setup_upcoming_visits') {
+  return bot.sendMessage(fromId, 'Для каких визитов?', {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '👤 Только мои', callback_data: 'upcoming_mode_self' }],
+        [{ text: '👥 Все', callback_data: 'upcoming_mode_all' }]
+      ]
+    }
+  });
+}
+
+  if (data.startsWith('upcoming_mode_')) {
+  const mode = data.endsWith('self') ? 'self' : 'all';
+
+  if (!db.scheduled_notifications) db.scheduled_notifications = {};
+  if (!db.scheduled_notifications[fromId]) db.scheduled_notifications[fromId] = {};
+
+  db.scheduled_notifications[fromId].upcoming_visits = {
+    enabled: true,
+    mode,
+    time: null
+  };
+
+  db.state[fromId] = 'WAIT_UPCOMING_TIME';
+  saveDB(db);
+
+  return bot.sendMessage(fromId, '⏰ Во сколько присылать? (например 07:00)');
+}
+
+  
+  
+
 if (data === 'mis_edit') {
   db.state[fromId] = 'WAIT_MIS_ID';
   saveDB(db);
@@ -798,6 +840,31 @@ bot.on('message', (msg) => {
 
   // ===== НАСТРОЙКИ =====
 
+  if (text === '📢 Оповещения') {
+  return bot.sendMessage(chatId, '📢 Оповещения', {
+    reply_markup: {
+      inline_keyboard: [
+        [{ text: '👀 Показать оповещения', callback_data: 'alerts_show' }],
+        [{ text: '⚙️ Задать оповещения', callback_data: 'alerts_setup' }]
+      ]
+    }
+  });
+}
+  
+if (db.state[chatId] === 'WAIT_UPCOMING_TIME') {
+  if (!/^\d{2}:\d{2}$/.test(text)) {
+    return bot.sendMessage(chatId, '❌ Формат HH:MM, например 07:00');
+  }
+
+  db.scheduled_notifications[chatId].upcoming_visits.time = text;
+  db.state[chatId] = null;
+  saveDB(db);
+
+  return bot.sendMessage(chatId, '✅ Оповещение настроено');
+}
+
+  
+
   if (text === '🔔 Уведомления') {
     if (!db.notify_whitelist.includes(chatId)) {
       if (db.notify_pending.includes(chatId)) {
@@ -1005,6 +1072,11 @@ setInterval(() => {
   cleanupLabs();
 }, 12 * 60 * 60 * 1000);
 
+  setInterval(() => {
+  runUpcomingVisitsNotifications();
+}, 60 * 1000); // проверяем раз в минуту
+
+
 });
 
 server.on('error', (err) => {
@@ -1020,6 +1092,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
