@@ -5,7 +5,8 @@
     5900607039,
     5280146224,
     648009056,
-    7485978153
+    7485978153,
+    260414970
   ],
   "notify_whitelist": [
     1582980728,
@@ -61,13 +62,16 @@
   },
   "state": {
     "133334492": null,
-    "648009056": null,
+    "260414970": "MIS",
+    "648009056": "WAIT_MIS_ID",
     "1582980728": null,
-    "5900607039": null,
-    "7485978153": null
+    "5900607039": "MIS",
+    "7485978153": "MIS"
   },
   "pending": [],
-  "notify_pending": [],
+  "notify_pending": [
+    5900607039
+  ],
   "notify_settings": {
     "1582980728": {
       "visit_create": "all",
@@ -88,15 +92,21 @@
       "patient_create": false,
       "invoice_pay": false,
       "lab_partial": false,
-      "lab_full": false
+      "lab_full": false,
+      "visit_move": "none"
     }
   },
   "notify_admin_limits": {
-    "1582980728": {}
+    "1582980728": {},
+    "7485978153": {}
   },
   "users": {
     "133334492": {
       "username": "Dr_EkaterinaSmyk",
+      "mis_id": null
+    },
+    "260414970": {
+      "username": "urolog_ageeva",
       "mis_id": null
     },
     "648009056": {
@@ -116,25 +126,25 @@
       "mis_id": "43347"
     }
   },
- "scheduled_notifications": {
-  "7485978153": {
-    "upcoming_visits": [
-      {
-        "id": "uv_1700000000000",
-        "enabled": true,
-        "mode": "self",
-        "time": "07:00",
-        "last_sent": null
-      },
-      {
-        "id": "uv_1700000001234",
-        "enabled": true,
-        "mode": "all",
-        "time": "18:00",
-        "last_sent": null
-      }
-    ]
-  }
-},
+  "scheduled_notifications": {
+    "7485978153": {
+      "upcoming_visits": [
+        {
+          "id": "uv_1700000000000",
+          "enabled": true,
+          "mode": "self",
+          "time": "07:00",
+          "last_sent": null
+        },
+        {
+          "id": "uv_1700000001234",
+          "enabled": true,
+          "mode": "all",
+          "time": "18:00",
+          "last_sent": null
+        }
+      ]
+    }
+  },
   "lab_history": []
 }
