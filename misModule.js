@@ -162,12 +162,25 @@ if (data.startsWith('mis_cal_prev_') || data.startsWith('mis_cal_next_')) {
     }
 
     // --- выбор даты в календаре ---
-   if (data.startsWith('mis_pick_date_')) {
-  // 🔒 закрываем callback СРАЗУ
+if (data.startsWith('mis_pick_date_')) {
+  // 🔒 закрываем callback СРАЗУ (чтобы кнопки не залипали)
   await bot.answerCallbackQuery(query.id);
 
   const [, , , y, m, d] = data.split('_');
   const date = new Date(Number(y), Number(m), Number(d));
+  date.setHours(0, 0, 0, 0);
+
+  // ===== защита от прошедших дат =====
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  if (date < today) {
+    await bot.sendMessage(
+      chatId,
+      '⛔ Прошедшие даты недоступны для «Предстоящих визитов»'
+    );
+    return;
+  }
 
   const db = loadDB();
   const state = db.state[chatId];
@@ -180,6 +193,7 @@ if (data.startsWith('mis_cal_prev_') || data.startsWith('mis_cal_next_')) {
     return;
   }
 
+  // очищаем состояние
   db.state[chatId] = null;
   saveDB(db);
 
@@ -201,6 +215,7 @@ if (data.startsWith('mis_cal_prev_') || data.startsWith('mis_cal_next_')) {
   return;
 }
 
+
   });
 }
 
@@ -209,8 +224,7 @@ if (data.startsWith('mis_cal_prev_') || data.startsWith('mis_cal_next_')) {
 // ===============================
 function buildCalendar(year, month) {
   const today = new Date();
-  const isThisMonth =
-    today.getFullYear() === year && today.getMonth() === month;
+  today.setHours(0, 0, 0, 0);
 
   const monthNames = [
     'Январь', 'Февраль', 'Март', 'Апрель', 'Май', 'Июнь',
@@ -219,11 +233,11 @@ function buildCalendar(year, month) {
 
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   let firstDay = new Date(year, month, 1).getDay();
-  if (firstDay === 0) firstDay = 7; // Вс → 7
+  if (firstDay === 0) firstDay = 7;
 
   const keyboard = [];
 
-  // ===== Заголовок месяца =====
+  // ===== Заголовок =====
   keyboard.push([
     { text: '⬅️', callback_data: `mis_cal_prev_${year}_${month}` },
     { text: `📅 ${monthNames[month]} ${year}`, callback_data: 'noop' },
@@ -250,19 +264,25 @@ function buildCalendar(year, month) {
 
   // ===== Дни =====
   for (let day = 1; day <= daysInMonth; day++) {
-    let text = String(day);
+    const date = new Date(year, month, day);
+    date.setHours(0, 0, 0, 0);
 
-    if (
-      isThisMonth &&
-      day === today.getDate()
-    ) {
-      text = `🟦 ${day}`; // подсветка сегодня
+    const isPast = date < today;
+    const isToday = date.getTime() === today.getTime();
+
+    let text = String(day);
+    let callback = `mis_pick_date_${year}_${month}_${day}`;
+
+    if (isToday) {
+      text = `🟦 ${day}`;
     }
 
-    row.push({
-      text,
-      callback_data: `mis_pick_date_${year}_${month}_${day}`
-    });
+    if (isPast) {
+      text = `· ${day}`;        // визуально "приглушено"
+      callback = 'noop';        // ❌ нельзя нажать
+    }
+
+    row.push({ text, callback_data: callback });
 
     if (row.length === 7) {
       keyboard.push(row);
@@ -274,6 +294,7 @@ function buildCalendar(year, month) {
 
   return keyboard;
 }
+
 
 
 // ===============================
