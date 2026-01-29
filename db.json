@@ -116,21 +116,25 @@
       "mis_id": "43347"
     }
   },
-  "scheduled_notifications": {
-    "1582980728": {
-      "upcoming_visits": {
+ "scheduled_notifications": {
+  "7485978153": {
+    "upcoming_visits": [
+      {
+        "id": "uv_1700000000000",
         "enabled": true,
         "mode": "self",
-        "time": "07:00"
-      }
-    },
-    "7485978153": {
-      "upcoming_visits": {
+        "time": "07:00",
+        "last_sent": null
+      },
+      {
+        "id": "uv_1700000001234",
         "enabled": true,
         "mode": "all",
-        "time": "11:18"
+        "time": "18:00",
+        "last_sent": null
       }
-    }
-  },
+    ]
+  }
+},
   "lab_history": []
 }
