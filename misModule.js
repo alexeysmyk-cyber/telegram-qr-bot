@@ -68,30 +68,38 @@ bot.on('mis_upcoming', (msg) => {
     }
 
     // --- быстрые даты ---
-    if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
-      const db = loadDB();
-      const state = db.state[chatId];
-      if (!state) return;
+  if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
+  await bot.answerCallbackQuery(query.id); // 🔥 СРАЗУ
+console.log('MIS sendVisits:', { chatId, mode, date });
 
-      const date = new Date();
-      if (data === 'mis_date_tomorrow') {
-        date.setDate(date.getDate() + 1);
-      }
+    
 
-      db.state[chatId] = null;
-      saveDB(db);
+  const db = loadDB();
+if (!state || !state.mis_mode) {
+  await bot.sendMessage(chatId, '⚠️ Сессия выбора сброшена, попробуйте ещё раз');
+  return;
+}
 
-      await sendVisits({
-        chatId,
-        mode: state.mis_mode,
-        date,
-        bot,
-        loadDB,
-        formatDate
-      });
+  const date = new Date();
+  if (data === 'mis_date_tomorrow') {
+    date.setDate(date.getDate() + 1);
+  }
 
-      return bot.answerCallbackQuery(query.id);
-    }
+  db.state[chatId] = null;
+  saveDB(db);
+
+  await sendVisits({
+    chatId,
+    mode: state.mis_mode,
+    date,
+    bot,
+    loadDB,
+    formatDate
+  });
+
+  return;
+}
+
 
     // --- календарь ---
     if (data === 'mis_date_custom') {
@@ -114,8 +122,10 @@ bot.on('mis_upcoming', (msg) => {
       const date = new Date(Number(y), Number(m), Number(d));
 
       const db = loadDB();
-      const state = db.state[chatId];
-      if (!state) return;
+   if (!state || !state.mis_mode) {
+  await bot.sendMessage(chatId, '⚠️ Сессия выбора сброшена, попробуйте ещё раз');
+  return;
+}
 
       db.state[chatId] = null;
       saveDB(db);
