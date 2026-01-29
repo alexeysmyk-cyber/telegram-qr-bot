@@ -199,7 +199,7 @@ function mainKeyboard() {
     reply_markup: {
       keyboard: [
         ['💰 Финансы', '⚙️ Настройки'],
-        ['🏥 Работа в МИС','📅 Предстоящие визиты']
+        ['🏥 Работа в МИС','📅 Визиты']
       ],
       resize_keyboard: true
     }
@@ -222,7 +222,7 @@ function misKeyboard() {
   return {
     reply_markup: {
       keyboard: [
-        ['📅 Предстоящие визиты'],
+        ['📅 Визиты'],
         ['Будет позже'],
         ['⬅️ Назад']
       ],
@@ -623,7 +623,7 @@ if (data === 'alerts_setup') {
   return bot.sendMessage(fromId, '⚙️ Что настроим?', {
     reply_markup: {
       inline_keyboard: [
-        [{ text: '📅 Предстоящие визиты', callback_data: 'setup_upcoming_visits' }]
+        [{ text: '📅 Визиты', callback_data: 'setup_upcoming_visits' }]
       ]
     }
   });
@@ -669,7 +669,7 @@ if (data.startsWith('alert_view_')) {
 
   return bot.sendMessage(
     fromId,
-    `📅 Предстоящие визиты\n\n` +
+    `📅 Визиты\n\n` +
     `⏰ Время: ${alert.time}\n` +
     `Режим: ${alert.mode === 'self' ? '👤 только мои' : '👥 все'}\n` +
     `Статус: ${alert.enabled ? '✅ включено' : '🔕 выключено'}`,
@@ -949,7 +949,7 @@ if (text === '⬅️ Назад' && db.state[chatId] === 'MIS') {
     mainKeyboard()
   );
 }
-if (text === '📅 Предстоящие визиты' && db.state[chatId] === 'MIS') {
+if (text === '📅 Визиты' && db.state[chatId] === 'MIS') {
   bot.emit('mis_upcoming', msg);
   return;
 }
@@ -1298,6 +1298,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
