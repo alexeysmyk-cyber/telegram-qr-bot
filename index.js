@@ -19,14 +19,7 @@ const bodyParser = require('body-parser');
 const { handleMisWebhook } = require('./misWebhook');
 const { cleanupLabs } = require('./cleanupLabs');
 const { runUpcomingVisitsNotifications } = require('./scheduledNotifications');
-const initMisModule = require('./misModule');
 
-initMisModule({
-  bot,
-  loadDB,
-  saveDB,
-  getUsername
-});
 
 const app = express();
 
@@ -42,6 +35,15 @@ app.use((req, res, next) => {
 // ================== БОТ ==================
 const bot = new TelegramBot(TOKEN, { polling: true });
 console.log('🤖 Bot started (polling mode)');
+
+const initMisModule = require('./misModule');
+
+initMisModule({
+  bot,
+  loadDB,
+  saveDB,
+  getUsername
+});
 
 // ================== БАЗА ДАННЫХ ==================
 function loadDB() {
@@ -1263,6 +1265,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
