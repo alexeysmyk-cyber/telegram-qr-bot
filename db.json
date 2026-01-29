@@ -59,6 +59,17 @@
       }
     ]
   },
+  
+"scheduled_notifications": {
+  "1582980728": {
+    "upcoming_visits": {
+      "enabled": true,
+      "mode": "self", 
+      "time": "07:00"
+    }
+  }
+},
+ 
   "state": {
     "133334492": null,
     "648009056": null,
@@ -117,4 +128,5 @@
     }
   },
   "lab_history": []
+  
 }
