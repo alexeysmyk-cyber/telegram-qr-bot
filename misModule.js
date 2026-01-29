@@ -56,15 +56,20 @@ bot.on('mis_upcoming', (msg) => {
       db.state[chatId] = { mis_mode: mode };
       saveDB(db);
 
-      return bot.sendMessage(chatId, 'На какую дату?', {
-        reply_markup: {
-          inline_keyboard: [
-            [{ text: '📅 Сегодня', callback_data: 'mis_date_today' }],
-            [{ text: '📅 Завтра', callback_data: 'mis_date_tomorrow' }],
-            [{ text: '🗓 Выбрать дату', callback_data: 'mis_date_custom' }]
-          ]
-        }
-      });
+    return bot.sendMessage(chatId, 'На какую дату?', {
+  reply_markup: {
+    inline_keyboard: [
+      [
+        { text: '📅 Сегодня', callback_data: 'mis_date_today' },
+        { text: '📅 Завтра', callback_data: 'mis_date_tomorrow' }
+      ],
+      [
+        { text: '🗓 Выбрать дату', callback_data: 'mis_date_custom' }
+      ]
+    ]
+  }
+});
+
     }
 
     // --- быстрые даты ---
