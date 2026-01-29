@@ -673,18 +673,54 @@ if (data.startsWith('alert_view_')) {
   return bot.answerCallbackQuery(query.id, { text: '✅ Статус изменён' });
 }
   
-if (data.startsWith('alert_toggle_')) {
-  const id = data.replace('alert_toggle_', '');
-  const list = db.scheduled_notifications[fromId].upcoming_visits;
-  const alert = list.find(a => a.id === id);
+if (data.startsWith('alert_delete_')) {
+  const alertId = data.replace('alert_delete_', '');
 
-  if (!alert) return;
+  if (
+    !db.scheduled_notifications ||
+    !db.scheduled_notifications[fromId] ||
+    !Array.isArray(db.scheduled_notifications[fromId].upcoming_visits)
+  ) {
+    return bot.answerCallbackQuery(query.id, {
+      text: '❌ Оповещение не найдено',
+      show_alert: true
+    });
+  }
 
-  alert.enabled = !alert.enabled;
+  const before = db.scheduled_notifications[fromId].upcoming_visits.length;
+
+  db.scheduled_notifications[fromId].upcoming_visits =
+    db.scheduled_notifications[fromId].upcoming_visits.filter(
+      a => a.id !== alertId
+    );
+
+  const after = db.scheduled_notifications[fromId].upcoming_visits.length;
+
   saveDB(db);
 
-  return bot.answerCallbackQuery(query.id, { text: '✅ Статус изменён' });
+  // 🔔 ОБЯЗАТЕЛЬНО ответить Telegram
+  await bot.answerCallbackQuery(query.id, {
+    text: '🗑 Оповещение удалено'
+  });
+
+  // 🧼 Если список пуст — сообщение
+  if (after === 0) {
+    return bot.sendMessage(fromId, '📭 Оповещений больше нет');
+  }
+
+  // 🔄 ИНАЧЕ — обновляем список
+  return bot.sendMessage(fromId, '📢 Обновлённый список оповещений:', {
+    reply_markup: {
+      inline_keyboard: db.scheduled_notifications[fromId].upcoming_visits.map(o => ([
+        {
+          text: `📅 ${o.time} · ${o.mode === 'self' ? '👤 мои' : '👥 все'}`,
+          callback_data: `alert_view_${o.id}`
+        }
+      ]))
+    }
+  });
 }
+
 
 
 
@@ -1193,6 +1229,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
