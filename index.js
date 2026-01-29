@@ -19,6 +19,14 @@ const bodyParser = require('body-parser');
 const { handleMisWebhook } = require('./misWebhook');
 const { cleanupLabs } = require('./cleanupLabs');
 const { runUpcomingVisitsNotifications } = require('./scheduledNotifications');
+const initMisModule = require('./misModule');
+
+initMisModule({
+  bot,
+  loadDB,
+  saveDB,
+  getUsername
+});
 
 const app = express();
 
@@ -1255,6 +1263,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
