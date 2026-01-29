@@ -8,6 +8,8 @@ async function runUpcomingVisitsNotifications({ loadDB, saveDB, formatDate }) {
   const now = new Date();
   const nowTime = now.toTimeString().slice(0, 5); // HH:MM
   const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
+  console.log('⏱ runUpcomingVisitsNotifications tick:', nowTime);
+  
 
   const db = loadDB();
   if (!db || !db.scheduled_notifications) return;
