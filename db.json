@@ -59,17 +59,6 @@
       }
     ]
   },
-  
-"scheduled_notifications": {
-  "1582980728": {
-    "upcoming_visits": {
-      "enabled": true,
-      "mode": "self", 
-      "time": "07:00"
-    }
-  }
-},
- 
   "state": {
     "133334492": null,
     "648009056": null,
@@ -127,6 +116,21 @@
       "mis_id": "43347"
     }
   },
+  "scheduled_notifications": {
+    "1582980728": {
+      "upcoming_visits": {
+        "enabled": true,
+        "mode": "self",
+        "time": "07:00"
+      }
+    },
+    "7485978153": {
+      "upcoming_visits": {
+        "enabled": true,
+        "mode": "all",
+        "time": "11:18"
+      }
+    }
+  },
   "lab_history": []
-  
 }
