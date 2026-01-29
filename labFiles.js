@@ -3,7 +3,9 @@ const path = require('path');
 
 // 👉 ПАПКА ДЛЯ ХРАНЕНИЯ АНАЛИЗОВ
 // будет: /app/data
-const LAB_DIR = path.join(__dirname, 'data');
+const LAB_DIR = path.join(process.cwd(), 'data');
+const DB_FILE = path.join(process.cwd(), 'db.json');
+
 
 // гарантируем, что папка существует
 if (!fs.existsSync(LAB_DIR)) {
