@@ -23,7 +23,20 @@ async function runUpcomingVisitsNotifications({ loadDB, saveDB, formatDate }) {
   if (!db || !db.scheduled_notifications) return;
 
   for (const chatId of Object.keys(db.scheduled_notifications)) {
-    const config = db.scheduled_notifications[chatId]?.upcoming_visits;
+    
+   const list = db.scheduled_notifications[chatId]?.upcoming_visits;
+if (!Array.isArray(list)) continue;
+
+for (const config of list) {
+  if (!config.enabled) continue;
+  if (config.time !== nowTime) continue;
+  if (config.last_sent === todayStr) continue;
+
+  // 👉 ВСЯ текущая логика отправки тут
+}
+
+
+    
     if (!config || !config.enabled) continue;
     if (config.time !== nowTime) continue;
 
