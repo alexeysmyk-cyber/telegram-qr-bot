@@ -68,17 +68,20 @@ bot.on('mis_upcoming', (msg) => {
     }
 
     // --- быстрые даты ---
-  if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
-  await bot.answerCallbackQuery(query.id); // 🔥 СРАЗУ
-console.log('MIS sendVisits:', { chatId, mode, date });
-
-    
+if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
+  // 🔒 закрываем callback СРАЗУ
+  await bot.answerCallbackQuery(query.id);
 
   const db = loadDB();
-if (!state || !state.mis_mode) {
-  await bot.sendMessage(chatId, '⚠️ Сессия выбора сброшена, попробуйте ещё раз');
-  return;
-}
+  const state = db.state[chatId];
+
+  if (!state || !state.mis_mode) {
+    await bot.sendMessage(
+      chatId,
+      '⚠️ Сессия выбора сброшена, попробуйте ещё раз'
+    );
+    return;
+  }
 
   const date = new Date();
   if (data === 'mis_date_tomorrow') {
@@ -87,6 +90,12 @@ if (!state || !state.mis_mode) {
 
   db.state[chatId] = null;
   saveDB(db);
+
+  console.log('MIS sendVisits:', {
+    chatId,
+    mode: state.mis_mode,
+    date
+  });
 
   await sendVisits({
     chatId,
@@ -99,6 +108,7 @@ if (!state || !state.mis_mode) {
 
   return;
 }
+
 
 
     // --- календарь ---
@@ -116,31 +126,45 @@ if (!state || !state.mis_mode) {
     }
 
     // --- выбор даты в календаре ---
-    if (data.startsWith('mis_pick_date_')) {
-      const [, , , y, m, d] = data.split('_');
+   if (data.startsWith('mis_pick_date_')) {
+  // 🔒 закрываем callback СРАЗУ
+  await bot.answerCallbackQuery(query.id);
 
-      const date = new Date(Number(y), Number(m), Number(d));
+  const [, , , y, m, d] = data.split('_');
+  const date = new Date(Number(y), Number(m), Number(d));
 
-      const db = loadDB();
-   if (!state || !state.mis_mode) {
-  await bot.sendMessage(chatId, '⚠️ Сессия выбора сброшена, попробуйте ещё раз');
+  const db = loadDB();
+  const state = db.state[chatId];
+
+  if (!state || !state.mis_mode) {
+    await bot.sendMessage(
+      chatId,
+      '⚠️ Сессия выбора сброшена, попробуйте ещё раз'
+    );
+    return;
+  }
+
+  db.state[chatId] = null;
+  saveDB(db);
+
+  console.log('MIS sendVisits (calendar):', {
+    chatId,
+    mode: state.mis_mode,
+    date
+  });
+
+  await sendVisits({
+    chatId,
+    mode: state.mis_mode,
+    date,
+    bot,
+    loadDB,
+    formatDate
+  });
+
   return;
 }
 
-      db.state[chatId] = null;
-      saveDB(db);
-
-      await sendVisits({
-        chatId,
-        mode: state.mis_mode,
-        date,
-        bot,
-        loadDB,
-        formatDate
-      });
-
-      return bot.answerCallbackQuery(query.id);
-    }
   });
 }
 
