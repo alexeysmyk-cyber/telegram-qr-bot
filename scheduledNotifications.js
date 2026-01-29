@@ -6,7 +6,15 @@ const qs = require('querystring');
 
 async function runUpcomingVisitsNotifications({ loadDB, saveDB, formatDate }) {
   const now = new Date();
-  const nowTime = now.toTimeString().slice(0, 5); // HH:MM
+  const nowTime = new Date().toLocaleTimeString(
+  'ru-RU',
+  {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Moscow'
+  }
+);
+
   const todayStr = now.toISOString().slice(0, 10); // YYYY-MM-DD
   console.log('⏱ runUpcomingVisitsNotifications tick:', nowTime);
   
