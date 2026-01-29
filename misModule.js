@@ -93,7 +93,7 @@ if (data === 'mis_date_today' || data === 'mis_date_tomorrow') {
     date.setDate(date.getDate() + 1);
   }
 
-  db.state[chatId] = null;
+//  db.state[chatId] = null;
   saveDB(db);
 
   console.log('MIS sendVisits:', {
