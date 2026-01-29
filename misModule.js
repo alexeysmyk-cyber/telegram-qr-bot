@@ -242,7 +242,7 @@ function buildCalendar(year, month) {
   // ===== Заголовок =====
   keyboard.push([
     { text: '⬅️', callback_data: `mis_cal_prev_${year}_${month}` },
-    { text: `📅 ${monthNames[month]} ${year}`, callback_data: 'noop' },
+    { text: `${monthNames[month]} ${year}`, callback_data: 'noop' },
     { text: '➡️', callback_data: `mis_cal_next_${year}_${month}` }
   ]);
 
