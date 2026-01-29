@@ -22,7 +22,7 @@ bot.on('mis_upcoming', (msg) => {
     reply_markup: {
       inline_keyboard: [
         [{ text: '👤 Только мои', callback_data: 'mis_mode_self' }],
-        [{ text: '👥 Все клиники', callback_data: 'mis_mode_all' }]
+        [{ text: '👥 Все врачи', callback_data: 'mis_mode_all' }]
       ]
     }
   });
@@ -60,8 +60,8 @@ bot.on('mis_upcoming', (msg) => {
   reply_markup: {
     inline_keyboard: [
       [
-        { text: '   📅 Сегодня   ', callback_data: 'mis_date_today' },
-        { text: '   📅 Завтра    ', callback_data: 'mis_date_tomorrow' }
+        { text: '📅    Сегодня   ', callback_data: 'mis_date_today' },
+        { text: '📅    Завтра    ', callback_data: 'mis_date_tomorrow' }
       ],
       [
         { text: '🗓 Выбрать дату', callback_data: 'mis_date_custom' }
