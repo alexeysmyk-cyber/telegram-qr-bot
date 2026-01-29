@@ -405,6 +405,10 @@ if (event === 'full_ready_lab_result' || event === 'part_ready_lab_result') {
     services.forEach(s => message += `• ${s}\n`);
   }
 // ===== 🧾 ИСТОРИЯ АНАЛИЗОВ — ПИШЕМ ВСЕГДА =====
+
+  const db = loadDB();
+  if (!db) return res.send('OK');
+  
 if (!db.lab_history) db.lab_history = [];
 
 db.lab_history.push({
@@ -436,11 +440,7 @@ saveDB(db);
       console.error('❌ Ошибка сохранения PDF:', e.message);
     }
   }
-
-  const db = loadDB();
-  if (!db) return res.send('OK');
-
-  
+ 
 
   for (const chatId of db.notify_whitelist || []) {
 
