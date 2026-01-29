@@ -217,6 +217,19 @@ function settingsKeyboard() {
   };
 }
 
+function misKeyboard() {
+  return {
+    reply_markup: {
+      keyboard: [
+        ['📅 Предстоящие визиты'],
+        ['Будет позже'],
+        ['⬅️ Назад']
+      ],
+      resize_keyboard: true
+    }
+  };
+}
+
 
 function financeKeyboard() {
   return {
@@ -915,6 +928,31 @@ bot.on('message', (msg) => {
     return bot.sendMessage(chatId, 'Главное меню', keyboard);
   }
 
+  if (text === '🏥 Работа в МИС') {
+  db.state[chatId] = 'MIS';
+  saveDB(db);
+
+  return bot.sendMessage(
+    chatId,
+    '🏥 Работа в МИС',
+    misKeyboard()
+  );
+}
+if (text === '⬅️ Назад' && db.state[chatId] === 'MIS') {
+  db.state[chatId] = null;
+  saveDB(db);
+
+  return bot.sendMessage(
+    chatId,
+    'Главное меню',
+    mainKeyboard()
+  );
+}
+if (text === '📅 Предстоящие визиты' && db.state[chatId] === 'MIS') {
+  bot.emit('mis_upcoming', msg);
+  return;
+}
+
   // ===== СОСТОЯНИЯ =====
 
   // ---- Ожидание ввода MIS ID ----
@@ -1259,6 +1297,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
