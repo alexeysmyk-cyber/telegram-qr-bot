@@ -439,6 +439,11 @@ db.lab_history.push({
   date: new Date().toISOString()
 });
 
+if (db.lab_history.length > 5000) {
+  db.lab_history = db.lab_history.slice(-3000);
+}
+
+  
 saveDB(db);
  
 
