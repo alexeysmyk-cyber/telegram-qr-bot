@@ -42,7 +42,8 @@ initMisModule({
   bot,
   loadDB,
   saveDB,
-  getUsername
+  getUsername,
+  formatDate 
 });
 
 
@@ -1297,6 +1298,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
