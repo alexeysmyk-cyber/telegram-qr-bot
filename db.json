@@ -66,19 +66,19 @@
     "5900607039": null,
     "7485978153": null
   },
-  "lab_history": [],
   "pending": [],
   "notify_pending": [],
   "notify_settings": {
     "1582980728": {
       "visit_create": "all",
-      "visit_cancel": "none",
-      "visit_finish": "none",
+      "visit_cancel": "all",
+      "visit_finish": "all",
       "patient_create": true,
       "invoice_create": true,
       "invoice_pay": true,
       "lab_partial": true,
-      "lab_full": true
+      "lab_full": true,
+      "visit_move": "all"
     },
     "7485978153": {
       "visit_create": "self",
@@ -92,9 +92,7 @@
     }
   },
   "notify_admin_limits": {
-    "1582980728": {
-      "visit_cancel": false
-    }
+    "1582980728": {}
   },
   "users": {
     "133334492": {
@@ -117,5 +115,6 @@
       "username": 7485978153,
       "mis_id": "43347"
     }
-  }
+  },
+  "lab_history": []
 }
