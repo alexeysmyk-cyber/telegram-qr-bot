@@ -185,24 +185,10 @@ if (data === 'mis_choose_date_again') {
     
     // --- выбор даты в календаре ---
 if (data.startsWith('mis_pick_date_')) {
-  // 🔒 закрываем callback СРАЗУ (чтобы кнопки не залипали)
   await bot.answerCallbackQuery(query.id);
 
   const [, , , y, m, d] = data.split('_');
   const date = new Date(Number(y), Number(m), Number(d));
-  date.setHours(0, 0, 0, 0);
-
-  // ===== защита от прошедших дат =====
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  if (date < today) {
-    await bot.sendMessage(
-      chatId,
-      '⛔ Прошедшие даты недоступны для «Предстоящих визитов»'
-    );
-    return;
-  }
 
   const db = loadDB();
   const state = db.state[chatId];
@@ -215,15 +201,8 @@ if (data.startsWith('mis_pick_date_')) {
     return;
   }
 
-  // очищаем состояние
-  db.state[chatId] = null;
+  // ❌ НЕ СБРАСЫВАЕМ state
   saveDB(db);
-
-  console.log('MIS sendVisits (calendar):', {
-    chatId,
-    mode: state.mis_mode,
-    date
-  });
 
   await sendVisits({
     chatId,
@@ -236,6 +215,7 @@ if (data.startsWith('mis_pick_date_')) {
 
   return;
 }
+
 
 
   });
