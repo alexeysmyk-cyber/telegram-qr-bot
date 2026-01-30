@@ -32,6 +32,10 @@ app.use((req, res, next) => {
   next();
 });
 
+// Mini App static
+app.use('/miniapp', express.static(path.join(__dirname, 'miniapp')));
+
+
 // ================== БОТ ==================
 const bot = new TelegramBot(TOKEN, { polling: true });
 console.log('🤖 Bot started (polling mode)');
@@ -1298,6 +1302,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
