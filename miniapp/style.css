@@ -1,0 +1,49 @@
+body {
+  margin: 0;
+  font-family: Inter, sans-serif;
+  background: #f4f7fb;
+  color: #1f2d3d;
+}
+
+.app {
+  padding: 16px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 20px;
+  margin: 0;
+}
+
+.tabs {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+
+.tab {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  border-radius: 12px;
+  background: #e6eefc;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tab.active {
+  background: #2B8CFF;
+  color: white;
+}
+
+.card {
+  background: white;
+  padding: 14px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  margin-bottom: 12px;
+}
