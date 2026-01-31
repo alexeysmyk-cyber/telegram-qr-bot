@@ -224,7 +224,35 @@ async function renderVisits() {
 }
 
 
+function initStepSlider(onChange) {
+  const points = document.querySelectorAll(".step-point");
+  const activeTrack = document.getElementById("activeTrack");
+  const label = document.getElementById("slotLabel");
 
+  const values = [15, 30, 60, 90, 120];
+
+  points.forEach((point, index) => {
+    point.addEventListener("click", () => {
+
+      document.querySelectorAll(".step-point")
+        .forEach(p => p.classList.remove("active"));
+
+      point.classList.add("active");
+
+      const value = Number(point.dataset.value);
+      label.innerText = value + " минут";
+
+      const percent = (index / (values.length - 1)) * 100;
+      activeTrack.style.width = percent + "%";
+
+      if (onChange) onChange(value);
+    });
+  });
+
+  const defaultIndex = values.indexOf(60);
+  activeTrack.style.width =
+    (defaultIndex / (values.length - 1)) * 100 + "%";
+}
 
 
 
