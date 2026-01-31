@@ -8,7 +8,7 @@ html, body {
 }
 
 .app {
-  padding: 0 16px 16px 16px;
+  padding: 48px 16px 16px 16px; /* 👈 ровно высота tabs */
 }
 
 .header {
@@ -21,30 +21,30 @@ h1 {
   margin: 0;
 }
 .tabs {
-  margin-top: -8px; 
-  display: flex;
-  width: 100%;
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
   background: #f4f7fb;
-  z-index: 100;
   border-bottom: 1px solid #e6e6e6;
-  padding: 0 0 2px 0;   /* минимальный отступ */
-  margin: 0;
+  z-index: 1000;
+  height: 48px;   /* 👈 фиксируем высоту */
 }
 
+
 .tab {
-  flex: 1;               /* снова во всю ширину */
-  text-align: center;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: none;
   border: none;
-  padding: 6px 0;        /* меньше по высоте */
   font-weight: 600;
   font-size: 15px;
   color: #7a8a9a;
   cursor: pointer;
   position: relative;
-  line-height: 1.2;
 }
 
 .tab.active {
