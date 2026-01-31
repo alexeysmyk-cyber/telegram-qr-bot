@@ -89,22 +89,32 @@ async function renderVisits() {
     const { doctors, isDirector, currentDoctorId } = data;
 
     let html = `
-      <div class="card">
-        <label>Врач:</label>
-        <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
-          ${doctors.map(d => `
-            <option value="${d.id}" ${d.id == currentDoctorId ? 'selected' : ''}>
-              ${d.name}
-            </option>
-          `).join('')}
-        </select>
-      </div>
-      <div class="card">
-        Здесь будет календарь
-      </div>
-    `;
+  <div class="card">
+    <label>Врач:</label>
+    <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
+      ${doctors.map(d => `
+        <option value="${d.id}" ${d.id == currentDoctorId ? 'selected' : ''}>
+          ${d.name}
+        </option>
+      `).join('')}
+    </select>
+  </div>
+  <div class="card">
+    <div id="calendar"></div>
+  </div>
+`;
+
 
     content.innerHTML = html;
+
+    const calendarEl = document.getElementById("calendar");
+
+renderCalendar(calendarEl, (date) => {
+  console.log("Выбрана дата:", date);
+
+  // здесь позже будем делать fetch расписания
+});
+
 
   } catch (err) {
     content.innerHTML = `<div class="card">Ошибка загрузки врачей</div>`;
