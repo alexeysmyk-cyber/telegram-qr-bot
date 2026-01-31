@@ -20,18 +20,17 @@ h1 {
   font-size: 20px;
   margin: 0;
 }
-.tab {
-  flex: 1;
-  background: none;
-  border: none;
-  padding: 10px 0;
-  font-weight: 600;
-  font-size: 15px;
-  color: #7a8a9a;
-  cursor: pointer;
-  position: relative;
-  line-height: 1;
+.tabs {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  display: flex;
+  background: #f4f7fb;
+  border-bottom: 1px solid #e6e6e6;
+  z-index: 1000;
 }
+
 
 
 .tab {
