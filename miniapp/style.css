@@ -205,3 +205,36 @@ h1 {
   color: white;
   transform: scale(1.1);
 }
+
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+.app {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 16px;
+  box-sizing: border-box;
+}
+
+#content {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 80px; /* место под кнопку */
+}
+
+.fixed-bottom {
+  position: fixed;
+  bottom: 16px;
+  left: 16px;
+  right: 16px;
+  z-index: 10;
+}
+
+.primary-btn {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+}
