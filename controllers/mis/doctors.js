@@ -12,46 +12,74 @@ function loadDB() {
 exports.getDoctors = async (req, res) => {
   try {
 
-    const telegramUserId = req.body.telegramUserId;
+    console.log("----- /api/mis/doctors -----");
+    console.log("BODY:", req.body);
+
+    const telegramUserId = req.body?.telegramUserId;
+
     if (!telegramUserId) {
-      return res.status(400).json({ error: 'No telegram user id' });
+      console.log("❌ No telegramUserId in body");
+      return res.status(400).send("No telegramUserId");
     }
 
     const db = loadDB();
-   const tgUser = db.users?.[String(telegramUserId)];
 
-    if (!tgUser || !tgUser.mis_id) {
-      return res.status(403).json({ error: 'No MIS ID assigned' });
+    console.log("DB users keys:", Object.keys(db.users || {}));
+
+    const tgUser = db.users?.[String(telegramUserId)];
+
+    if (!tgUser) {
+      console.log("❌ Telegram user not found in db.json");
+      return res.status(403).send("User not found in DB");
     }
 
-    // 🔹 Запрос getUsers
+    if (!tgUser.mis_id) {
+      console.log("❌ User has no mis_id");
+      return res.status(403).send("No MIS ID assigned");
+    }
+
+    console.log("Telegram user MIS ID:", tgUser.mis_id);
+
+    // --- Запрос в МИС ---
     const body = qs.stringify({
       api_key: process.env.API_KEY,
       clinic_id: 2997
     });
 
+    const url = process.env.BASE_URL.replace(/\/$/, '') + '/getUsers';
+
+    console.log("Calling MIS:", url);
+
     const response = await axios.post(
-      process.env.BASE_URL.replace(/\/$/, '') + '/getUsers',
+      url,
       body,
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
 
     const result = response.data;
 
+    console.log("MIS response error:", result.error);
+
     if (!result || result.error !== 0) {
-      return res.status(500).json({ error: 'MIS error' });
+      console.log("❌ MIS returned error:", result);
+      return res.status(500).send("MIS error");
     }
 
     const users = result.data;
 
-    // 🔹 Находим текущего пользователя в МИС
+    console.log("Users count from MIS:", users.length);
+
+    // --- Находим текущего пользователя в МИС ---
     const currentMisUser = users.find(u =>
       String(u.id) === String(tgUser.mis_id)
     );
 
     if (!currentMisUser) {
-      return res.status(403).json({ error: 'MIS user not found' });
+      console.log("❌ MIS user not found by mis_id");
+      return res.status(403).send("MIS user not found");
     }
+
+    console.log("MIS user roles:", currentMisUser.role);
 
     const roles = currentMisUser.role || [];
 
@@ -59,18 +87,21 @@ exports.getDoctors = async (req, res) => {
     const isDirector = roles.includes("16353");
 
     if (!isDoctor && !isDirector) {
-      return res.status(403).json({ error: 'User is not doctor' });
+      console.log("❌ User is not doctor or director");
+      return res.status(403).send("User is not doctor");
     }
 
-    // 🔹 Получаем только врачей
+    // --- Получаем только врачей ---
     const doctors = users
       .filter(u => (u.role || []).includes("16354"))
       .filter(u => !u.is_deleted)
       .map(u => ({
         id: u.id,
         name: u.name,
-        avatar: u.avatar_small || u.avatar
+        avatar: u.avatar_small || u.avatar || null
       }));
+
+    console.log("Doctors count:", doctors.length);
 
     return res.json({
       isDirector,
@@ -79,7 +110,8 @@ exports.getDoctors = async (req, res) => {
     });
 
   } catch (err) {
-    console.error("getDoctors error:", err);
-    return res.status(500).json({ error: 'Server error' });
+    console.error("🔥 getDoctors fatal error:", err);
+    return res.status(500).send("Server error");
   }
 };
+
