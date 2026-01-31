@@ -2,6 +2,8 @@
 // Telegram Mini App Init
 // ===============================
 let tg = null;
+let selectedDate = null;
+let selectedDuration = 60;
 
 if (window.Telegram && window.Telegram.WebApp) {
   tg = window.Telegram.WebApp;
@@ -136,8 +138,7 @@ content.innerHTML = html;
 const calendarEl = document.getElementById("calendar");
 const showBtn = document.getElementById("showScheduleBtn");
 
-let selectedDate = null;
-let selectedDuration = 60;
+
 
 renderCalendar(calendarEl, (date) => {
   selectedDate = date;
@@ -201,11 +202,7 @@ function initStepSlider() {
 }
 
 
-  // выставить начальное положение (60)
-  const defaultIndex = values.indexOf(60);
-  activeTrack.style.width =
-    (defaultIndex / (values.length - 1)) * 100 + "%";
-}
+
 
 
 
