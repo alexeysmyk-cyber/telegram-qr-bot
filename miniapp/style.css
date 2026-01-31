@@ -6,7 +6,7 @@ body {
 }
 
 .app {
-  padding: 16px;
+  padding: 0 16px 16px 16px;
 }
 
 .header {
@@ -21,23 +21,28 @@ h1 {
 
 .tabs {
   display: flex;
-  gap: 10px;
-  margin-bottom: 20px;
+  position: sticky;
+  top: 0;
+  background: #f4f7fb;
+  z-index: 100;
+  border-bottom: 1px solid #e6e6e6;
 }
 
 .tab {
   flex: 1;
-  padding: 10px;
+  padding: 14px 0;
   border: none;
-  border-radius: 12px;
-  background: #e6eefc;
+  background: transparent;
   font-weight: 600;
-  cursor: pointer;
+  font-size: 14px;
+  color: #777;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
 }
 
 .tab.active {
-  background: #2B8CFF;
-  color: white;
+  color: #2B8CFF;
+  border-bottom: 2px solid #2B8CFF;
 }
 
 .card {
