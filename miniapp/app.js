@@ -19,6 +19,7 @@ const visitsTab = document.getElementById('visitsTab');
 const scheduleTab = document.getElementById('scheduleTab');
 
 import { renderCalendar } from './calendar.js';
+import { loadSchedule } from "./schedule.js";
 
 // ===============================
 // Авторизация через backend
@@ -83,125 +84,145 @@ async function renderVisits() {
 
     const data = await response.json();
 
-    if (!response.ok) {
+    if (!response.ok || data.error) {
       content.innerHTML = `<div class="card">Ошибка доступа</div>`;
       return;
     }
 
     const { doctors, isDirector, currentDoctorId } = data;
 
-let html = `
-  <div class="card">
-    <label>Врач:</label>
-    <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
-      ${doctors.map(d => `
-        <option value="${d.id}" ${d.id == currentDoctorId ? 'selected' : ''}>
-          ${d.name}
-        </option>
-      `).join('')}
-    </select>
-  </div>
+    let html = `
+      <div class="card">
+        <label>Врач:</label>
+        <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
+          ${doctors.map(d => `
+            <option value="${d.id}" ${d.id == currentDoctorId ? 'selected' : ''}>
+              ${d.name}
+            </option>
+          `).join('')}
+        </select>
 
-  <div class="card">
-    <div id="calendar"></div>
-  </div>
+        ${isDirector ? `
+          <div class="toggle-all">
+            <button id="toggleAllBtn" class="secondary-btn">
+              Показать для всех
+            </button>
+          </div>
+        ` : ``}
+      </div>
 
- <div class="card">
-  <label>Длительность приёма:</label>
+      <div class="card">
+        <div id="calendar"></div>
+      </div>
 
-  <div class="step-slider" id="durationSlider">
-    <div class="step-track"></div>
-    <div class="step-active" id="activeTrack"></div>
+      <div class="card">
+        <label>Длительность приёма:</label>
 
-    <div class="step-point" data-value="15">15</div>
-    <div class="step-point" data-value="30">30</div>
-    <div class="step-point active" data-value="60">60</div>
-    <div class="step-point" data-value="90">90</div>
-    <div class="step-point" data-value="120">120</div>
-  </div>
+        <div class="step-slider" id="durationSlider">
+          <div class="step-track"></div>
+          <div class="step-active" id="activeTrack"></div>
 
-  <div class="slot-value">
-    <span id="slotLabel">60 минут</span>
-  </div>
-</div>
+          <div class="step-point" data-value="15">15</div>
+          <div class="step-point" data-value="30">30</div>
+          <div class="step-point active" data-value="60">60</div>
+          <div class="step-point" data-value="90">90</div>
+          <div class="step-point" data-value="120">120</div>
+        </div>
 
+        <div class="slot-value">
+          <span id="slotLabel">60 минут</span>
+        </div>
+      </div>
 
-<div class="fixed-bottom">
-  <button id="showScheduleBtn" class="primary-btn">
-    Показать
-  </button>
-</div>
-</div>
-`;
+      <div id="scheduleContainer"></div>
 
+      <div class="fixed-bottom">
+        <button id="showScheduleBtn" class="primary-btn">
+          Показать
+        </button>
+      </div>
+    `;
 
-content.innerHTML = html;
+    content.innerHTML = html;
 
-const calendarEl = document.getElementById("calendar");
-const showBtn = document.getElementById("showScheduleBtn");
+    // ===============================
+    // ИНИЦИАЛИЗАЦИЯ
+    // ===============================
 
+    const calendarEl = document.getElementById("calendar");
+    const showBtn = document.getElementById("showScheduleBtn");
+    const doctorSelect = document.getElementById("doctorSelect");
+    const scheduleContainer = document.getElementById("scheduleContainer");
 
+    let selectedDate = null;
+    let selectedDuration = 60;
+    let showAll = false;
 
-renderCalendar(calendarEl, (date) => {
-  selectedDate = date;
-});
+    renderCalendar(calendarEl, (date) => {
+      selectedDate = date;
+    });
 
-initStepSlider(); // 👈 ОБЯЗАТЕЛЬНО
+    initStepSlider((value) => {
+      selectedDuration = value;
+    });
 
-showBtn.addEventListener("click", () => {
+    // ===== ДЛЯ ДИРЕКТОРА =====
+    const toggleBtn = document.getElementById("toggleAllBtn");
+    if (toggleBtn) {
+      toggleBtn.addEventListener("click", () => {
+        showAll = !showAll;
 
-  if (!selectedDate) {
-    alert("Выберите дату");
-    return;
-  }
+        toggleBtn.innerText = showAll
+          ? "Показать только выбранного"
+          : "Показать для всех";
 
-  const doctorId = document.getElementById("doctorSelect").value;
+        doctorSelect.disabled = showAll;
+      });
+    }
 
-  console.log({
-    doctorId,
-    selectedDate,
-    duration: selectedDuration
-  });
+    // ===== ЗАГРУЗКА РАСПИСАНИЯ =====
+    showBtn.addEventListener("click", async () => {
 
-});
+      if (!selectedDate) {
+        alert("Выберите дату");
+        return;
+      }
 
+      showLoader(scheduleContainer);
 
+      try {
 
+        const response = await fetch("/api/mis/appointments", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            date: selectedDate,
+            doctorId: showAll ? null : doctorSelect.value
+          })
+        });
+
+        const result = await response.json();
+
+        if (!response.ok || result.error !== 0) {
+          scheduleContainer.innerHTML =
+            `<div class="card">Ошибка загрузки</div>`;
+          return;
+        }
+
+        renderScheduleGrid(result.data, scheduleContainer);
+
+      } catch (err) {
+        scheduleContainer.innerHTML =
+          `<div class="card">Ошибка сервера</div>`;
+      }
+
+    });
 
   } catch (err) {
     content.innerHTML = `<div class="card">Ошибка загрузки врачей</div>`;
   }
 }
 
-
-function initStepSlider() {
-  const points = document.querySelectorAll(".step-point");
-  const activeTrack = document.getElementById("activeTrack");
-  const label = document.getElementById("slotLabel");
-
-  const values = [15, 30, 60, 90, 120];
-
-  points.forEach((point, index) => {
-    point.addEventListener("click", () => {
-      document.querySelectorAll(".step-point")
-        .forEach(p => p.classList.remove("active"));
-
-      point.classList.add("active");
-
-      const value = Number(point.dataset.value);
-      label.innerText = value + " минут";
-
-      selectedDuration = value; // 👈 сохраняем
-
-      const percent = (index / (values.length - 1)) * 100;
-      activeTrack.style.width = percent + "%";
-    });
-  });
-
-  const defaultIndex = values.indexOf(60);
-  activeTrack.style.width =
-    (defaultIndex / (values.length - 1)) * 100 + "%";
-}
 
 
 
