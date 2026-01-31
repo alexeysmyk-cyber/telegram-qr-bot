@@ -185,16 +185,18 @@ async function renderVisits() {
     // директор — показать всех
     const toggleBtn = document.getElementById("toggleAllBtn");
     if (toggleBtn) {
-      toggleBtn.addEventListener("click", () => {
+toggleBtn.addEventListener("click", () => {
 
-        showAll = !showAll;
+  showAll = !showAll;
 
-        toggleBtn.innerText = showAll
-          ? "Показать только выбранного"
-          : "Показать для всех";
+  toggleBtn.innerText = showAll
+    ? "Показать только выбранного"
+    : "Показать для всех";
 
-        doctorSelect.disabled = showAll;
-      });
+  toggleBtn.classList.toggle("active", showAll);
+
+  doctorSelect.disabled = showAll;
+});
     }
 
     // ===============================
