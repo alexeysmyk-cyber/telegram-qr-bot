@@ -1332,16 +1332,7 @@ if (!PORT) {
   process.exit(1);
 }
 
-app.post('/mis', async (req, res) => {
-    console.log("BODY:", req.body);
-  res.send("OK");
-  try {
-    await handleMisWebhook(req, res);
-  } catch (err) {
-    console.error('MIS webhook error:', err);
-    res.status(500).send('Error');
-  }
-});
+app.post('/mis', async (req, res) => { await handleMisWebhook(req, res); });
 
 app.listen(PORT, () => {
   console.log('🌐 HTTP server started on port', PORT);
@@ -1369,6 +1360,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
