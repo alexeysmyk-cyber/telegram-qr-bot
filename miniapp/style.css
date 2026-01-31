@@ -38,17 +38,19 @@ html, body {
 
 .tab {
   flex: 1;
+  height: 44px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  font-size: 15px;
+  font-size: 17px;     /* было 15 */
+  letter-spacing: 0.3px;
   color: #7a8a9a;
   background: none;
   border: none;
   position: relative;
-  cursor: pointer;
 }
+
 
 .tab.active {
   color: #00a4c7;
