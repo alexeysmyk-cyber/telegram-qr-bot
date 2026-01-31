@@ -102,4 +102,7 @@ h1 {
   background: #eee;
   color: #bbb;
 }
+.cal-grid {
+  transition: all 0.25s ease;
+}
 
