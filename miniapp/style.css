@@ -21,29 +21,30 @@ h1 {
   margin: 0;
 }
 
+.tab {
+  background: none;
+  border: none;
+  padding: 4px 0;   /* было 8px или 10px */
+  font-weight: 600;
+  font-size: 15px;
+  color: #7a8a9a;
+  cursor: pointer;
+  position: relative;
+  line-height: 1.2;
+}
+
 .tabs {
-  margin-top: -4px;
   display: flex;
+  gap: 24px;
   position: sticky;
   top: 0;
-  margin: 0;
-  padding: 0 0 6px 0;
   background: #f4f7fb;
   z-index: 100;
   border-bottom: 1px solid #e6e6e6;
+  padding: 2px 16px 0 16px; /* было больше */
 }
 
-.tab {
-  flex: 1;
-  padding: 14px 0;
-  border: none;
-  background: transparent;
-  font-weight: 600;
-  font-size: 14px;
-  color: #777;
-  border-bottom: 2px solid transparent;
-  transition: all 0.2s ease;
-}
+
 
 .tab.active {
   color: #2B8CFF;
