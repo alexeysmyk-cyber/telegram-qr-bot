@@ -131,22 +131,19 @@ let html = `
 `;
 
 
-    content.innerHTML = html;
+content.innerHTML = html;
 
-    const calendarEl = document.getElementById("calendar");
-const slider = document.getElementById("slotDuration");
-const label = document.getElementById("slotLabel");
+const calendarEl = document.getElementById("calendar");
 const showBtn = document.getElementById("showScheduleBtn");
 
 let selectedDate = null;
+let selectedDuration = 60;
 
 renderCalendar(calendarEl, (date) => {
   selectedDate = date;
 });
 
-slider.addEventListener("input", () => {
-  label.innerText = slider.value + " минут";
-});
+initStepSlider(); // 👈 ОБЯЗАТЕЛЬНО
 
 showBtn.addEventListener("click", () => {
 
@@ -156,16 +153,15 @@ showBtn.addEventListener("click", () => {
   }
 
   const doctorId = document.getElementById("doctorSelect").value;
-  const duration = slider.value;
 
   console.log({
     doctorId,
     selectedDate,
-    duration
+    duration: selectedDuration
   });
 
-  // здесь позже будет fetch расписания
 });
+
 
 
 
@@ -175,11 +171,45 @@ showBtn.addEventListener("click", () => {
 }
 
 
+function initStepSlider() {
+  const points = document.querySelectorAll(".step-point");
+  const activeTrack = document.getElementById("activeTrack");
+  const label = document.getElementById("slotLabel");
 
-  function nextMonth() {
-    current.setMonth(current.getMonth() + 1);
-    build(current.getFullYear(), current.getMonth());
-  }
+  const values = [15, 30, 60, 90, 120];
+
+  points.forEach((point, index) => {
+    point.addEventListener("click", () => {
+      document.querySelectorAll(".step-point")
+        .forEach(p => p.classList.remove("active"));
+
+      point.classList.add("active");
+
+      const value = Number(point.dataset.value);
+      label.innerText = value + " минут";
+
+      selectedDuration = value; // 👈 сохраняем
+
+      const percent = (index / (values.length - 1)) * 100;
+      activeTrack.style.width = percent + "%";
+    });
+  });
+
+  const defaultIndex = values.indexOf(60);
+  activeTrack.style.width =
+    (defaultIndex / (values.length - 1)) * 100 + "%";
+}
+
+
+  // выставить начальное положение (60)
+  const defaultIndex = values.indexOf(60);
+  activeTrack.style.width =
+    (defaultIndex / (values.length - 1)) * 100 + "%";
+}
+
+
+
+
 
 
 
