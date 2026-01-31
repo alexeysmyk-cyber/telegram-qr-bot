@@ -105,23 +105,42 @@ let html = `
   </div>
 
   <div class="card">
-    <label>Длительность приёма:</label>
-    <div class="slot-slider">
-      <input type="range"
-             id="slotDuration"
-             min="15"
-             max="120"
-             step="15"
-             value="60" />
-      <div class="slot-value">
-        <span id="slotLabel">60 минут</span>
-      </div>
+  <label>Длительность приёма:</label>
+
+  <div class="slider-wrapper">
+    <input type="range"
+           id="slotDuration"
+           min="15"
+           max="120"
+           step="15"
+           value="60"
+           list="durationMarks" />
+
+    <datalist id="durationMarks">
+      <option value="15"></option>
+      <option value="30"></option>
+      <option value="60"></option>
+      <option value="90"></option>
+      <option value="120"></option>
+    </datalist>
+
+    <div class="slider-labels">
+      <span>15</span>
+      <span>30</span>
+      <span>60</span>
+      <span>90</span>
+      <span>120</span>
     </div>
 
-    <button id="showScheduleBtn" class="primary-btn">
-      Показать
-    </button>
+    <div class="slot-value">
+      <span id="slotLabel">60 минут</span>
+    </div>
   </div>
+
+  <button id="showScheduleBtn" class="primary-btn">
+    Показать
+  </button>
+</div>
 `;
 
 
