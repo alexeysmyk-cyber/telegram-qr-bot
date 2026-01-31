@@ -104,42 +104,23 @@ let html = `
     <div id="calendar"></div>
   </div>
 
-  <div class="card">
+ <div class="card">
   <label>Длительность приёма:</label>
 
-<div class="slider-wrapper">
+  <div class="step-slider" id="durationSlider">
+    <div class="step-track"></div>
+    <div class="step-active" id="activeTrack"></div>
 
-  <div class="slider-track-wrapper">
-    <div class="slider-track"></div>
-
-    <input type="range"
-           id="slotDuration"
-           min="15"
-           max="120"
-           step="15"
-           value="60" />
-
-    <div class="slider-marks">
-      <div class="mark" data-value="15"></div>
-      <div class="mark" data-value="30"></div>
-      <div class="mark" data-value="60"></div>
-      <div class="mark" data-value="90"></div>
-      <div class="mark" data-value="120"></div>
-    </div>
-  </div>
-
-  <div class="slider-labels">
-    <span>15</span>
-    <span>30</span>
-    <span>60</span>
-    <span>90</span>
-    <span>120</span>
+    <div class="step-point" data-value="15">15</div>
+    <div class="step-point" data-value="30">30</div>
+    <div class="step-point active" data-value="60">60</div>
+    <div class="step-point" data-value="90">90</div>
+    <div class="step-point" data-value="120">120</div>
   </div>
 
   <div class="slot-value">
     <span id="slotLabel">60 минут</span>
   </div>
-
 </div>
 
 
