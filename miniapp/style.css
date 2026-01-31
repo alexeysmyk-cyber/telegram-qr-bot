@@ -166,6 +166,14 @@ html, body {
   color: #bbb !important;
 }
 
+.cal-day.selected,
+.cal-day.saturday.selected,
+.cal-day.sunday.selected {
+  background: #00a4c7 !important;
+  color: white !important;
+}
+
+
 /* ============================= */
 /* СЛАЙДЕР ДЛИТЕЛЬНОСТИ */
 /* ============================= */
