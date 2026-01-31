@@ -53,44 +53,64 @@ initMisModule({
 const crypto = require('crypto');
 
 app.post('/api/auth/telegram', express.json(), (req, res) => {
-  const { initData } = req.body;
+  try {
+    const { initData } = req.body;
 
-  if (!initData) {
-    return res.status(403).send('No initData');
+    if (!initData) {
+      return res.status(403).send('No initData');
+    }
+
+    const params = new URLSearchParams(initData);
+
+    const hash = params.get('hash');
+    if (!hash) {
+      return res.status(403).send('No hash');
+    }
+
+    params.delete('hash');
+
+    const dataCheckString = [...params.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(([key, value]) => `${key}=${value}`)
+      .join('\n');
+
+    // 🔥 Правильный секрет для Telegram WebApp
+    const secretKey = crypto
+      .createHmac('sha256', 'WebAppData')
+      .update(TOKEN) // ← используем объявленный выше TOKEN
+      .digest();
+
+    const calculatedHash = crypto
+      .createHmac('sha256', secretKey)
+      .update(dataCheckString)
+      .digest('hex');
+
+    if (calculatedHash !== hash) {
+      console.log("HASH MISMATCH");
+      console.log("TG hash:", hash);
+      console.log("Calculated:", calculatedHash);
+      return res.status(403).send('Invalid signature');
+    }
+
+    const userRaw = params.get('user');
+    if (!userRaw) {
+      return res.status(403).send('No user');
+    }
+
+    const user = JSON.parse(userRaw);
+
+    const db = loadDB();
+
+    if (!db.whitelist.includes(user.id)) {
+      return res.status(403).send('Not allowed');
+    }
+
+    return res.sendStatus(200);
+
+  } catch (err) {
+    console.error("Auth error:", err);
+    return res.status(500).send('Auth error');
   }
-
-  const params = new URLSearchParams(initData);
-  const hash = params.get('hash');
-  params.delete('hash');
-
-  const dataCheckString = [...params.entries()]
-    .sort()
-    .map(([k, v]) => `${k}=${v}`)
-    .join('\n');
-
-  const secret = crypto
-    .createHash('sha256')
-    .update(process.env.BOT_TOKEN)
-    .digest();
-
-  const hmac = crypto
-    .createHmac('sha256', secret)
-    .update(dataCheckString)
-    .digest('hex');
-
-  if (hmac !== hash) {
-    return res.status(403).send('Invalid signature');
-  }
-
-  const user = JSON.parse(params.get('user'));
-
-  const db = loadDB();
-
-  if (!db.whitelist.includes(user.id)) {
-    return res.status(403).send('Not allowed');
-  }
-
-  return res.sendStatus(200);
 });
 
 
@@ -1335,6 +1355,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
