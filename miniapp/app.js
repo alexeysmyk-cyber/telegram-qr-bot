@@ -1,32 +1,60 @@
-const tg = window.Telegram.WebApp;
-tg.expand();
+// ===============================
+// Telegram Mini App Init
+// ===============================
+const tg = window.Telegram?.WebApp;
 
+if (!tg) {
+  document.body.innerHTML = "Откройте приложение через Telegram";
+  throw new Error("Telegram WebApp not found");
+}
+
+tg.expand();
+tg.ready();
+
+// ===============================
+// DOM элементы
+// ===============================
 const content = document.getElementById('content');
 const visitsTab = document.getElementById('visitsTab');
 const scheduleTab = document.getElementById('scheduleTab');
 
+// ===============================
+// Авторизация через backend
+// ===============================
 async function authorize() {
-  const initData = tg.initData;
+  try {
+    const initData = tg.initData;
 
-  if (!initData) {
-    document.body.innerHTML = "Доступ только через Telegram";
+    if (!initData) {
+      document.body.innerHTML = "Доступ только через Telegram";
+      return false;
+    }
+
+    const response = await fetch('/api/auth/telegram', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ initData })
+    });
+
+    if (!response.ok) {
+      document.body.innerHTML = "Нет доступа";
+      return false;
+    }
+
+    return true;
+
+  } catch (err) {
+    console.error("Authorization error:", err);
+    document.body.innerHTML = "Ошибка авторизации";
     return false;
   }
-
-  const res = await fetch('/api/auth/telegram', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ initData })
-  });
-
-  if (!res.ok) {
-    document.body.innerHTML = "Нет доступа";
-    return false;
-  }
-
-  return true;
 }
 
+// ===============================
+// UI логика
+// ===============================
 function setActive(tab) {
   visitsTab.classList.remove('active');
   scheduleTab.classList.remove('active');
@@ -52,23 +80,27 @@ function renderSchedule() {
 }
 
 function attachEvents() {
-  visitsTab.onclick = () => {
+  visitsTab.addEventListener('click', () => {
     setActive(visitsTab);
     renderVisits();
-  };
+  });
 
-  scheduleTab.onclick = () => {
+  scheduleTab.addEventListener('click', () => {
     setActive(scheduleTab);
     renderSchedule();
-  };
+  });
 }
 
+// ===============================
+// Инициализация
+// ===============================
 async function init() {
-  const ok = await authorize();
-  if (!ok) return;
+  const authorized = await authorize();
+  if (!authorized) return;
 
   attachEvents();
   renderVisits();
 }
 
 init();
+
