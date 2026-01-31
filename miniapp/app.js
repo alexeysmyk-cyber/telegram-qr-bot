@@ -107,8 +107,11 @@ let html = `
   <div class="card">
   <label>Длительность приёма:</label>
 
- <div class="slider-wrapper">
-  <div class="slider-container">
+<div class="slider-wrapper">
+
+  <div class="slider-track-wrapper">
+    <div class="slider-track"></div>
+
     <input type="range"
            id="slotDuration"
            min="15"
@@ -116,12 +119,12 @@ let html = `
            step="15"
            value="60" />
 
-    <div class="slider-dots">
-      <span data-value="15"></span>
-      <span data-value="30"></span>
-      <span data-value="60"></span>
-      <span data-value="90"></span>
-      <span data-value="120"></span>
+    <div class="slider-marks">
+      <div class="mark" data-value="15"></div>
+      <div class="mark" data-value="30"></div>
+      <div class="mark" data-value="60"></div>
+      <div class="mark" data-value="90"></div>
+      <div class="mark" data-value="120"></div>
     </div>
   </div>
 
@@ -136,6 +139,7 @@ let html = `
   <div class="slot-value">
     <span id="slotLabel">60 минут</span>
   </div>
+
 </div>
 
 
