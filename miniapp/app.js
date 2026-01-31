@@ -1,15 +1,13 @@
 // ===============================
 // Telegram Mini App Init
 // ===============================
-const tg = window.Telegram?.WebApp;
+let tg = null;
 
-if (!tg) {
-  document.body.innerHTML = "Откройте приложение через Telegram";
-  throw new Error("Telegram WebApp not found");
+if (window.Telegram && window.Telegram.WebApp) {
+  tg = window.Telegram.WebApp;
+  tg.expand();
+  tg.ready();
 }
-
-tg.expand();
-tg.ready();
 
 // ===============================
 // DOM элементы
@@ -23,10 +21,15 @@ const scheduleTab = document.getElementById('scheduleTab');
 // ===============================
 async function authorize() {
   try {
+    if (!tg) {
+      document.body.innerHTML = "Доступ только через Telegram";
+      return false;
+    }
+
     const initData = tg.initData;
 
     if (!initData) {
-      document.body.innerHTML = "Доступ только через Telegram";
+      document.body.innerHTML = "Нет данных авторизации";
       return false;
     }
 
@@ -103,4 +106,3 @@ async function init() {
 }
 
 init();
-
