@@ -1333,6 +1333,8 @@ if (!PORT) {
 }
 
 app.post('/mis', async (req, res) => {
+    console.log("BODY:", req.body);
+  res.send("OK");
   try {
     await handleMisWebhook(req, res);
   } catch (err) {
@@ -1367,6 +1369,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
