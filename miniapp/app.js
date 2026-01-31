@@ -5,15 +5,12 @@ const content = document.getElementById('content');
 const visitsTab = document.getElementById('visitsTab');
 const scheduleTab = document.getElementById('scheduleTab');
 
-const tg = window.Telegram.WebApp;
-tg.expand();
-
 async function authorize() {
   const initData = tg.initData;
 
   if (!initData) {
     document.body.innerHTML = "Доступ только через Telegram";
-    return;
+    return false;
   }
 
   const res = await fetch('/api/auth/telegram', {
@@ -24,28 +21,17 @@ async function authorize() {
 
   if (!res.ok) {
     document.body.innerHTML = "Нет доступа";
-    return;
+    return false;
   }
+
+  return true;
 }
-
-authorize();
-
 
 function setActive(tab) {
   visitsTab.classList.remove('active');
   scheduleTab.classList.remove('active');
   tab.classList.add('active');
 }
-
-visitsTab.onclick = () => {
-  setActive(visitsTab);
-  renderVisits();
-};
-
-scheduleTab.onclick = () => {
-  setActive(scheduleTab);
-  renderSchedule();
-};
 
 function renderVisits() {
   content.innerHTML = `
@@ -65,4 +51,24 @@ function renderSchedule() {
   `;
 }
 
-renderVisits();
+function attachEvents() {
+  visitsTab.onclick = () => {
+    setActive(visitsTab);
+    renderVisits();
+  };
+
+  scheduleTab.onclick = () => {
+    setActive(scheduleTab);
+    renderSchedule();
+  };
+}
+
+async function init() {
+  const ok = await authorize();
+  if (!ok) return;
+
+  attachEvents();
+  renderVisits();
+}
+
+init();
