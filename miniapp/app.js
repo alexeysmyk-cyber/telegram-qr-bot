@@ -128,12 +128,39 @@ let html = `
     content.innerHTML = html;
 
     const calendarEl = document.getElementById("calendar");
+const slider = document.getElementById("slotDuration");
+const label = document.getElementById("slotLabel");
+const showBtn = document.getElementById("showScheduleBtn");
+
+let selectedDate = null;
 
 renderCalendar(calendarEl, (date) => {
-  console.log("Выбрана дата:", date);
-
-  // здесь позже будем делать fetch расписания
+  selectedDate = date;
 });
+
+slider.addEventListener("input", () => {
+  label.innerText = slider.value + " минут";
+});
+
+showBtn.addEventListener("click", () => {
+
+  if (!selectedDate) {
+    alert("Выберите дату");
+    return;
+  }
+
+  const doctorId = document.getElementById("doctorSelect").value;
+  const duration = slider.value;
+
+  console.log({
+    doctorId,
+    selectedDate,
+    duration
+  });
+
+  // здесь позже будет fetch расписания
+});
+
 
 
   } catch (err) {
