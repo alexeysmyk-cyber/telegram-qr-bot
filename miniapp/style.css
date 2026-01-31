@@ -1,7 +1,9 @@
-body {
+html, body {
   margin: 0;
-  font-family: Inter, sans-serif;
+  padding: 0;
+  height: 100%;
   background: #f4f7fb;
+  font-family: Inter, sans-serif;
   color: #1f2d3d;
 }
 
@@ -23,6 +25,8 @@ h1 {
   display: flex;
   position: sticky;
   top: 0;
+  margin: 0;
+  padding: 0 0 6px 0;
   background: #f4f7fb;
   z-index: 100;
   border-bottom: 1px solid #e6e6e6;
