@@ -105,4 +105,26 @@ h1 {
 .cal-grid {
   transition: all 0.25s ease;
 }
+.cal-day.saturday {
+  background: #fff1f2;
+  color: #b54757;
+}
 
+.cal-day.sunday {
+  background: #ffe6e8;
+  color: #a61d2a;
+}
+
+.cal-day.saturday:hover {
+  background: #ffd6da;
+}
+
+.cal-day.sunday:hover {
+  background: #ffc2c8;
+}
+
+/* выбранный день всегда фирменный */
+.cal-day.selected {
+  background: #00a4c7 !important;
+  color: white !important;
+}
