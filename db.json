@@ -6,13 +6,15 @@
     5280146224,
     648009056,
     7485978153,
-    260414970
+    260414970,
+    310418501
   ],
   "notify_whitelist": [
     1582980728,
     7485978153,
     133334492,
-    5280146224
+    5280146224,
+    310418501
   ],
   "history": {
     "133334492": [
@@ -69,7 +71,8 @@
     "1582980728": null,
     "5900607039": "MIS",
     "7485978153": "MIS",
-    "5280146224": "MIS"
+    "5280146224": "MIS",
+    "310418501": "MIS"
   },
   "pending": [],
   "notify_pending": [],
@@ -117,15 +120,31 @@
       "lab_partial": false,
       "lab_full": false,
       "visit_move": "none"
+    },
+       "310418501": {
+      "visit_create": "none",
+      "visit_cancel": "none",
+      "visit_finish": "none",
+      "invoice_create": false,
+      "patient_create": false,
+      "invoice_pay": false,
+      "lab_partial": false,
+      "lab_full": false,
+      "visit_move": "none"
     }
   },
   "notify_admin_limits": {
     "1582980728": {},
     "7485978153": {},
      "133334492": {},
-     "5280146224": {)
+     "5280146224": {),
+     "310418501": {)
   },
   "users": {
+     "310418501": {
+      "username": "Dmitrii_Bogoslovski",
+      "mis_id": "440099"
+    },
     "133334492": {
       "username": "Dr_EkaterinaSmyk",
       "mis_id": "43347"
@@ -169,7 +188,21 @@
           "last_sent": null
         }
       ]
+    },
+  "133334492": {
+      "upcoming_visits": [
+               {
+          "id": "uv_1700000004444",
+          "enabled": true,
+          "mode": "all",
+          "time": "18:00",
+          "last_sent": null
+        }
+      ]
     }
+
+
+    
   },
   "lab_history": []
 }
