@@ -88,7 +88,7 @@ async function renderVisits() {
 
     const { doctors, isDirector, currentDoctorId } = data;
 
-    let html = `
+let html = `
   <div class="card">
     <label>Врач:</label>
     <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
@@ -99,8 +99,28 @@ async function renderVisits() {
       `).join('')}
     </select>
   </div>
+
   <div class="card">
     <div id="calendar"></div>
+  </div>
+
+  <div class="card">
+    <label>Длительность приёма:</label>
+    <div class="slot-slider">
+      <input type="range"
+             id="slotDuration"
+             min="15"
+             max="120"
+             step="15"
+             value="60" />
+      <div class="slot-value">
+        <span id="slotLabel">60 минут</span>
+      </div>
+    </div>
+
+    <button id="showScheduleBtn" class="primary-btn">
+      Показать
+    </button>
   </div>
 `;
 
