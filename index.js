@@ -3,7 +3,7 @@ const ADMIN_CHAT_ID = 1582980728;
 const SECRET_KEY = 'SredaSecretKey';
 const path = require('path');
 const DB_FILE = path.join(__dirname, 'db.json');
-const BASE_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
+const BASE_QR_URL = 'https://qr.nspk.ru/AS1A003RTQJV7SPH85OPSMRVK29EOS71';
 const TOKEN = process.env.BOT_TOKEN;
 if (!TOKEN) {
   console.error('❌ НЕ ЗАДАНА ПЕРЕМЕННАЯ ОКРУЖЕНИЯ BOT_TOKEN');
@@ -1012,7 +1012,7 @@ if (text === '📅 Визиты' && db.state[chatId] === 'MIS') {
 
     let params = { ...BASE_PARAMS, sum: Math.round(amount * 100).toString() };
     const query = Object.keys(params).map(k => k + '=' + params[k]).join('&');
-    const link = `${BASE_URL}?${query}`;
+    const link = `${BASE_QR_URL}?${query}`;
     const qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(link)}`;
 
     const keyboard = (chatId === ADMIN_CHAT_ID)
@@ -1308,6 +1308,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
