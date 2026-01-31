@@ -160,4 +160,54 @@ h1 {
 .primary-btn:hover {
   background: #008fae;
 }
+.slider-wrapper {
+  width: 100%;
+  margin-top: 12px;
+}
+
+#slotDuration {
+  width: 100%;
+  appearance: none;
+  height: 6px;
+  border-radius: 6px;
+  background: #d9eef5;
+  outline: none;
+}
+
+/* бегунок */
+#slotDuration::-webkit-slider-thumb {
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00a4c7;
+  cursor: pointer;
+  border: 2px solid white;
+  box-shadow: 0 0 0 2px #00a4c7;
+}
+
+#slotDuration::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #00a4c7;
+  cursor: pointer;
+  border: none;
+}
+
+/* подписи под шкалой */
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-top: 6px;
+  color: #777;
+}
+
+.slot-value {
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 600;
+  color: #00a4c7;
+}
 
