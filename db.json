@@ -10,7 +10,9 @@
   ],
   "notify_whitelist": [
     1582980728,
-    7485978153
+    7485978153,
+    133334492,
+    5280146224
   ],
   "history": {
     "133334492": [
@@ -61,19 +63,40 @@
     ]
   },
   "state": {
-    "133334492": null,
+    "133334492": "MIS",
     "260414970": "MIS",
     "648009056": "WAIT_MIS_ID",
     "1582980728": null,
     "5900607039": "MIS",
-    "7485978153": "MIS"
+    "7485978153": "MIS",
+    "5280146224": "MIS"
   },
   "pending": [],
-  "notify_pending": [
-    5900607039
-  ],
+  "notify_pending": [],
   "notify_settings": {
-    "1582980728": {
+    "5280146224": {
+      "visit_create": "all",
+      "visit_cancel": "all",
+      "visit_finish": "all",
+      "patient_create": true,
+      "invoice_create": true,
+      "invoice_pay": true,
+      "lab_partial": true,
+      "lab_full": true,
+      "visit_move": "all"
+    }, 
+    "133334492": {
+      "visit_create": "all",
+      "visit_cancel": "all",
+      "visit_finish": "all",
+      "patient_create": true,
+      "invoice_create": true,
+      "invoice_pay": true,
+      "lab_partial": true,
+      "lab_full": true,
+      "visit_move": "all"
+    }, 
+      "1582980728": {
       "visit_create": "all",
       "visit_cancel": "all",
       "visit_finish": "all",
@@ -98,12 +121,14 @@
   },
   "notify_admin_limits": {
     "1582980728": {},
-    "7485978153": {}
+    "7485978153": {},
+     "133334492": {},
+     "5280146224": {)
   },
   "users": {
     "133334492": {
       "username": "Dr_EkaterinaSmyk",
-      "mis_id": null
+      "mis_id": "43347"
     },
     "260414970": {
       "username": "urolog_ageeva",
@@ -119,7 +144,7 @@
     },
     "5280146224": {
       "username": "MarinaTribelgorn",
-      "mis_id": null
+      "mis_id": "44098"
     },
     "7485978153": {
       "username": 7485978153,
