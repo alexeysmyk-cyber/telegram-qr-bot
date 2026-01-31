@@ -128,3 +128,9 @@ h1 {
   background: #00a4c7 !important;
   color: white !important;
 }
+.cal-day.disabled,
+.cal-day.disabled.saturday,
+.cal-day.disabled.sunday {
+  background: #eee !important;
+  color: #bbb !important;
+}
