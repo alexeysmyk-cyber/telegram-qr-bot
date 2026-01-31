@@ -128,38 +128,6 @@ renderCalendar(calendarEl, (date) => {
     build(current.getFullYear(), current.getMonth());
   }
 
-  function prevMonth() {
-    const test = new Date(current);
-    test.setMonth(test.getMonth() - 1);
-
-    // нельзя уйти в прошлые месяцы полностью
-    if (test < new Date(today.getFullYear(), today.getMonth(), 1)) return;
-
-    current.setMonth(current.getMonth() - 1);
-    build(current.getFullYear(), current.getMonth());
-  }
-
-  // 👇 свайп логика
-  container.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
-
-  container.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-
-    const delta = touchEndX - touchStartX;
-
-    if (delta < -50) {
-      nextMonth();
-    }
-
-    if (delta > 50) {
-      prevMonth();
-    }
-  });
-
-  build(current.getFullYear(), current.getMonth());
-}
 
 
 function renderSchedule() {
