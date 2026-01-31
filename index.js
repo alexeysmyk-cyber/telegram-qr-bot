@@ -50,6 +50,49 @@ initMisModule({
   formatDate 
 });
 
+const crypto = require('crypto');
+
+app.post('/api/auth/telegram', express.json(), (req, res) => {
+  const { initData } = req.body;
+
+  if (!initData) {
+    return res.status(403).send('No initData');
+  }
+
+  const params = new URLSearchParams(initData);
+  const hash = params.get('hash');
+  params.delete('hash');
+
+  const dataCheckString = [...params.entries()]
+    .sort()
+    .map(([k, v]) => `${k}=${v}`)
+    .join('\n');
+
+  const secret = crypto
+    .createHash('sha256')
+    .update(process.env.BOT_TOKEN)
+    .digest();
+
+  const hmac = crypto
+    .createHmac('sha256', secret)
+    .update(dataCheckString)
+    .digest('hex');
+
+  if (hmac !== hash) {
+    return res.status(403).send('Invalid signature');
+  }
+
+  const user = JSON.parse(params.get('user'));
+
+  const db = loadDB();
+
+  if (!db.whitelist.includes(user.id)) {
+    return res.status(403).send('Not allowed');
+  }
+
+  return res.sendStatus(200);
+});
+
 
 // ================== БАЗА ДАННЫХ ==================
 function loadDB() {
@@ -1292,6 +1335,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
