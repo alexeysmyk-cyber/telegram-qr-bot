@@ -16,7 +16,7 @@ const content = document.getElementById('content');
 const visitsTab = document.getElementById('visitsTab');
 const scheduleTab = document.getElementById('scheduleTab');
 
-import { renderCalendar } from './calendar.js';
+//import { renderCalendar } from './calendar.js';
 
 // ===============================
 // Авторизация через backend
