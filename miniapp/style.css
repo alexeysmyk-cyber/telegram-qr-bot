@@ -242,25 +242,12 @@ h1 {
   transform: translateX(-50%);
 }
 
-/* точные позиции */
-.slider-labels span:nth-child(1) { 
-  left: 0%;
-  transform: translateX(0);
-}
+.slider-labels span:nth-child(1) { left: 0%; transform: translateX(0); }
 
-.slider-labels span:nth-child(2) { 
-  left: 25%;
-}
+.slider-labels span:nth-child(2) { left: 14.285%; }
 
-.slider-labels span:nth-child(3) { 
-  left: 50%;
-}
+.slider-labels span:nth-child(3) { left: 42.857%; }
 
-.slider-labels span:nth-child(4) { 
-  left: 75%;
-}
+.slider-labels span:nth-child(4) { left: 71.428%; }
 
-.slider-labels span:nth-child(5) { 
-  left: 100%;
-  transform: translateX(-100%);
-}
+.slider-labels span:nth-child(5) { left: 100%; transform: translateX(-100%); }
