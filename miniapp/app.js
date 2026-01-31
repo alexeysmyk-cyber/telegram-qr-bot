@@ -208,7 +208,7 @@ showBtn.addEventListener("click", async () => {
     return;
   }
 
-  scheduleContainer.innerHTML = `<div class="card">Загрузка...</div>`;
+  showLoader(scheduleContainer);
 
   try {
 
@@ -223,27 +223,22 @@ showBtn.addEventListener("click", async () => {
 
     const result = await response.json();
 
-    console.log("Appointments response:", result);
-
     if (!response.ok || result.error !== 0) {
       scheduleContainer.innerHTML =
         `<div class="card">Ошибка загрузки</div>`;
       return;
     }
 
-    // ВРЕМЕННЫЙ ВЫВОД
-    scheduleContainer.innerHTML =
-      `<pre style="font-size:12px">${JSON.stringify(result.data, null, 2)}</pre>`;
+    renderScheduleGrid(result.data || [], scheduleContainer);
 
   } catch (err) {
-
-    console.error("Schedule fetch error:", err);
 
     scheduleContainer.innerHTML =
       `<div class="card">Ошибка сервера</div>`;
   }
 
 });
+
 
 
   } catch (err) {
