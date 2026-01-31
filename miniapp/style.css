@@ -166,12 +166,24 @@ html, body {
   color: #bbb !important;
 }
 
-.cal-day.selected,
-.cal-day.saturday.selected,
-.cal-day.sunday.selected {
-  background: #00a4c7 !important;
-  color: white !important;
+/* выбранный будний */
+.cal-day.selected:not(.saturday):not(.sunday) {
+  background: #00a4c7;
+  color: white;
 }
+
+/* выбранная суббота */
+.cal-day.saturday.selected {
+  background: #ffd6da;
+  color: #a61d2a;
+}
+
+/* выбранное воскресенье */
+.cal-day.sunday.selected {
+  background: #ffc2c8;
+  color: #a61d2a;
+}
+
 
 
 /* ============================= */
