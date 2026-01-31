@@ -135,15 +135,6 @@ h1 {
   color: #bbb !important;
 }
 
-.slot-slider {
-  margin-top: 10px;
-}
-
-.slot-value {
-  margin-top: 6px;
-  font-weight: 600;
-  color: #00a4c7;
-}
 
 .primary-btn {
   margin-top: 14px;
@@ -160,9 +151,9 @@ h1 {
 .primary-btn:hover {
   background: #008fae;
 }
-.slider-wrapper {
+.slider-container {
+  position: relative;
   width: 100%;
-  margin-top: 12px;
 }
 
 #slotDuration {
@@ -172,6 +163,8 @@ h1 {
   border-radius: 6px;
   background: #d9eef5;
   outline: none;
+  position: relative;
+  z-index: 2;
 }
 
 /* бегунок */
@@ -192,22 +185,23 @@ h1 {
   border-radius: 50%;
   background: #00a4c7;
   cursor: pointer;
-  border: none;
 }
 
-/* подписи под шкалой */
-.slider-labels {
+/* точки */
+.slider-dots {
+  position: absolute;
+  top: 3px;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
-  font-size: 12px;
-  margin-top: 6px;
-  color: #777;
+  pointer-events: none;
+  z-index: 1;
 }
 
-.slot-value {
-  margin-top: 8px;
-  text-align: center;
-  font-weight: 600;
-  color: #00a4c7;
+.slider-dots span {
+  width: 6px;
+  height: 6px;
+  background: #00a4c7;
+  border-radius: 50%;
 }
-
