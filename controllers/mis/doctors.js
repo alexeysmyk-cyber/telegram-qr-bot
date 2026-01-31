@@ -18,7 +18,7 @@ exports.getDoctors = async (req, res) => {
     }
 
     const db = loadDB();
-    const tgUser = db.users?.[telegramUserId];
+   const tgUser = db.users?.[String(telegramUserId)];
 
     if (!tgUser || !tgUser.mis_id) {
       return res.status(403).json({ error: 'No MIS ID assigned' });
