@@ -15,7 +15,7 @@ if (!BASE_URL) {
 }
 
 // итоговый URL
-const GET_APPOINTMENT_URL = `${BASE_URL}getAppointments`;
+const GET_APPOINTMENT_URL = `${BASE_URL}/getAppointments`;
 
 console.log('🧪 GET_APPOINTMENT_URL =', GET_APPOINTMENT_URL);
 
