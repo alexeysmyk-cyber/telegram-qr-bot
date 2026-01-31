@@ -1259,31 +1259,25 @@ if (
 // ================== HTTP SERVER (TEST) ==================
 
 
-// ================== HTTP SERVER (ДЛЯ WEBHOOK ОТ СЕРВИСОВ) ==================
-
-const PORT = process.env.PORT; // ❗ НЕ ставим 3000 вручную
+// ================== HTTP ==================
 
 app.get('/ping', (req, res) => {
   res.send('OK');
 });
+
 app.post('/mis', async (req, res) => {
   await handleMisWebhook(req, res);
 });
 
-const server = app.listen(PORT, () => {
-  console.log('🌐 HTTP server started on port', PORT);
+// ===== фоновые задачи =====
 
-  // ===== АВТООЧИСТКА АНАЛИЗОВ И ИСТОРИИ =====
-
-// запуск сразу при старте
 cleanupLabs();
 
-// запуск каждые 12 часов
 setInterval(() => {
   cleanupLabs();
 }, 12 * 60 * 60 * 1000);
 
- setInterval(() => {
+setInterval(() => {
   runUpcomingVisitsNotifications({
     loadDB,
     saveDB,
@@ -1291,9 +1285,9 @@ setInterval(() => {
   });
 }, 60 * 1000);
 
+// экспорт для bothost
+module.exports = app;
 
-
-});
 
 server.on('error', (err) => {
   if (err.code === 'EADDRINUSE') {
@@ -1308,6 +1302,7 @@ server.on('error', (err) => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
