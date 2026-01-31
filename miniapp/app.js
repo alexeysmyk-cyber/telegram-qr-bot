@@ -126,9 +126,11 @@ let html = `
 </div>
 
 
+<div class="fixed-bottom">
   <button id="showScheduleBtn" class="primary-btn">
     Показать
   </button>
+</div>
 </div>
 `;
 
