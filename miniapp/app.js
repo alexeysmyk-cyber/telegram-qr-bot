@@ -177,6 +177,16 @@ function renderCalendar(container, onSelect) {
       btn.className = "cal-day";
       btn.innerText = d;
 
+      const dayOfWeek = date.getDay(); // 0 = воскресенье, 6 = суббота
+
+  if (dayOfWeek === 6) {
+    btn.classList.add("saturday");
+  }
+
+  if (dayOfWeek === 0) {
+    btn.classList.add("sunday");
+  }
+
       if (date < today) {
         btn.classList.add("disabled");
         btn.disabled = true;
