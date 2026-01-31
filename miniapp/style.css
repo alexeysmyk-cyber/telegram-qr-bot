@@ -47,3 +47,59 @@ h1 {
   box-shadow: 0 4px 12px rgba(0,0,0,0.05);
   margin-bottom: 12px;
 }
+
+.cal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.cal-header button {
+  background: #e3f2f7;
+  border: none;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-size: 18px;
+}
+
+.cal-title {
+  font-weight: 600;
+  font-size: 16px;
+  text-transform: capitalize;
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+}
+
+.cal-day-name {
+  text-align: center;
+  font-size: 12px;
+  color: #777;
+}
+
+.cal-day {
+  padding: 10px;
+  border-radius: 10px;
+  border: none;
+  background: #f2f8fb;
+  font-size: 14px;
+}
+
+.cal-day:hover {
+  background: #d0ecf7;
+}
+
+.cal-day.selected {
+  background: #00a4c7;
+  color: white;
+}
+
+.cal-day.disabled {
+  background: #eee;
+  color: #bbb;
+}
+
