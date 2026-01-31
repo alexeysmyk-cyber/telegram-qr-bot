@@ -324,7 +324,7 @@ async function sendVisits({
     });
 
     const response = await axios.post(
-      `${process.env.BASE_URL}getAppointments`,
+      `${process.env.BASE_URL}/getAppointments`,
       body,
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
