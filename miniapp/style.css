@@ -30,7 +30,10 @@ h1 { font-size: 20px; margin: 0;}
 
 .tab {
   flex: 1;
-  padding: 14px 0 10px;
+  height: 44px;          /* фиксируем */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   font-weight: 600;
   font-size: 15px;
   color: #7a8a9a;
@@ -46,7 +49,7 @@ h1 { font-size: 20px; margin: 0;}
 .tab.active::after {
   content: "";
   position: absolute;
-  bottom: -1px;
+  bottom: 0;
   left: 30%;
   width: 40%;
   height: 3px;
