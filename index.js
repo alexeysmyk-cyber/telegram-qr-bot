@@ -33,7 +33,9 @@ app.use((req, res, next) => {
 });
 
 // Mini App static
-app.use('/miniapp', express.static(path.join(__dirname, 'miniapp')));
+app.get('/miniapp', (req, res) => {
+  res.sendFile(path.join(__dirname, 'miniapp', 'index.html'));
+});
 
 
 // ================== БОТ ==================
@@ -1335,6 +1337,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
