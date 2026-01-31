@@ -113,6 +113,9 @@ app.post('/api/auth/telegram', express.json(), (req, res) => {
   }
 });
 
+// ================== Роутер ==================
+const misRouter = require('./routes/mis');
+app.use('/api/mis', misRouter);
 
 // ================== БАЗА ДАННЫХ ==================
 function loadDB() {
@@ -1355,6 +1358,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
