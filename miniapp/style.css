@@ -134,3 +134,30 @@ h1 {
   background: #eee !important;
   color: #bbb !important;
 }
+
+.slot-slider {
+  margin-top: 10px;
+}
+
+.slot-value {
+  margin-top: 6px;
+  font-weight: 600;
+  color: #00a4c7;
+}
+
+.primary-btn {
+  margin-top: 14px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  border-radius: 12px;
+  background: #00a4c7;
+  color: white;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.primary-btn:hover {
+  background: #008fae;
+}
+
