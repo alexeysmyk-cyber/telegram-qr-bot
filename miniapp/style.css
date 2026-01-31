@@ -29,7 +29,7 @@ h1 {
   background: #f4f7fb;
   border-bottom: 1px solid #e6e6e6;
   z-index: 1000;
-  height: 44px;      /* 👈 фиксируем */
+  height: 40px;      /* 👈 фиксируем */
 }
 
 
