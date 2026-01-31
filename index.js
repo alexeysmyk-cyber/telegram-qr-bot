@@ -1289,19 +1289,14 @@ setInterval(() => {
 module.exports = app;
 
 
-server.on('error', (err) => {
-  if (err.code === 'EADDRINUSE') {
-    console.warn('⚠️ Port already in use, HTTP server not started (but bot continues working)');
-  } else {
-    console.error('HTTP server error:', err);
-  }
-});
+
 
 
 // ================== ОШИБКИ ==================
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
