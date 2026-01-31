@@ -71,9 +71,16 @@ function setActive(tab) {
 }
 
 async function renderVisits() {
+
   content.innerHTML = `<div class="card">Загрузка врачей...</div>`;
 
   try {
+
+    if (!tg || !tg.initDataUnsafe || !tg.initDataUnsafe.user) {
+      content.innerHTML = `<div class="card">Ошибка Telegram WebApp</div>`;
+      return;
+    }
+
     const response = await fetch('/api/mis/doctors', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -89,14 +96,19 @@ async function renderVisits() {
       return;
     }
 
-    const { doctors, isDirector, currentDoctorId } = data;
+    const { doctors = [], isDirector = false, currentDoctorId = null } = data;
+
+    if (!Array.isArray(doctors) || doctors.length === 0) {
+      content.innerHTML = `<div class="card">Нет врачей</div>`;
+      return;
+    }
 
     let html = `
       <div class="card">
         <label>Врач:</label>
         <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
           ${doctors.map(d => `
-            <option value="${d.id}" ${d.id == currentDoctorId ? 'selected' : ''}>
+            <option value="${d.id}" ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
               ${d.name}
             </option>
           `).join('')}
@@ -158,18 +170,23 @@ async function renderVisits() {
     let selectedDuration = 60;
     let showAll = false;
 
+    // календарь
     renderCalendar(calendarEl, (date) => {
       selectedDate = date;
     });
 
-    initStepSlider((value) => {
-      selectedDuration = value;
-    });
+    // слайдер
+    if (typeof initStepSlider === "function") {
+      initStepSlider((value) => {
+        selectedDuration = value;
+      });
+    }
 
-    // ===== ДЛЯ ДИРЕКТОРА =====
+    // директор — показать всех
     const toggleBtn = document.getElementById("toggleAllBtn");
     if (toggleBtn) {
       toggleBtn.addEventListener("click", () => {
+
         showAll = !showAll;
 
         toggleBtn.innerText = showAll
@@ -180,7 +197,10 @@ async function renderVisits() {
       });
     }
 
-    // ===== ЗАГРУЗКА РАСПИСАНИЯ =====
+    // ===============================
+    // ЗАГРУЗКА РАСПИСАНИЯ
+    // ===============================
+
     showBtn.addEventListener("click", async () => {
 
       if (!selectedDate) {
@@ -203,15 +223,20 @@ async function renderVisits() {
 
         const result = await response.json();
 
+        console.log("Appointments response:", result);
+
         if (!response.ok || result.error !== 0) {
           scheduleContainer.innerHTML =
             `<div class="card">Ошибка загрузки</div>`;
           return;
         }
 
-        renderScheduleGrid(result.data, scheduleContainer);
+        renderScheduleGrid(result.data || [], scheduleContainer);
 
       } catch (err) {
+
+        console.error("Schedule fetch error:", err);
+
         scheduleContainer.innerHTML =
           `<div class="card">Ошибка сервера</div>`;
       }
@@ -219,7 +244,11 @@ async function renderVisits() {
     });
 
   } catch (err) {
-    content.innerHTML = `<div class="card">Ошибка загрузки врачей</div>`;
+
+    console.error("renderVisits error:", err);
+
+    content.innerHTML =
+      `<div class="card">Ошибка загрузки врачей</div>`;
   }
 }
 
