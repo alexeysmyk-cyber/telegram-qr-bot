@@ -294,3 +294,25 @@ html, body {
   transform: translateY(-2px);
 }
 
+.secondary-btn {
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  border-radius: 10px;
+  border: 1px solid #00a4c7;
+  background: #e8f7fb;
+  color: #007c96;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.secondary-btn:hover {
+  background: #d3eff6;
+}
+
+.secondary-btn.active {
+  background: #00a4c7;
+  color: white;
+}
