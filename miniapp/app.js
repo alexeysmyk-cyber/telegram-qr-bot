@@ -64,14 +64,50 @@ function setActive(tab) {
   tab.classList.add('active');
 }
 
-function renderVisits() {
-  content.innerHTML = `
-    <div class="card">
-      <b>Визиты</b><br/>
-      Здесь будет список врачей, календарь и слоты.
-    </div>
-  `;
+async function renderVisits() {
+  content.innerHTML = `<div class="card">Загрузка врачей...</div>`;
+
+  try {
+    const response = await fetch('/api/mis/doctors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        telegramUserId: tg.initDataUnsafe.user.id
+      })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      content.innerHTML = `<div class="card">Ошибка доступа</div>`;
+      return;
+    }
+
+    const { doctors, isDirector, currentDoctorId } = data;
+
+    let html = `
+      <div class="card">
+        <label>Врач:</label>
+        <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
+          ${doctors.map(d => `
+            <option value="${d.id}" ${d.id == currentDoctorId ? 'selected' : ''}>
+              ${d.name}
+            </option>
+          `).join('')}
+        </select>
+      </div>
+      <div class="card">
+        Здесь будет календарь
+      </div>
+    `;
+
+    content.innerHTML = html;
+
+  } catch (err) {
+    content.innerHTML = `<div class="card">Ошибка загрузки врачей</div>`;
+  }
 }
+
 
 function renderSchedule() {
   content.innerHTML = `
