@@ -155,16 +155,14 @@ h1 {
   position: relative;
   width: 100%;
   height: 36px;
-  padding: 0 9px; /* половина ширины бегунка */
-  box-sizing: border-box;
 }
 
 /* линия */
 .slider-track {
   position: absolute;
   top: 16px;
-  left: 9px;
-  right: 9px;
+  left: 0;
+  right: 0;
   height: 4px;
   background: #d9eef5;
   border-radius: 4px;
@@ -173,13 +171,22 @@ h1 {
 /* range */
 #slotDuration {
   position: absolute;
-  width: calc(100% - 18px);
-  left: 9px;
-  top: 0;
+  width: 100%;
   height: 36px;
+  top: 0;
+  left: 0;
   background: transparent;
   appearance: none;
   z-index: 3;
+}
+
+/* убираем дефолтный трек */
+#slotDuration::-webkit-slider-runnable-track {
+  background: transparent;
+}
+
+#slotDuration::-moz-range-track {
+  background: transparent;
 }
 
 /* бегунок */
@@ -192,6 +199,7 @@ h1 {
   border: 3px solid white;
   box-shadow: 0 0 0 2px #00a4c7;
   cursor: pointer;
+  margin-top: -7px; /* центрируем относительно линии */
 }
 
 #slotDuration::-moz-range-thumb {
@@ -206,11 +214,10 @@ h1 {
 .slider-marks {
   position: absolute;
   top: 16px;
-  left: 9px;
-  right: 9px;
+  left: 0;
+  right: 0;
   display: flex;
   justify-content: space-between;
-  z-index: 2;
   pointer-events: none;
 }
 
@@ -219,4 +226,5 @@ h1 {
   height: 6px;
   background: #00a4c7;
   border-radius: 50%;
+  transform: translateX(-50%);
 }
