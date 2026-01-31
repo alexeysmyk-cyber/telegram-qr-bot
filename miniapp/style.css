@@ -24,21 +24,24 @@ h1 {
   position: sticky;
   top: 0;
   display: flex;
-  align-items: center;
   background: #f4f7fb;
-  border-bottom: 1px solid #e6e6e6;
   z-index: 1000;
+  box-shadow: inset 0 -1px 0 #e6e6e6;
 }
 
 .tab {
   flex: 1;
-  padding: 12px 0;
+  padding: 14px 0 10px;
   font-weight: 600;
   font-size: 15px;
   color: #7a8a9a;
   background: none;
   border: none;
   position: relative;
+}
+
+.tab.active {
+  color: #00a4c7;
 }
 
 .tab.active::after {
@@ -49,16 +52,9 @@ h1 {
   width: 40%;
   height: 3px;
   background: #00a4c7;
-  border-radius: 3px;
+  border-radius: 3px 3px 0 0;
 }
 
-.card {
-  background: white;
-  padding: 14px;
-  border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  margin-bottom: 12px;
-}
 
 .cal-header {
   display: flex;
