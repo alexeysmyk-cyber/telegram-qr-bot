@@ -41,10 +41,11 @@ async function authorize() {
       body: JSON.stringify({ initData })
     });
 
-    if (!response.ok) {
-      document.body.innerHTML = "Нет доступа";
-      return false;
-    }
+ if (!response.ok) {
+  const text = await response.text();
+  content.innerHTML = `<div class="card">Ошибка: ${response.status}<br>${text}</div>`;
+  return;
+}
 
     return true;
 
