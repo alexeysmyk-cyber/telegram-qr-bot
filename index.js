@@ -1259,34 +1259,30 @@ if (
 // ================== HTTP SERVER (TEST) ==================
 
 
-// ================== HTTP ==================
+const PORT = process.env.PORT;
 
-app.get('/ping', (req, res) => {
-  res.send('OK');
-});
+if (!PORT) {
+  console.error("PORT not provided by bothost");
+  process.exit(1);
+}
 
-app.post('/mis', async (req, res) => {
-  await handleMisWebhook(req, res);
-});
+app.listen(PORT, () => {
+  console.log('🌐 HTTP server started on port', PORT);
 
-// ===== фоновые задачи =====
-
-cleanupLabs();
-
-setInterval(() => {
   cleanupLabs();
-}, 12 * 60 * 60 * 1000);
 
-setInterval(() => {
-  runUpcomingVisitsNotifications({
-    loadDB,
-    saveDB,
-    formatDate
-  });
-}, 60 * 1000);
+  setInterval(() => {
+    cleanupLabs();
+  }, 12 * 60 * 60 * 1000);
 
-// экспорт для bothost
-module.exports = app;
+  setInterval(() => {
+    runUpcomingVisitsNotifications({
+      loadDB,
+      saveDB,
+      formatDate
+    });
+  }, 60 * 1000);
+});
 
 
 
@@ -1296,6 +1292,7 @@ module.exports = app;
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
