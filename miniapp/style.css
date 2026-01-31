@@ -7,7 +7,7 @@ html, body {
   color: #1f2d3d;
 }
 .app {
-  padding: 20px 16px 16px 16px;
+  padding: 16px 16px 16px 16px;
 }
 
 
@@ -23,46 +23,34 @@ h1 {
 .tabs {
   position: sticky;
   top: 0;
-  left: 0;
-  width: 100%;
   display: flex;
+  align-items: center;
   background: #f4f7fb;
   border-bottom: 1px solid #e6e6e6;
   z-index: 1000;
-  height: 40px;      /* 👈 фиксируем */
 }
-
-
-
 
 .tab {
   flex: 1;
-  background: none;
-  border: none;
-  padding: 10px 0;
+  padding: 12px 0;
   font-weight: 600;
   font-size: 15px;
   color: #7a8a9a;
-  cursor: pointer;
+  background: none;
+  border: none;
   position: relative;
-  line-height: 1;
-}
-
-.tab.active {
-  color: #00a4c7;
 }
 
 .tab.active::after {
   content: "";
   position: absolute;
   bottom: 0;
-  left: 25%;
-  width: 50%;
+  left: 30%;
+  width: 40%;
   height: 3px;
   background: #00a4c7;
   border-radius: 3px;
 }
-
 
 .card {
   background: white;
