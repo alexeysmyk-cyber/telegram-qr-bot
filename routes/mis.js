@@ -44,8 +44,12 @@ router.post("/appointments", async (req, res) => {
 
     console.log("Calling MIS getAppointments:", body);
 
+    // ✅ ИСПРАВЛЕННЫЙ URL
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/getAppointments";
+
     const response = await axios.post(
-      process.env.BASE_URL + "getAppointments",
+      url,
       qs.stringify(body),
       {
         headers: {
