@@ -201,44 +201,20 @@ async function renderVisits() {
     // ЗАГРУЗКА РАСПИСАНИЯ
     // ===============================
 
-showBtn.addEventListener("click", async () => {
+showBtn.addEventListener("click", () => {
 
   if (!selectedDate) {
     alert("Выберите дату");
     return;
   }
 
-  showLoader(scheduleContainer);
-
-  try {
-
-    const response = await fetch("/api/mis/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        date: selectedDate,
-        doctorId: showAll ? null : doctorSelect.value
-      })
-    });
-
-    const result = await response.json();
-
-    if (!response.ok || result.error !== 0) {
-      scheduleContainer.innerHTML =
-        `<div class="card">Ошибка загрузки</div>`;
-      return;
-    }
-
-    renderScheduleGrid(result.data || [], scheduleContainer);
-
-  } catch (err) {
-
-    scheduleContainer.innerHTML =
-      `<div class="card">Ошибка сервера</div>`;
-  }
+  loadSchedule({
+    container: scheduleContainer,
+    date: selectedDate,
+    doctorId: showAll ? null : doctorSelect.value
+  });
 
 });
-
 
 
   } catch (err) {
