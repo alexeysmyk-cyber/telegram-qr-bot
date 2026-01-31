@@ -12,7 +12,7 @@ html, body {
 
 h1 { font-size: 20px; margin: 0;}
 .app {
-  padding: 2px 16px 16px 16px;
+  padding: 4px 16px 16px 16px;
 }
 
 .tabs {
@@ -23,6 +23,7 @@ h1 { font-size: 20px; margin: 0;}
   background: #f4f7fb;
   z-index: 1000;
   box-shadow: inset 0 -1px 0 #e6e6e6;
+  overflow: hidden;
 }
 
 
@@ -45,7 +46,7 @@ h1 { font-size: 20px; margin: 0;}
 .tab.active::after {
   content: "";
   position: absolute;
-  bottom: 0;
+  bottom: -1px;
   left: 30%;
   width: 40%;
   height: 3px;
