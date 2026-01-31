@@ -12,8 +12,8 @@ function loadDB() {
 exports.getDoctors = async (req, res) => {
   try {
 
-    console.log("----- /api/mis/doctors -----");
-    console.log("BODY:", req.body);
+//    console.log("----- /api/mis/doctors -----");
+ //   console.log("BODY:", req.body);
 
     const telegramUserId = req.body?.telegramUserId;
 
@@ -24,7 +24,7 @@ exports.getDoctors = async (req, res) => {
 
     const db = loadDB();
 
-    console.log("DB users keys:", Object.keys(db.users || {}));
+//    console.log("DB users keys:", Object.keys(db.users || {}));
 
     const tgUser = db.users?.[String(telegramUserId)];
 
@@ -38,7 +38,7 @@ exports.getDoctors = async (req, res) => {
       return res.status(403).send("No MIS ID assigned");
     }
 
-    console.log("Telegram user MIS ID:", tgUser.mis_id);
+//    console.log("Telegram user MIS ID:", tgUser.mis_id);
 
     // --- Запрос в МИС ---
     const body = qs.stringify({
@@ -48,7 +48,7 @@ exports.getDoctors = async (req, res) => {
 
     const url = process.env.BASE_URL.replace(/\/$/, '') + '/getUsers';
 
-    console.log("Calling MIS:", url);
+//    console.log("Calling MIS:", url);
 
     const response = await axios.post(
       url,
@@ -67,7 +67,7 @@ exports.getDoctors = async (req, res) => {
 
     const users = result.data;
 
-    console.log("Users count from MIS:", users.length);
+//    console.log("Users count from MIS:", users.length);
 
     // --- Находим текущего пользователя в МИС ---
     const currentMisUser = users.find(u =>
@@ -79,7 +79,7 @@ exports.getDoctors = async (req, res) => {
       return res.status(403).send("MIS user not found");
     }
 
-    console.log("MIS user roles:", currentMisUser.role);
+//    console.log("MIS user roles:", currentMisUser.role);
 
     const roles = currentMisUser.role || [];
 
@@ -101,7 +101,7 @@ exports.getDoctors = async (req, res) => {
         avatar: u.avatar_small || u.avatar || null
       }));
 
-    console.log("Doctors count:", doctors.length);
+//    console.log("Doctors count:", doctors.length);
 
     return res.json({
       isDirector,
