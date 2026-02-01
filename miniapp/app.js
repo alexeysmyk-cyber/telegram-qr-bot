@@ -307,12 +307,12 @@ function updateFilterSummary() {
 
   parts.push(selectedDuration + " мин");
 
-  if (!showCancelled && !showCompleted) {
-    parts.push("Все");
-  } else {
+ 
+    parts.push("Предстоящие");
+
     if (showCancelled) parts.push("Отменённые");
     if (showCompleted) parts.push("Завершённые");
-  }
+  
 
   filterSummary.innerText = parts.join(" • ");
 }
