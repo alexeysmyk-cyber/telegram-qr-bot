@@ -531,9 +531,6 @@ html, body {
   cursor: pointer;
 }
 
-.calendar-collapsed {
-  display: none;
-}
 
 .hidden {
   display: none !important;
