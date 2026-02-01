@@ -314,18 +314,27 @@ if (showBtn) {
  const header = document.getElementById("calendarHeader");
 const calendarBlock = document.getElementById("calendar");
 const label = document.getElementById("selectedDateLabel");
+const calendarEl = document.getElementById("calendar");
+const header = document.getElementById("calendarHeader");
+const label = document.getElementById("selectedDateLabel");
 const prevBtn = document.getElementById("prevDayBtn");
 const nextBtn = document.getElementById("nextDayBtn");
 
-// Рендер календаря
+// начальное состояние
+header.classList.add("hidden");
+calendarEl.classList.remove("hidden");
+
+// выбор даты
 renderCalendar(calendarEl, (date) => {
-  selectedDate = date;
   if (!date) return;
+
+  selectedDate = date;
 
   label.innerText = formatPrettyDate(date);
 
-  header.classList.remove("hidden");
+  // сворачиваем календарь
   calendarEl.classList.add("hidden");
+  header.classList.remove("hidden");
 
   loadSchedule({
     container: scheduleContainer,
@@ -337,19 +346,18 @@ renderCalendar(calendarEl, (date) => {
   });
 });
 
-
-
+// раскрытие по клику на дату
 label.addEventListener("click", () => {
   header.classList.add("hidden");
   calendarEl.classList.remove("hidden");
 });
 
-
-
+// смена дня стрелками
 function changeDay(delta) {
   if (!selectedDate) return;
 
   selectedDate.setDate(selectedDate.getDate() + delta);
+
   label.innerText = formatPrettyDate(selectedDate);
 
   loadSchedule({
@@ -364,7 +372,6 @@ function changeDay(delta) {
 
 prevBtn.addEventListener("click", () => changeDay(-1));
 nextBtn.addEventListener("click", () => changeDay(1));
-;
 
 
     // слайдер
