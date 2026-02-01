@@ -1,6 +1,4 @@
-alert("Telegram: " + !!window.Telegram);
-alert("WebApp: " + !!window.Telegram?.WebApp);
-alert("initData length: " + (window.Telegram?.WebApp?.initData?.length || 0));
+
 // ===============================
 // Telegram Mini App Init
 // ===============================
