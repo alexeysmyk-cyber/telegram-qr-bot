@@ -5,8 +5,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
   let selectedDate = null;
 
-  let touchStartX = 0;
-  let swipeTriggered = false;
+  let startX = 0;
+  let isDragging = false;
 
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
@@ -35,9 +35,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
   }
 
-  // ===============================
-  // FULL VIEW
-  // ===============================
   function buildFull() {
 
     container.parentElement.classList.remove("compact");
@@ -77,10 +74,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     daysShort.forEach((d, index) => {
       const el = document.createElement("div");
       el.innerText = d;
-
       if (index === 5) el.classList.add("saturday");
       if (index === 6) el.classList.add("sunday");
-
       weekdays.appendChild(el);
     });
 
@@ -119,9 +114,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
       }
 
       btn.onclick = () => {
-
-        if (swipeTriggered) return;
-
         selectedDate = new Date(date);
         collapse();
         if (onSelect) onSelect(selectedDate);
@@ -133,9 +125,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     container.appendChild(grid);
   }
 
-  // ===============================
-  // COLLAPSED VIEW
-  // ===============================
   function collapse() {
 
     if (!selectedDate) return;
@@ -178,67 +167,34 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // SWIPE (финально корректный)
+  // POINTER SWIPE (без ghost click)
   // ===============================
 
-  let isTouching = false;
-  let hasMoved = false;
-
-  container.addEventListener("touchstart", (e) => {
-
-    if (!container.parentElement.classList.contains("compact")) {
-      e.stopPropagation();
-    }
-
-    isTouching = true;
-    hasMoved = false;
-    touchStartX = e.changedTouches[0].screenX;
+  container.addEventListener("pointerdown", (e) => {
+    if (container.parentElement.classList.contains("compact")) return;
+    startX = e.clientX;
+    isDragging = true;
   });
 
-  container.addEventListener("touchmove", (e) => {
+  container.addEventListener("pointerup", (e) => {
 
-    if (!isTouching) return;
+    if (!isDragging) return;
+    isDragging = false;
 
-    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (container.parentElement.classList.contains("compact")) return;
 
-    if (Math.abs(diff) > 20) {
-      hasMoved = true;
-    }
-  });
+    const diff = e.clientX - startX;
 
-  container.addEventListener("touchend", (e) => {
-
-    const isCompact = container.parentElement.classList.contains("compact");
-
-    if (!isTouching) return;
-
-    isTouching = false;
-
-    const diff = e.changedTouches[0].screenX - touchStartX;
-
-    if (!isCompact && hasMoved && Math.abs(diff) > 60) {
-
-      e.stopPropagation();
-
-      swipeTriggered = true;
-
+    if (Math.abs(diff) > 60) {
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
       } else {
         current.setMonth(current.getMonth() + 1);
       }
-
       buildFull();
-
-      requestAnimationFrame(() => {
-        swipeTriggered = false;
-      });
     }
   });
 
-  // ===============================
-  // INIT
-  // ===============================
   if (initialDate) {
     selectedDate = new Date(initialDate);
     current = new Date(initialDate);
