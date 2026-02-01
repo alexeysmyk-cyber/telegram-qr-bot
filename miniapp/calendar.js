@@ -16,41 +16,49 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     return `${days[date.getDay()]}. ${String(date.getDate()).padStart(2,"0")}-${months[date.getMonth()]}-${date.getFullYear()}`;
   }
 
-function buildFull() {
-  container.parentElement.classList.remove("compact");
-  container.innerHTML = "";
-  collapsed = false;
+  // ===============================
+  // FULL VIEW
+  // ===============================
+  function buildFull() {
 
-  const header = document.createElement("div");
-  header.className = "calendar-title full-header";
+    container.parentElement.classList.remove("compact");
+    container.innerHTML = "";
 
-  const prev = document.createElement("button");
-  prev.innerText = "‹";
-  prev.className = "nav-btn";
+    const header = document.createElement("div");
+    header.className = "calendar-title full-header";
 
-  const next = document.createElement("button");
-  next.innerText = "›";
-  next.className = "nav-btn";
+    const prev = document.createElement("button");
+    prev.innerText = "‹";
+    prev.className = "nav-btn";
 
-  const title = document.createElement("div");
-  title.className = "collapsed-title";
-  title.innerText = formatHeader(current);
+    const next = document.createElement("button");
+    next.innerText = "›";
+    next.className = "nav-btn";
 
-  // клик по заголовку → свернуть
-  title.style.cursor = "pointer";
-  title.onclick = () => {
-    selectedDate = new Date(current);
-    collapse();
-    if (onSelect) onSelect(selectedDate);
-  };
+    const title = document.createElement("div");
+    title.className = "collapsed-title";
+    title.innerText = formatHeader(current);
 
-  prev.onclick = () => changeDay(-1);
-  next.onclick = () => changeDay(1);
+    // клик по заголовку → свернуть
+    title.style.cursor = "pointer";
+    title.onclick = () => {
+      selectedDate = new Date(current);
+      collapse();
+      if (onSelect) onSelect(selectedDate);
+    };
 
-  header.append(prev, title, next);
-  container.appendChild(header);
+    prev.onclick = () => changeDay(-1);
+    next.onclick = () => changeDay(1);
 
+    header.append(prev, title, next);
+    container.appendChild(header);
 
+    // можно добавить тут сетку дней если нужно
+  }
+
+  // ===============================
+  // COLLAPSED VIEW
+  // ===============================
   function collapse() {
 
     if (!selectedDate) return;
@@ -87,22 +95,46 @@ function buildFull() {
     container.appendChild(wrapper);
   }
 
+  // ===============================
+  // CHANGE DAY
+  // ===============================
   function changeDay(offset) {
+
+    if (!selectedDate) return;
 
     selectedDate.setDate(selectedDate.getDate() + offset);
 
-    // 🔥 ВАЖНО — синхронизируем месяц
+    // синхронизация месяца
     current = new Date(selectedDate);
 
     collapse();
     if (onSelect) onSelect(selectedDate);
   }
 
-  // ===== ИНИЦИАЛИЗАЦИЯ =====
+  // ===============================
+  // SWIPE SUPPORT
+  // ===============================
+  let touchStartX = 0;
 
+  container.addEventListener("touchstart", (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+  });
+
+  container.addEventListener("touchend", (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+
+    if (Math.abs(diff) > 50 && selectedDate) {
+      if (diff > 0) changeDay(-1);
+      else changeDay(1);
+    }
+  });
+
+  // ===============================
+  // INIT
+  // ===============================
   if (initialDate) {
     selectedDate = new Date(initialDate);
-    current = new Date(initialDate);   // 🔥 СИНХРОНИЗАЦИЯ
+    current = new Date(initialDate);
     collapse();
     if (onSelect) onSelect(selectedDate);
   } else {
