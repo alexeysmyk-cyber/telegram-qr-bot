@@ -108,9 +108,12 @@ async function renderVisits() {
         <label>Врач:</label>
         <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
           ${doctors.map(d => `
-            <option value="${d.id}" ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
-              ${d.name}
-            </option>
+           <option value="${d.id}"
+        data-full="${d.name}"
+        data-short="${getShortName(d.name)}"
+        ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
+  ${d.name}
+</option>
           `).join('')}
         </select>
 
