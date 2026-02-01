@@ -66,11 +66,14 @@ function showLoader(container) {
 
 function renderScheduleGrid(data, container, showAll) {
 
-  if (!data.length) {
-    container.innerHTML = "";
-    return;
-  }
+if (!visits.length) {
+  container.innerHTML = `
+    <div class="card empty-state">
+      Записей на ${formatHumanDate(date)} нет
+    </div>
+  `;
 
+  
   // ===== ЕСЛИ ОДИН ВРАЧ (НЕ showAll) =====
   if (!showAll) {
 
