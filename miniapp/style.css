@@ -631,3 +631,8 @@ html, body {
   color: #6c757d;
 }
 
+/* Завершённый визит */
+.slot-default {
+  background: #f0faf4;          /* лёгкий медицинский зелёный */
+  border-left: 4px solid #4caf50;
+}
