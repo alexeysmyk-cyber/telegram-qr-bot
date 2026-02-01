@@ -152,7 +152,8 @@ let html = `
       <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
         ${doctors.map(d => `
           <option value="${d.id}" 
-                  data-short="${d.shortName || d.name}" 
+                  data-short="${getShortName(d.name)}"
+                  data-full="${d.name}"
                   ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
             ${d.name}
           </option>
@@ -167,6 +168,36 @@ let html = `
       </div>
     ` : ``}
 
+  </div>
+
+  <div class="card">
+    <div id="calendar"></div>
+  </div>
+
+  <div class="card">
+    <label>Длительность приёма:</label>
+    <div class="step-slider" id="durationSlider">
+      <div class="step-track"></div>
+      <div class="step-active" id="activeTrack"></div>
+
+      <div class="step-point" data-value="15">15</div>
+      <div class="step-point" data-value="30">30</div>
+      <div class="step-point active" data-value="60">60</div>
+      <div class="step-point" data-value="90">90</div>
+      <div class="step-point" data-value="120">120</div>
+    </div>
+
+    <div class="slot-value">
+      <span id="slotLabel">60 минут</span>
+    </div>
+  </div>
+
+  <div id="scheduleContainer"></div>
+
+  <div class="fixed-bottom">
+    <button id="showScheduleBtn" class="primary-btn">
+      Показать
+    </button>
   </div>
 `;
 
@@ -184,7 +215,23 @@ let html = `
 
     let selectedDate = null;
     let selectedDuration = 60;
-    let showAll = false;
+    if (showBtn) {
+  showBtn.addEventListener("click", () => {
+
+    if (!selectedDate) {
+      alert("Выберите дату");
+      return;
+    }
+
+    loadSchedule({
+      container: scheduleContainer,
+      date: formatLocalDate(selectedDate),
+      doctorId: showAll ? null : doctorSelect.value
+    });
+
+  });
+}
+ = false;
 
     // календарь
     renderCalendar(calendarEl, (date) => {
@@ -199,7 +246,7 @@ let html = `
     }
 
     // директор — показать всех
-let showAll = false;
+
 
 const toggleContainer = document.getElementById("doctorToggle");
 
