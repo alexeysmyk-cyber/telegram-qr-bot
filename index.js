@@ -982,6 +982,19 @@ bot.on('message', (msg) => {
   const chatId = msg.chat.id;
   const text = msg.text;
 
+  const mainButtons = [
+  '💰 Финансы',
+  '⚙️ Настройки',
+  '🏥 Работа в МИС',
+  '📅 Визиты',
+  '⬅️ Назад'
+];
+
+if (mainButtons.includes(text)) {
+  db.state[chatId] = null;
+  saveDB(db);
+}
+
   if (msg.entities && msg.entities.some(e => e.type === 'bot_command')) return;
 
   console.log(`MSG from ${chatId}: ${text}`);
@@ -1352,6 +1365,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
