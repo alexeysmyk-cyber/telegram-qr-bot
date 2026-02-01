@@ -577,4 +577,28 @@ html, body {
 .calendar-hidden {
   display: none;
 }
+.slot-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.star {
+  font-size: 16px;
+  margin-left: 6px;
+}
+
+.star.red {
+  color: #d9534f;
+}
+
+.star.green {
+  color: #28a745;
+}
+
+.past-label {
+  font-size: 11px;
+  color: #888;
+  margin-bottom: 4px;
+}
 
