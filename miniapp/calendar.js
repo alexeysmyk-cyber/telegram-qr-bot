@@ -13,9 +13,17 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     "Сентября","Октября","Ноября","Декабря"
   ];
 
-  function formatHeader(date) {
-    return `${String(date.getDate()).padStart(2,"0")} ${months[date.getMonth()]} ${date.getFullYear()}`;
-  }
+ function formatHeader(date) {
+  const days = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
+  const months = [
+    "Января","Февраля","Марта","Апреля",
+    "Мая","Июня","Июля","Августа",
+    "Сентября","Октября","Ноября","Декабря"
+  ];
+
+  return `${days[date.getDay()]}, ${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+}
+
 
   function buildFull() {
 
@@ -102,11 +110,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
         btn.classList.add("selected");
       }
 
-      btn.onclick = () => {
-        selectedDate = new Date(date);
-        collapse();
-        if (onSelect) onSelect(selectedDate);
-      };
+btn.onclick = () 
 
       grid.appendChild(btn);
     }
