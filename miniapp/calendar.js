@@ -3,47 +3,33 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   let current = new Date();
   current.setHours(0,0,0,0);
 
-  let isSwiping = false;
   let selectedDate = null;
   let touchStartX = 0;
+  let isSwiping = false;
 
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
-// Именительный (для развернутого)
-const monthsNominative = [
-  "Январь","Февраль","Март","Апрель",
-  "Май","Июнь","Июль","Август",
-  "Сентябрь","Октябрь","Ноябрь","Декабрь"
-];
+  const monthsNominative = [
+    "Январь","Февраль","Март","Апрель",
+    "Май","Июнь","Июль","Август",
+    "Сентябрь","Октябрь","Ноябрь","Декабрь"
+  ];
 
-// Родительный (для свернутого)
-const monthsGenitive = [
-  "Января","Февраля","Марта","Апреля",
-  "Мая","Июня","Июля","Августа",
-  "Сентября","Октября","Ноября","Декабря"
-];
+  const monthsGenitive = [
+    "Января","Февраля","Марта","Апреля",
+    "Мая","Июня","Июля","Августа",
+    "Сентября","Октября","Ноября","Декабря"
+  ];
 
+  function formatFullDate(date) {
+    return `${daysFull[date.getDay()]}, ${date.getDate()}-${monthsGenitive[date.getMonth()]}-${date.getFullYear()}`;
+  }
 
-  // ===== Формат полной даты (для свернутого вида)
-// ===== Полная дата (свернутый вид — родительный)
-function formatFullDate(date) {
-  return `${daysFull[date.getDay()]}, ${
-    date.getDate()
-  }-${monthsGenitive[date.getMonth()]}-${
-    date.getFullYear()
-  }`;
-}
+  function formatMonthYear(date) {
+    return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
+  }
 
-// ===== Месяц + год (развернутый — именительный)
-function formatMonthYear(date) {
-  return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
-}
-
-
-  // ===============================
-  // FULL VIEW
-  // ===============================
   function buildFull() {
 
     container.parentElement.classList.remove("compact");
@@ -126,7 +112,14 @@ function formatMonthYear(date) {
         btn.classList.add("selected");
       }
 
-    btn.onclick = () =>
+      btn.onclick = () => {
+
+        if (isSwiping) return;
+
+        selectedDate = new Date(date);
+        collapse();
+        if (onSelect) onSelect(selectedDate);
+      };
 
       grid.appendChild(btn);
     }
@@ -134,9 +127,6 @@ function formatMonthYear(date) {
     container.appendChild(grid);
   }
 
-  // ===============================
-  // COLLAPSED VIEW
-  // ===============================
   function collapse() {
 
     if (!selectedDate) return;
@@ -178,44 +168,40 @@ function formatMonthYear(date) {
     if (onSelect) onSelect(selectedDate);
   }
 
-  // ===============================
-  // SWIPE (только для раскрытого календаря)
-  // ===============================
-container.addEventListener("touchstart", (e) => {
-  isSwiping = false;
-  touchStartX = e.changedTouches[0].screenX;
-});
+  // ===== Swipe =====
 
-container.addEventListener("touchmove", (e) => {
-  const diff = e.changedTouches[0].screenX - touchStartX;
-  if (Math.abs(diff) > 15) {
-    isSwiping = true;
-  }
-});
+  container.addEventListener("touchstart", (e) => {
+    isSwiping = false;
+    touchStartX = e.changedTouches[0].screenX;
+  });
 
-container.addEventListener("touchend", (e) => {
-
-  const diff = e.changedTouches[0].screenX - touchStartX;
-
-  if (Math.abs(diff) < 60) return;
-
-  if (!container.parentElement.classList.contains("compact")) {
-
-    if (diff > 0) {
-      current.setMonth(current.getMonth() - 1);
-    } else {
-      current.setMonth(current.getMonth() + 1);
+  container.addEventListener("touchmove", (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 15) {
+      isSwiping = true;
     }
+  });
 
-    buildFull();
-  }
+  container.addEventListener("touchend", (e) => {
 
-});
+    const diff = e.changedTouches[0].screenX - touchStartX;
 
+    if (Math.abs(diff) < 60) return;
 
-  // ===============================
-  // INIT
-  // ===============================
+    if (!container.parentElement.classList.contains("compact")) {
+
+      if (diff > 0) {
+        current.setMonth(current.getMonth() - 1);
+      } else {
+        current.setMonth(current.getMonth() + 1);
+      }
+
+      buildFull();
+    }
+  });
+
+  // ===== INIT =====
+
   if (initialDate) {
     selectedDate = new Date(initialDate);
     current = new Date(initialDate);
@@ -224,3 +210,4 @@ container.addEventListener("touchend", (e) => {
     buildFull();
   }
 }
+
