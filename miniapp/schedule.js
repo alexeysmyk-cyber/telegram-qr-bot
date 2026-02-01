@@ -73,7 +73,7 @@ function renderScheduleGrid(data, container, showAll) {
 
   let html = "";
 
-  // ===== ОДИН ВРАЧ =====
+  // ===== ЕСЛИ ВЫБРАН ОДИН ВРАЧ =====
   if (!showAll) {
 
     data.forEach(slot => {
@@ -97,28 +97,34 @@ function renderScheduleGrid(data, container, showAll) {
 
   Object.keys(grouped).forEach(doctor => {
 
-    const count = grouped[doctor].length;
+    const visits = grouped[doctor];
+
+    if (!visits.length) return; // если нет визитов — не показываем врача
 
     html += `
       <div class="doctor-block">
 
-        <div class="doctor-header">
+        <div class="doctor-header" data-doctor="${doctor}">
           ${doctor}
-          <span class="count">(${count})</span>
+          <span class="count">(${visits.length})</span>
         </div>
 
         <div class="slots hidden">
     `;
 
-    grouped[doctor].forEach(slot => {
+    visits.forEach(slot => {
       html += renderSlot(slot);
     });
 
-    html += `</div></div>`;
+    html += `
+        </div>
+      </div>
+    `;
   });
 
   container.innerHTML = html;
 
+  // ===== СВОРАЧИВАНИЕ =====
   document.querySelectorAll(".doctor-header").forEach(header => {
     header.addEventListener("click", () => {
       const slots = header.nextElementSibling;
@@ -128,6 +134,7 @@ function renderScheduleGrid(data, container, showAll) {
 
   attachSlotEvents();
 }
+
 
 
 
