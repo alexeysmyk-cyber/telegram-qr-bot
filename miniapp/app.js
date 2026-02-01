@@ -311,9 +311,6 @@ if (showBtn) {
 }
 
 
- const header = document.getElementById("calendarHeader");
-const calendarBlock = document.getElementById("calendar");
-const label = document.getElementById("selectedDateLabel");
 const calendarEl = document.getElementById("calendar");
 const header = document.getElementById("calendarHeader");
 const label = document.getElementById("selectedDateLabel");
@@ -332,7 +329,7 @@ renderCalendar(calendarEl, (date) => {
 
   label.innerText = formatPrettyDate(date);
 
-  // сворачиваем календарь
+  // свернуть календарь
   calendarEl.classList.add("hidden");
   header.classList.remove("hidden");
 
@@ -346,7 +343,7 @@ renderCalendar(calendarEl, (date) => {
   });
 });
 
-// раскрытие по клику на дату
+// раскрыть календарь
 label.addEventListener("click", () => {
   header.classList.add("hidden");
   calendarEl.classList.remove("hidden");
@@ -372,7 +369,6 @@ function changeDay(delta) {
 
 prevBtn.addEventListener("click", () => changeDay(-1));
 nextBtn.addEventListener("click", () => changeDay(1));
-
 
     // слайдер
     if (typeof initStepSlider === "function") {
