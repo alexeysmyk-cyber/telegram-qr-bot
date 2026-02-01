@@ -35,50 +35,41 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
   }
 
- function buildFull() {
+  // ===============================
+  // FULL VIEW
+  // ===============================
+  function buildFull() {
 
-  container.parentElement.classList.remove("compact");
-  container.innerHTML = "";
+    container.parentElement.classList.remove("compact");
+    container.innerHTML = "";
 
-  const header = document.createElement("div");
-  header.className = "calendar-title full-header";
+    const header = document.createElement("div");
+    header.className = "calendar-title full-header";
 
-  const prev = document.createElement("button");
-  prev.className = "nav-btn";
-  prev.innerText = "‹";
+    const prev = document.createElement("button");
+    prev.className = "nav-btn";
+    prev.innerText = "‹";
 
-  const next = document.createElement("button");
-  next.className = "nav-btn";
-  next.innerText = "›";
+    const next = document.createElement("button");
+    next.className = "nav-btn";
+    next.innerText = "›";
 
-  const title = document.createElement("div");
-  title.className = "collapsed-title";
-  title.innerText = formatMonthYear(current);
+    const title = document.createElement("div");
+    title.className = "collapsed-title";
+    title.innerText = formatMonthYear(current);
 
-  // 🔥 ДОБАВЛЕНО
-  title.onclick = () => {
-    if (selectedDate) {
-      current = new Date(selectedDate);
-      collapse();
-    }
-  };
+    // Закрытие по клику на название месяца
+    title.onclick = () => {
+      if (selectedDate) {
+        current = new Date(selectedDate);
+        collapse();
+      }
+    };
 
-  prev.onclick = () => {
-    current.setMonth(current.getMonth() - 1);
-    buildFull();
-  };
-
-  next.onclick = () => {
-    current.setMonth(current.getMonth() + 1);
-    buildFull();
-  };
-
-  header.append(prev, title, next);
-  container.appendChild(header);
-
-  // дальше твой код без изменений
-}
-
+    prev.onclick = () => {
+      current.setMonth(current.getMonth() - 1);
+      buildFull();
+    };
 
     next.onclick = () => {
       current.setMonth(current.getMonth() + 1);
@@ -145,6 +136,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     container.appendChild(grid);
   }
 
+  // ===============================
+  // COLLAPSED VIEW
+  // ===============================
   function collapse() {
 
     if (!selectedDate) return;
@@ -187,9 +181,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // НАДЁЖНЫЙ SWIPE через touchmove
+  // SWIPE через touchmove
   // ===============================
-
   container.addEventListener("touchstart", (e) => {
     if (container.parentElement.classList.contains("compact")) return;
     touchStartX = e.changedTouches[0].screenX;
@@ -217,6 +210,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     }
   });
 
+  // ===============================
+  // INIT
+  // ===============================
   if (initialDate) {
     selectedDate = new Date(initialDate);
     current = new Date(initialDate);
