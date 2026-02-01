@@ -170,6 +170,12 @@ async function renderVisits() {
   const filterSummary = document.getElementById("filterSummary");
   const toggleContainer = document.getElementById("doctorToggle");
 
+  const filterPanel = document.getElementById("filterPanel");
+const editFiltersBtn = document.getElementById("editFiltersBtn");
+
+  const filterPanel = document.getElementById("filterPanel");
+const editFiltersBtn = document.getElementById("editFiltersBtn");
+
   let showCancelled = false;
   let showCompleted = false;
   let showAll = false;
