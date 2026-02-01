@@ -71,11 +71,10 @@ function renderScheduleGrid(data, container, showAll) {
     return;
   }
 
-  let html = "";
-
-  // ===== ЕСЛИ ВЫБРАН ОДИН ВРАЧ =====
+  // ===== ЕСЛИ ОДИН ВРАЧ (НЕ showAll) =====
   if (!showAll) {
 
+    let html = "";
     data.forEach(slot => {
       html += renderSlot(slot);
     });
@@ -95,21 +94,26 @@ function renderScheduleGrid(data, container, showAll) {
     grouped[item.doctor].push(item);
   });
 
-  Object.keys(grouped).forEach(doctor => {
+  const doctors = Object.keys(grouped);
+
+  let html = "";
+
+  doctors.forEach(doctor => {
 
     const visits = grouped[doctor];
+    if (!visits.length) return;
 
-    if (!visits.length) return; // если нет визитов — не показываем врача
+    const autoOpen = doctors.length === 1; // авто раскрытие
 
     html += `
       <div class="doctor-block">
 
-        <div class="doctor-header" data-doctor="${doctor}">
-          ${doctor}
-          <span class="count">(${visits.length})</span>
+        <div class="doctor-header ${autoOpen ? "open" : ""}">
+          <span>${doctor} (${visits.length})</span>
+          <span class="arrow ${autoOpen ? "rotated" : ""}">▾</span>
         </div>
 
-        <div class="slots hidden">
+        <div class="slots ${autoOpen ? "open" : ""}">
     `;
 
     visits.forEach(slot => {
@@ -124,16 +128,25 @@ function renderScheduleGrid(data, container, showAll) {
 
   container.innerHTML = html;
 
-  // ===== СВОРАЧИВАНИЕ =====
+  // ===== АНИМАЦИЯ РАСКРЫТИЯ =====
   document.querySelectorAll(".doctor-header").forEach(header => {
+
     header.addEventListener("click", () => {
+
       const slots = header.nextElementSibling;
-      slots.classList.toggle("hidden");
+      const arrow = header.querySelector(".arrow");
+
+      header.classList.toggle("open");
+      slots.classList.toggle("open");
+      arrow.classList.toggle("rotated");
+
     });
+
   });
 
   attachSlotEvents();
 }
+
 
 
 
