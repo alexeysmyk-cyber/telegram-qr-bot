@@ -78,7 +78,8 @@ function collapse() {
 
   container.innerHTML = "";
   collapsed = true;
-
+container.parentElement.classList.add("compact");
+  
   const wrapper = document.createElement("div");
   wrapper.className = "calendar-collapsed";
 
