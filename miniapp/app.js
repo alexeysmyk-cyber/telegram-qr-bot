@@ -222,39 +222,31 @@ doctorSelect.addEventListener("change", () => {
 
 
   
-  const scheduleContainer = document.getElementById("scheduleContainer");
+const scheduleContainer = document.getElementById("scheduleContainer");
+const scheduleWrapper = scheduleContainer.parentElement;
 
 let touchStartX = 0;
 
-scheduleContainer.addEventListener("touchstart", (e) => {
+scheduleWrapper.addEventListener("touchstart", (e) => {
   touchStartX = e.changedTouches[0].screenX;
 });
 
-scheduleContainer.addEventListener("touchend", (e) => {
-  const touchEndX = e.changedTouches[0].screenX;
-  const diff = touchEndX - touchStartX;
+scheduleWrapper.addEventListener("touchend", (e) => {
 
-  if (Math.abs(diff) > 50) {
+  if (!selectedDate) return;
 
-    if (diff > 0) {
-      selectedDate.setDate(selectedDate.getDate() - 1);
-    } else {
-      selectedDate.setDate(selectedDate.getDate() + 1);
-    }
+  const diff = e.changedTouches[0].screenX - touchStartX;
 
-    loadSchedule({
-      container: scheduleContainer,
-      date: formatLocalDate(selectedDate),
-      doctorId: showAll ? null : doctorSelect.value,
-      showAll,
-      duration: selectedDuration,
-      showCancelled,
-      showCompleted
-    });
+  if (Math.abs(diff) < 60) return;
+
+  if (diff > 0) {
+    selectedDate.setDate(selectedDate.getDate() - 1);
+  } else {
+    selectedDate.setDate(selectedDate.getDate() + 1);
   }
+
+  refreshSchedule();   // используем твою функцию
 });
-
-
 
 
 
