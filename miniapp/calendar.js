@@ -6,8 +6,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   let selectedDate = null;
   let touchStartX = 0;
 
-  const days = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
-  const weekdaysOrder = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
+  const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
   const months = [
     "Января","Февраля","Марта","Апреля",
@@ -15,10 +15,19 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     "Сентября","Октября","Ноября","Декабря"
   ];
 
-  function formatHeader(date) {
-    return `${days[date.getDay()]}, ${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
+  // ===== Формат полной даты (для свернутого вида)
+  function formatFullDate(date) {
+    return `${daysFull[date.getDay()]}, ${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
   }
 
+  // ===== Формат месяца (для развернутого вида)
+  function formatMonthYear(date) {
+    return `${months[date.getMonth()]} ${date.getFullYear()}`;
+  }
+
+  // ===============================
+  // FULL VIEW
+  // ===============================
   function buildFull() {
 
     container.parentElement.classList.remove("compact");
@@ -35,22 +44,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     next.className = "nav-btn";
     next.innerText = "›";
 
-    const headerDate = selectedDate ? selectedDate : current;
-
     const title = document.createElement("div");
     title.className = "collapsed-title";
-    title.innerText = formatHeader(headerDate);
-
-    // ✅ подсветка выходных в заголовке
-    if (headerDate.getDay() === 6) title.classList.add("saturday");
-    if (headerDate.getDay() === 0) title.classList.add("sunday");
-
-    // клик по заголовку → выбрать текущий месяц и свернуть
-    title.onclick = () => {
-      selectedDate = new Date(current);
-      collapse();
-      if (onSelect) onSelect(selectedDate);
-    };
+    title.innerText = formatMonthYear(current);
 
     prev.onclick = () => {
       current.setMonth(current.getMonth() - 1);
@@ -65,11 +61,11 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     header.append(prev, title, next);
     container.appendChild(header);
 
-    // ===== ДНИ НЕДЕЛИ =====
+    // ===== Дни недели
     const weekdays = document.createElement("div");
     weekdays.className = "cal-weekdays";
 
-    weekdaysOrder.forEach((d, index) => {
+    daysShort.forEach((d, index) => {
       const el = document.createElement("div");
       el.innerText = d;
 
@@ -81,7 +77,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
     container.appendChild(weekdays);
 
-    // ===== СЕТКА =====
+    // ===== Сетка
     const grid = document.createElement("div");
     grid.className = "cal-grid";
 
@@ -109,14 +105,13 @@ export function renderCalendar(container, onSelect, initialDate = null) {
       if (dow === 6) btn.classList.add("saturday");
       if (dow === 0) btn.classList.add("sunday");
 
-      // подсветка выбранного
-      if (selectedDate && date.toDateString() === selectedDate.toDateString()) {
+      if (selectedDate &&
+          date.toDateString() === selectedDate.toDateString()) {
         btn.classList.add("selected");
       }
 
       btn.onclick = () => {
         selectedDate = new Date(date);
-        current = new Date(date);
         collapse();
         if (onSelect) onSelect(selectedDate);
       };
@@ -127,6 +122,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     container.appendChild(grid);
   }
 
+  // ===============================
+  // COLLAPSED VIEW
+  // ===============================
   function collapse() {
 
     if (!selectedDate) return;
@@ -145,15 +143,16 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
     const title = document.createElement("div");
     title.className = "collapsed-title";
-    title.innerText = formatHeader(selectedDate);
+    title.innerText = formatFullDate(selectedDate);
 
-    // ✅ подсветка выходных
-    if (selectedDate.getDay() === 6) title.classList.add("saturday");
-    if (selectedDate.getDay() === 0) title.classList.add("sunday");
+    if (selectedDate.getDay() === 6)
+      title.classList.add("saturday");
+
+    if (selectedDate.getDay() === 0)
+      title.classList.add("sunday");
 
     prev.onclick = () => changeDay(-1);
     next.onclick = () => changeDay(1);
-
     title.onclick = () => buildFull();
 
     wrapper.append(prev, title, next);
@@ -167,7 +166,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     if (onSelect) onSelect(selectedDate);
   }
 
-  // ===== СВАЙП =====
+  // ===============================
+  // SWIPE (только для раскрытого календаря)
+  // ===============================
   container.addEventListener("touchstart", (e) => {
     touchStartX = e.changedTouches[0].screenX;
   });
@@ -175,9 +176,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   container.addEventListener("touchend", (e) => {
 
     const diff = e.changedTouches[0].screenX - touchStartX;
+
     if (Math.abs(diff) < 60) return;
 
-    // свайп работает только в раскрытом виде
     if (!container.parentElement.classList.contains("compact")) {
 
       if (diff > 0) {
@@ -190,7 +191,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     }
   });
 
-  // ===== ИНИЦИАЛИЗАЦИЯ =====
+  // ===============================
+  // INIT
+  // ===============================
   if (initialDate) {
     selectedDate = new Date(initialDate);
     current = new Date(initialDate);
