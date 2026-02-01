@@ -6,7 +6,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   let selectedDate = null;
 
   let touchStartX = 0;
-  let hasMoved = false;
+  let swipeDone = false;
 
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
@@ -167,31 +167,25 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // ПРАВИЛЬНЫЙ SWIPE
+  // НАДЁЖНЫЙ SWIPE через touchmove
   // ===============================
 
   container.addEventListener("touchstart", (e) => {
+    if (container.parentElement.classList.contains("compact")) return;
     touchStartX = e.changedTouches[0].screenX;
-    hasMoved = false;
+    swipeDone = false;
   });
 
   container.addEventListener("touchmove", (e) => {
-    const diff = e.changedTouches[0].screenX - touchStartX;
-    if (Math.abs(diff) > 25) {
-      hasMoved = true;
-    }
-  });
 
-  container.addEventListener("touchend", (e) => {
-
-    const isCompact = container.parentElement.classList.contains("compact");
-    if (isCompact) return;
+    if (container.parentElement.classList.contains("compact")) return;
+    if (swipeDone) return;
 
     const diff = e.changedTouches[0].screenX - touchStartX;
 
-    if (hasMoved && Math.abs(diff) > 60) {
+    if (Math.abs(diff) > 70) {
 
-      e.stopPropagation(); // только при реальном свайпе
+      swipeDone = true;
 
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
