@@ -636,3 +636,39 @@ html, body {
   background: #f0faf4;          /* лёгкий медицинский зелёный */
   border-left: 4px solid #4caf50;
 }
+
+/* ===== DOCTOR GROUPING ===== */
+
+.doctor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  padding: 10px 0;
+  cursor: pointer;
+}
+
+.doctor-header .arrow {
+  font-size: 18px;
+  transition: transform 0.25s ease;
+  color: #00a4c7;
+}
+
+.doctor-header .arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* АНИМАЦИЯ */
+
+.slots {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
+}
+
+.slots.open {
+  max-height: 2000px; /* большое значение */
+  opacity: 1;
+}
+
