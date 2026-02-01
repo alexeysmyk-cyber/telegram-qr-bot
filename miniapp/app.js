@@ -109,9 +109,11 @@ async function renderVisits() {
         <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
           ${doctors.map(d => `
             <option value="${d.id}"
-                    ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
-              ${d.name}
-            </option>
+        data-full="${d.name}"
+        data-short="${getShortName(d.name)}"
+        ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
+  ${d.name}
+</option>
           `).join('')}
         </select>
       </div>
@@ -179,6 +181,34 @@ async function renderVisits() {
   // STATE
   // ===============================
   const doctorSelect = document.getElementById("doctorSelect");
+
+function initDoctorSelect() {
+
+  if (!doctorSelect) return;
+
+  function updateClosedText() {
+    const selectedOption = doctorSelect.options[doctorSelect.selectedIndex];
+    selectedOption.textContent = selectedOption.dataset.short;
+  }
+
+  function restoreFullText() {
+    Array.from(doctorSelect.options).forEach(option => {
+      option.textContent = option.dataset.full;
+    });
+  }
+
+  doctorSelect.addEventListener("mousedown", restoreFullText);
+
+  doctorSelect.addEventListener("change", () => {
+    updateClosedText();
+  });
+
+  updateClosedText();
+}
+
+initDoctorSelect();
+
+  
 
 doctorSelect.addEventListener("change", () => {
   refreshSchedule();
