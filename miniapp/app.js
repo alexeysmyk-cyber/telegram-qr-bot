@@ -324,9 +324,18 @@ calendarEl.classList.remove("hidden");
 renderCalendar(calendarEl, (date) => {
   if (!date) return;
 
-  selectedDate = date;
-
   label.innerText = formatPrettyDate(date);
+
+// Удаляем старые классы
+label.classList.remove("saturday", "sunday");
+
+// Добавляем если выходной
+if (date.getDay() === 6) {
+  label.classList.add("saturday");
+}
+if (date.getDay() === 0) {
+  label.classList.add("sunday");
+}
 
   // свернуть календарь
   calendarEl.classList.add("hidden");
