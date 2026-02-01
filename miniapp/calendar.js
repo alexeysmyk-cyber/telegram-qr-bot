@@ -3,6 +3,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   let current = new Date();
   current.setHours(0,0,0,0);
 
+  let isSwiping = false;
   let selectedDate = null;
   let touchStartX = 0;
 
@@ -125,11 +126,7 @@ function formatMonthYear(date) {
         btn.classList.add("selected");
       }
 
-      btn.onclick = () => {
-        selectedDate = new Date(date);
-        collapse();
-        if (onSelect) onSelect(selectedDate);
-      };
+    btn.onclick = () =>
 
       grid.appendChild(btn);
     }
@@ -184,27 +181,37 @@ function formatMonthYear(date) {
   // ===============================
   // SWIPE (только для раскрытого календаря)
   // ===============================
-  container.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
+container.addEventListener("touchstart", (e) => {
+  isSwiping = false;
+  touchStartX = e.changedTouches[0].screenX;
+});
 
-  container.addEventListener("touchend", (e) => {
+container.addEventListener("touchmove", (e) => {
+  const diff = e.changedTouches[0].screenX - touchStartX;
+  if (Math.abs(diff) > 15) {
+    isSwiping = true;
+  }
+});
 
-    const diff = e.changedTouches[0].screenX - touchStartX;
+container.addEventListener("touchend", (e) => {
 
-    if (Math.abs(diff) < 60) return;
+  const diff = e.changedTouches[0].screenX - touchStartX;
 
-    if (!container.parentElement.classList.contains("compact")) {
+  if (Math.abs(diff) < 60) return;
 
-      if (diff > 0) {
-        current.setMonth(current.getMonth() - 1);
-      } else {
-        current.setMonth(current.getMonth() + 1);
-      }
+  if (!container.parentElement.classList.contains("compact")) {
 
-      buildFull();
+    if (diff > 0) {
+      current.setMonth(current.getMonth() - 1);
+    } else {
+      current.setMonth(current.getMonth() + 1);
     }
-  });
+
+    buildFull();
+  }
+
+});
+
 
   // ===============================
   // INIT
