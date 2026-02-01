@@ -245,7 +245,18 @@ scheduleWrapper.addEventListener("touchend", (e) => {
     selectedDate.setDate(selectedDate.getDate() + 1);
   }
 
-  refreshSchedule();   // используем твою функцию
+  // 🔥 Обновляем календарь (чтобы дата в шапке изменилась)
+  renderCalendar(
+    document.getElementById("calendar"),
+    (date) => {
+      selectedDate = new Date(date);
+      refreshSchedule();
+    },
+    selectedDate
+  );
+
+  // 🔥 Обновляем визиты
+  refreshSchedule();
 });
 
 
