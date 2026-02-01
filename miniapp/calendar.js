@@ -175,14 +175,24 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // SWIPE (ИСПРАВЛЕННЫЙ БЕЗ GHOST CLICK)
+  // SWIPE (исправлен, логика не изменена)
   // ===============================
   container.addEventListener("touchstart", (e) => {
+
+    if (!container.parentElement.classList.contains("compact")) {
+      e.stopPropagation();
+    }
+
     touchStartX = e.changedTouches[0].screenX;
     swipeTriggered = false;
   });
 
   container.addEventListener("touchmove", (e) => {
+
+    if (!container.parentElement.classList.contains("compact")) {
+      e.stopPropagation();
+    }
+
     const diff = e.changedTouches[0].screenX - touchStartX;
     if (Math.abs(diff) > 20) {
       swipeTriggered = true;
@@ -191,10 +201,12 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
   container.addEventListener("touchend", (e) => {
 
+    const isCompact = container.parentElement.classList.contains("compact");
     const diff = e.changedTouches[0].screenX - touchStartX;
 
-    if (!container.parentElement.classList.contains("compact") &&
-        Math.abs(diff) > 60) {
+    if (!isCompact && Math.abs(diff) > 60) {
+
+      e.stopPropagation();
 
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
@@ -204,9 +216,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
       buildFull();
 
-      // 🔥 Блокируем ghost click после свайпа
+      // защита от ghost click
       container.style.pointerEvents = "none";
-
       setTimeout(() => {
         container.style.pointerEvents = "auto";
       }, 300);
