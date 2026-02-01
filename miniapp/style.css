@@ -391,33 +391,44 @@ html, body {
 }
 
 .filter-summary {
-  padding: 10px 12px;
+  padding: 12px 14px;
 }
 
-.filter-row {
+.filter-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  margin-bottom: 4px;
 }
 
 .filter-title {
+  font-size: 13px;
   font-weight: 600;
-  font-size: 14px;
 }
 
 .filter-values {
-  font-size: 13px;
-  color: #6c7a86;
-  margin-top: 2px;
+  font-size: 12px;
+  color: #7a8a9a;
+
+  white-space: nowrap;        /* ВАЖНО */
+  overflow: hidden;           /* ВАЖНО */
+  text-overflow: ellipsis;    /* если не помещается — ... */
 }
-.text-btn {
+
+.link-btn {
   background: none;
   border: none;
   color: #00a4c7;
   font-weight: 600;
-  font-size: 14px;
+  font-size: 13px;
   cursor: pointer;
+  padding: 0;
 }
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
 .toggle-line {
   display: flex;
   justify-content: space-between;
