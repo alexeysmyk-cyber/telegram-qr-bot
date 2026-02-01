@@ -110,30 +110,18 @@ export function renderCalendar(container, onSelect, initialDate = null) {
         btn.classList.add("selected");
       }
 
-btn.onclick = () 
+btn.onclick = () => {
+  selectedDate = new Date(date);
+  collapse();
+  if (onSelect) onSelect(selectedDate);
+};
 
       grid.appendChild(btn);
     }
 
     container.appendChild(grid);
 
-    // ✅ Свайп меняет месяц, НЕ выбирает дату
-    container.addEventListener("touchstart", (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    });
-
-    container.addEventListener("touchend", (e) => {
-      const diff = e.changedTouches[0].screenX - touchStartX;
-
-      if (Math.abs(diff) > 60) {
-        if (diff > 0) {
-          current.setMonth(current.getMonth() - 1);
-        } else {
-          current.setMonth(current.getMonth() + 1);
-        }
-        buildFull();
-      }
-    });
+    
   }
 
   function collapse() {
@@ -172,6 +160,34 @@ btn.onclick = ()
     if (onSelect) onSelect(selectedDate);
   }
 
+// ===== СВАЙП (вешаем один раз) =====
+
+container.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+container.addEventListener("touchend", (e) => {
+
+  const diff = e.changedTouches[0].screenX - touchStartX;
+
+  if (Math.abs(diff) < 60) return;
+
+  // свайп работает ТОЛЬКО когда календарь раскрыт
+  if (!container.parentElement.classList.contains("compact")) {
+
+    if (diff > 0) {
+      current.setMonth(current.getMonth() - 1);
+    } else {
+      current.setMonth(current.getMonth() + 1);
+    }
+
+    buildFull();
+  }
+});
+
+
+
+  
   // Инициализация
   if (initialDate) {
     selectedDate = new Date(initialDate);
