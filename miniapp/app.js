@@ -397,6 +397,22 @@ function formatLocalDate(date) {
   return `${dd}.${mm}.${yyyy}`;
 }
 
+function formatPrettyDate(date) {
+  const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+  const months = [
+    "Января","Февраля","Марта","Апреля","Мая","Июня",
+    "Июля","Августа","Сентября","Октября","Ноября","Декабря"
+  ];
+
+  const dayName = days[date.getDay()];
+  const dd = String(date.getDate()).padStart(2, "0");
+  const month = months[date.getMonth()];
+  const yyyy = date.getFullYear();
+
+  return `${dayName}. ${dd}-${month}-${yyyy}`;
+}
+
+
 
 function initStepSlider(onChange) {
   const points = document.querySelectorAll(".step-point");
