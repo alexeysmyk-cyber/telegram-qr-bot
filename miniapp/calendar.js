@@ -5,8 +5,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
   let selectedDate = null;
 
-  let startX = 0;
-  let isDragging = false;
+  let touchStartX = 0;
+  let hasMoved = false;
 
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
@@ -167,30 +167,39 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // POINTER SWIPE (без ghost click)
+  // СТАБИЛЬНЫЙ TOUCH SWIPE
   // ===============================
 
-  container.addEventListener("pointerdown", (e) => {
-    if (container.parentElement.classList.contains("compact")) return;
-    startX = e.clientX;
-    isDragging = true;
+  container.addEventListener("touchstart", (e) => {
+    if (!container.parentElement.classList.contains("compact")) {
+      e.stopPropagation();
+    }
+    touchStartX = e.changedTouches[0].screenX;
+    hasMoved = false;
   });
 
-  container.addEventListener("pointerup", (e) => {
+  container.addEventListener("touchmove", (e) => {
+    const diff = e.changedTouches[0].screenX - touchStartX;
+    if (Math.abs(diff) > 25) {
+      hasMoved = true;
+    }
+  });
 
-    if (!isDragging) return;
-    isDragging = false;
+  container.addEventListener("touchend", (e) => {
 
-    if (container.parentElement.classList.contains("compact")) return;
+    const isCompact = container.parentElement.classList.contains("compact");
+    if (isCompact) return;
 
-    const diff = e.clientX - startX;
+    const diff = e.changedTouches[0].screenX - touchStartX;
 
-    if (Math.abs(diff) > 60) {
+    if (hasMoved && Math.abs(diff) > 60) {
+
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
       } else {
         current.setMonth(current.getMonth() + 1);
       }
+
       buildFull();
     }
   });
