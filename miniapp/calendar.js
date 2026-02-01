@@ -1,76 +1,70 @@
 export function renderCalendar(container, onSelect) {
 
   let current = new Date();
-  current.setDate(1);
+  current.setHours(0,0,0,0);
 
-  const today = new Date();
-  today.setHours(0,0,0,0);
+  let selectedDate = null;
+  let collapsed = false;
 
-  let touchStartX = 0;
-  let touchEndX = 0;
+  function formatHeader(date) {
+    const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+    const months = [
+      "Января","Февраля","Марта","Апреля",
+      "Мая","Июня","Июля","Августа",
+      "Сентября","Октября","Ноября","Декабря"
+    ];
 
-  function build(year, month) {
+    const dayName = days[date.getDay()];
+    const dd = String(date.getDate()).padStart(2, "0");
+    const monthName = months[date.getMonth()];
+    const yyyy = date.getFullYear();
+
+    return `${dayName}. ${dd}-${monthName}-${yyyy}`;
+  }
+
+  function buildFull() {
+
     container.innerHTML = "";
+    collapsed = false;
 
     const header = document.createElement("div");
-    header.className = "cal-header";
+    header.className = "calendar-title";
+    header.innerText = formatHeader(current);
 
-    const title = document.createElement("div");
-    title.className = "cal-title";
-    title.innerText =
-      new Date(year, month)
-        .toLocaleString("ru-RU", { month: "long", year: "numeric" });
-
-    header.appendChild(title);
     container.appendChild(header);
 
     const grid = document.createElement("div");
     grid.className = "cal-grid";
 
-    const daysOfWeek = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
-    daysOfWeek.forEach(d => {
-      const el = document.createElement("div");
-      el.className = "cal-day-name";
-      el.innerText = d;
-      grid.appendChild(el);
-    });
-
-    const firstDay = new Date(year, month, 1);
+    const firstDay = new Date(current.getFullYear(), current.getMonth(), 1);
     let start = firstDay.getDay();
     if (start === 0) start = 7;
 
-    const daysInMonth = new Date(year, month+1, 0).getDate();
+    const daysInMonth =
+      new Date(current.getFullYear(), current.getMonth()+1, 0).getDate();
 
     for (let i=1;i<start;i++){
       grid.appendChild(document.createElement("div"));
     }
 
-    for (let d=1; d<=daysInMonth; d++){
-      const date = new Date(year, month, d);
+    for (let d=1; d<=daysInMonth; d++) {
+
+      const date = new Date(current.getFullYear(), current.getMonth(), d);
       date.setHours(0,0,0,0);
 
       const btn = document.createElement("button");
       btn.className = "cal-day";
       btn.innerText = d;
 
-      const dayOfWeek = date.getDay();
+      const dow = date.getDay();
+      if (dow === 6) btn.classList.add("saturday");
+      if (dow === 0) btn.classList.add("sunday");
 
-      if (date >= today) {
-        if (dayOfWeek === 6) btn.classList.add("saturday");
-        if (dayOfWeek === 0) btn.classList.add("sunday");
-      }
-
-      if (date < today) {
-        btn.classList.add("disabled");
-        btn.disabled = true;
-      } else {
-        btn.onclick = () => {
-          document.querySelectorAll(".cal-day")
-            .forEach(x => x.classList.remove("selected"));
-          btn.classList.add("selected");
-          onSelect(date);
-        };
-      }
+      btn.onclick = () => {
+        selectedDate = new Date(date);
+        collapse();
+        if (onSelect) onSelect(selectedDate);
+      };
 
       grid.appendChild(btn);
     }
@@ -78,32 +72,44 @@ export function renderCalendar(container, onSelect) {
     container.appendChild(grid);
   }
 
-  function nextMonth() {
-    current.setMonth(current.getMonth() + 1);
-    build(current.getFullYear(), current.getMonth());
+  function collapse() {
+
+    if (!selectedDate) return;
+
+    container.innerHTML = "";
+    collapsed = true;
+
+    const wrapper = document.createElement("div");
+    wrapper.className = "calendar-collapsed";
+
+    const prev = document.createElement("button");
+    prev.innerText = "‹";
+
+    const next = document.createElement("button");
+    next.innerText = "›";
+
+    const title = document.createElement("div");
+    title.className = "collapsed-title";
+    title.innerText = formatHeader(selectedDate);
+
+    if (selectedDate.getDay() === 6)
+      title.classList.add("saturday");
+
+    if (selectedDate.getDay() === 0)
+      title.classList.add("sunday");
+
+    prev.onclick = () => changeDay(-1);
+    next.onclick = () => changeDay(1);
+
+    wrapper.append(prev, title, next);
+    container.appendChild(wrapper);
   }
 
-  function prevMonth() {
-    const test = new Date(current);
-    test.setMonth(test.getMonth() - 1);
-
-    if (test < new Date(today.getFullYear(), today.getMonth(), 1)) return;
-
-    current.setMonth(current.getMonth() - 1);
-    build(current.getFullYear(), current.getMonth());
+  function changeDay(offset) {
+    selectedDate.setDate(selectedDate.getDate() + offset);
+    collapse();
+    if (onSelect) onSelect(selectedDate);
   }
 
-  container.addEventListener("touchstart", (e) => {
-    touchStartX = e.changedTouches[0].screenX;
-  });
-
-  container.addEventListener("touchend", (e) => {
-    touchEndX = e.changedTouches[0].screenX;
-    const delta = touchEndX - touchStartX;
-
-    if (delta < -50) nextMonth();
-    if (delta > 50) prevMonth();
-  });
-
-  build(current.getFullYear(), current.getMonth());
+  buildFull();
 }
