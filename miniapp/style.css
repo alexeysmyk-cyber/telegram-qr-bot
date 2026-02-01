@@ -497,11 +497,20 @@ html, body {
 .calendar-collapsed button {
   background: none;
   border: none;
-  font-size: 20px;
+  font-size: 22px;      /* было 18 */
+  width: 34px;          /* было 28 */
+  height: 34px;         /* было 28 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: #00a4c7;
   cursor: pointer;
-  width: 32px;
 }
+.calendar-collapsed button:hover {
+  background: #e6f8fb;
+  border-radius: 8px;
+}
+
 .collapsed-title {
   flex: 1;
   text-align: center;
