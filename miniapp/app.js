@@ -183,7 +183,7 @@ let html = `
   </div>
 
   <div class="filter-values" id="filterSummary">
-    60 мин · все
+    60 мин · Предстоящие
   </div>
 
 </div>
