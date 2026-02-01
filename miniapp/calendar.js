@@ -119,6 +119,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
       }
 
       btn.onclick = () => {
+
+        if (swipeTriggered) return;
+
         selectedDate = new Date(date);
         collapse();
         if (onSelect) onSelect(selectedDate);
@@ -175,7 +178,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // SWIPE (исправлен, логика не изменена)
+  // SWIPE (исправлен, больше ничего не менялось)
   // ===============================
   container.addEventListener("touchstart", (e) => {
 
@@ -208,6 +211,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
       e.stopPropagation();
 
+      swipeTriggered = true;
+
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
       } else {
@@ -216,11 +221,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
       buildFull();
 
-      // защита от ghost click
-      container.style.pointerEvents = "none";
       setTimeout(() => {
-        container.style.pointerEvents = "auto";
-      }, 300);
+        swipeTriggered = false;
+      }, 200);
     }
   });
 
