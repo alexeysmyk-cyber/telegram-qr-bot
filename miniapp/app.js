@@ -347,11 +347,10 @@ label.addEventListener("click", () => {
 });
 
 
-    function changeDay(delta) {
+function changeDay(delta) {
   if (!selectedDate) return;
 
   selectedDate.setDate(selectedDate.getDate() + delta);
-
   label.innerText = formatPrettyDate(selectedDate);
 
   loadSchedule({
@@ -366,6 +365,7 @@ label.addEventListener("click", () => {
 
 prevBtn.addEventListener("click", () => changeDay(-1));
 nextBtn.addEventListener("click", () => changeDay(1));
+;
 
 
     // слайдер
