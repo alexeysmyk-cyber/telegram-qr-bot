@@ -1,31 +1,25 @@
-export function renderCalendar(container, onSelect) {
+export function renderCalendar(container, onSelect, initialDate = null) {
 
   let current = new Date();
   current.setHours(0,0,0,0);
 
   let selectedDate = null;
-  let collapsed = false;
 
   function formatHeader(date) {
-    const days = ["Вс", "Пн", "Вт", "Ср", "Чт", "Пт", "Сб"];
+    const days = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
     const months = [
       "Января","Февраля","Марта","Апреля",
       "Мая","Июня","Июля","Августа",
       "Сентября","Октября","Ноября","Декабря"
     ];
 
-    const dayName = days[date.getDay()];
-    const dd = String(date.getDate()).padStart(2, "0");
-    const monthName = months[date.getMonth()];
-    const yyyy = date.getFullYear();
-
-    return `${dayName}. ${dd}-${monthName}-${yyyy}`;
+    return `${days[date.getDay()]}. ${String(date.getDate()).padStart(2,"0")}-${months[date.getMonth()]}-${date.getFullYear()}`;
   }
 
   function buildFull() {
+
     container.parentElement.classList.remove("compact");
     container.innerHTML = "";
-    collapsed = false;
 
     const header = document.createElement("div");
     header.className = "calendar-title";
@@ -43,11 +37,11 @@ export function renderCalendar(container, onSelect) {
     const daysInMonth =
       new Date(current.getFullYear(), current.getMonth()+1, 0).getDate();
 
-    for (let i=1;i<start;i++){
+    for (let i = 1; i < start; i++) {
       grid.appendChild(document.createElement("div"));
     }
 
-    for (let d=1; d<=daysInMonth; d++) {
+    for (let d = 1; d <= daysInMonth; d++) {
 
       const date = new Date(current.getFullYear(), current.getMonth(), d);
       date.setHours(0,0,0,0);
@@ -55,6 +49,11 @@ export function renderCalendar(container, onSelect) {
       const btn = document.createElement("button");
       btn.className = "cal-day";
       btn.innerText = d;
+
+      if (selectedDate &&
+          date.getTime() === selectedDate.getTime()) {
+        btn.classList.add("selected");
+      }
 
       const dow = date.getDay();
       if (dow === 6) btn.classList.add("saturday");
@@ -72,52 +71,61 @@ export function renderCalendar(container, onSelect) {
     container.appendChild(grid);
   }
 
-function collapse() {
+  function collapse() {
 
-  if (!selectedDate) return;
+    if (!selectedDate) return;
 
-  container.innerHTML = "";
-  collapsed = true;
-container.parentElement.classList.add("compact");
-  
-  const wrapper = document.createElement("div");
-  wrapper.className = "calendar-collapsed";
+    container.innerHTML = "";
+    container.parentElement.classList.add("compact");
 
-  const prev = document.createElement("button");
-  prev.innerText = "‹";
+    const wrapper = document.createElement("div");
+    wrapper.className = "calendar-collapsed";
 
-  const next = document.createElement("button");
-  next.innerText = "›";
+    const prev = document.createElement("button");
+    prev.innerText = "‹";
 
-  const title = document.createElement("div");
-  title.className = "collapsed-title";
-  title.innerText = formatHeader(selectedDate);
+    const next = document.createElement("button");
+    next.innerText = "›";
 
-  if (selectedDate.getDay() === 6)
-    title.classList.add("saturday");
+    const title = document.createElement("div");
+    title.className = "collapsed-title";
+    title.innerText = formatHeader(selectedDate);
 
-  if (selectedDate.getDay() === 0)
-    title.classList.add("sunday");
+    if (selectedDate.getDay() === 6)
+      title.classList.add("saturday");
 
-  // 🔥 ВОТ ЭТО ДОБАВИТЬ
-  title.style.cursor = "pointer";
-  title.onclick = () => {
-    buildFull();
-  };
+    if (selectedDate.getDay() === 0)
+      title.classList.add("sunday");
 
-  prev.onclick = () => changeDay(-1);
-  next.onclick = () => changeDay(1);
+    title.style.cursor = "pointer";
+    title.onclick = () => buildFull();
 
-  wrapper.append(prev, title, next);
-  container.appendChild(wrapper);
-}
+    prev.onclick = () => changeDay(-1);
+    next.onclick = () => changeDay(1);
 
+    wrapper.append(prev, title, next);
+    container.appendChild(wrapper);
+  }
 
   function changeDay(offset) {
+
     selectedDate.setDate(selectedDate.getDate() + offset);
+
+    // 🔥 ВАЖНО — синхронизируем месяц
+    current = new Date(selectedDate);
+
     collapse();
     if (onSelect) onSelect(selectedDate);
   }
 
-  buildFull();
+  // ===== ИНИЦИАЛИЗАЦИЯ =====
+
+  if (initialDate) {
+    selectedDate = new Date(initialDate);
+    current = new Date(initialDate);   // 🔥 СИНХРОНИЗАЦИЯ
+    collapse();
+    if (onSelect) onSelect(selectedDate);
+  } else {
+    buildFull();
+  }
 }
