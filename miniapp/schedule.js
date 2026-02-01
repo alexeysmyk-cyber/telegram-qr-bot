@@ -44,7 +44,7 @@ export async function loadSchedule({
       return false;
     });
 
-    renderScheduleGrid(visits, container, showAll);
+    renderScheduleGrid(visits, container, showAll, date);
 
   } catch (err) {
     container.innerHTML = `<div class="card">Ошибка сервера</div>`;
@@ -66,15 +66,15 @@ function showLoader(container) {
 
 function renderScheduleGrid(data, container, showAll) {
 
-if (!visits.length) {
-  container.innerHTML = `
-    <div class="card empty-state">
-      Записей на ${formatHumanDate(date)} нет
-    </div>
-  `;
-
-  
-  // ===== ЕСЛИ ОДИН ВРАЧ (НЕ showAll) =====
+ // ===== ЕСЛИ ВИЗИТОВ НЕТ =====
+  if (!data || data.length === 0) {
+    container.innerHTML = `
+      <div class="card empty-state">
+        Записей на ${date} нет
+      </div>
+    `;
+    return;
+// ===== ЕСЛИ ОДИН ВРАЧ =====
   if (!showAll) {
 
     let html = "";
@@ -98,7 +98,6 @@ if (!visits.length) {
   });
 
   const doctors = Object.keys(grouped);
-
   let html = "";
 
   doctors.forEach(doctor => {
@@ -106,11 +105,10 @@ if (!visits.length) {
     const visits = grouped[doctor];
     if (!visits.length) return;
 
-    const autoOpen = doctors.length === 1; // авто раскрытие
+    const autoOpen = doctors.length === 1;
 
     html += `
       <div class="doctor-block">
-
         <div class="doctor-header ${autoOpen ? "open" : ""}">
           <span>${doctor} (${visits.length})</span>
           <span class="arrow ${autoOpen ? "rotated" : ""}">▾</span>
@@ -131,7 +129,6 @@ if (!visits.length) {
 
   container.innerHTML = html;
 
-  // ===== АНИМАЦИЯ РАСКРЫТИЯ =====
   document.querySelectorAll(".doctor-header").forEach(header => {
 
     header.addEventListener("click", () => {
@@ -149,7 +146,6 @@ if (!visits.length) {
 
   attachSlotEvents();
 }
-
 
 
 
