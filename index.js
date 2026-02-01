@@ -1025,7 +1025,7 @@ if (text === '⬅️ Назад' && db.state[chatId] === 'MIS') {
     mainKeyboard()
   );
 }
-if (text === '📅 Визиты' && db.state[chatId] === 'MIS') {
+if (text === '📅 Визиты' ) {
   bot.emit('mis_upcoming', msg);
   return;
 }
@@ -1360,6 +1360,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
