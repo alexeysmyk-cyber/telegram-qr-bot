@@ -703,4 +703,9 @@ html, body {
 .sunday {
   color: #dc2626;
 }
+.cal-day.pressing {
+  background: #e5e7eb;
+  transform: scale(0.96);
+  transition: 0.1s;
+}
 
