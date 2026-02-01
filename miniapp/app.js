@@ -311,7 +311,13 @@ if (showBtn) {
 }
 
 
-    // календарь
+ const header = document.getElementById("calendarHeader");
+const calendarBlock = document.getElementById("calendar");
+const label = document.getElementById("selectedDateLabel");
+const prevBtn = document.getElementById("prevDayBtn");
+const nextBtn = document.getElementById("nextDayBtn");
+
+// Рендер календаря
 renderCalendar(calendarEl, (date) => {
   selectedDate = date;
   if (!date) return;
@@ -331,13 +337,6 @@ renderCalendar(calendarEl, (date) => {
   });
 });
 
-
-
-    const header = document.getElementById("calendarHeader");
-const calendarBlock = document.getElementById("calendar");
-const label = document.getElementById("selectedDateLabel");
-const prevBtn = document.getElementById("prevDayBtn");
-const nextBtn = document.getElementById("nextDayBtn");
 
 label.addEventListener("click", () => {
   const header = document.getElementById("calendarHeader");
