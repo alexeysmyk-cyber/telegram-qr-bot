@@ -33,16 +33,12 @@ export async function loadSchedule({
     // ===== ФИЛЬТРАЦИЯ =====
     visits = visits.filter(v => {
 
-      // если фильтры не выбраны → только upcoming
       if (!showCancelled && !showCompleted) {
         return v.status === "upcoming";
       }
 
-      // если выбран хоть один фильтр
       if (v.status === "upcoming") return true;
-
       if (showCancelled && v.status === "refused") return true;
-
       if (showCompleted && v.status === "completed") return true;
 
       return false;
@@ -70,7 +66,6 @@ function showLoader(container) {
 
 function renderScheduleGrid(data, container, showAll) {
 
-  // если нет визитов — ничего не показываем
   if (!data.length) {
     container.innerHTML = "";
     return;
@@ -78,7 +73,7 @@ function renderScheduleGrid(data, container, showAll) {
 
   let html = "";
 
-  // ===== ЕСЛИ ОДИН ВРАЧ — БЕЗ ГРУППИРОВКИ =====
+  // ===== ОДИН ВРАЧ =====
   if (!showAll) {
 
     data.forEach(slot => {
@@ -124,7 +119,6 @@ function renderScheduleGrid(data, container, showAll) {
 
   container.innerHTML = html;
 
-  // ===== СВОРАЧИВАНИЕ =====
   document.querySelectorAll(".doctor-header").forEach(header => {
     header.addEventListener("click", () => {
       const slots = header.nextElementSibling;
@@ -155,7 +149,14 @@ function renderSlot(slot) {
     <div class="slot ${getSlotClass(slot.status)}"
          data-id="${slot.id}">
 
-      ${isPastVisit ? `<div class="past-label">Визит в прошлом</div>` : ""}
+      <div class="slot-meta">
+        <div class="meta-left">
+          ${isPastVisit ? "Визит в прошлом" : ""}
+        </div>
+        <div class="meta-right">
+          ${getStatusText(slot.status)}
+        </div>
+      </div>
 
       <div class="slot-top">
         <div class="time">
@@ -174,6 +175,15 @@ function renderSlot(slot) {
 
 
 
+function getStatusText(status) {
+  if (status === "upcoming") return "Визит ожидается";
+  if (status === "refused") return "Визит отменён";
+  if (status === "completed") return "Визит завершён";
+  return "";
+}
+
+
+
 function getSlotClass(status) {
   if (status === "upcoming") return "slot-active";
   if (status === "refused") return "slot-cancelled";
@@ -188,7 +198,6 @@ function isPast(dateString) {
   const [datePart, timePart] = dateString.split(" ");
   const [dd, mm, yyyy] = datePart.split(".");
 
-  // создаём дату визита как московское время
   const visitUTC = Date.UTC(
     yyyy,
     mm - 1,
@@ -196,7 +205,6 @@ function isPast(dateString) {
     ...timePart.split(":")
   );
 
-  // получаем текущее московское время
   const now = new Date();
 
   const nowMoscow = new Date(
@@ -214,7 +222,6 @@ function isPast(dateString) {
 
   return visitUTC < nowUTC;
 }
-
 
 
 
