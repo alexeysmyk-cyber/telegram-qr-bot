@@ -85,7 +85,7 @@ html, body {
 
 .card {
   background: white;
-  padding: 10px 12px;   /* было 14 */
+  padding: 8px 10px;   /* было 14 */
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.04);
   margin-bottom: 8px;   /* было 12 */
@@ -119,8 +119,10 @@ html, body {
 .cal-grid {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 6px;
+  gap: 4px;              /* было 6 */
+  width: 100%;
 }
+
 
 .cal-day-name {
   text-align: center;
@@ -129,11 +131,13 @@ html, body {
 }
 
 .cal-day {
-  padding: 10px;
-  border-radius: 10px;
+  aspect-ratio: 1 / 1;   /* идеальный квадрат */
+  padding: 0;            /* убираем раздувание */
+  border-radius: 8px;
   border: none;
   background: #f2f8fb;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
 }
 
 .cal-day:hover {
@@ -510,9 +514,8 @@ html, body {
   color: #d9534f;
 }
 .calendar-wrapper {
-  padding: 0;
+  padding: 8px 10px;
 }
-
 .calendar-header {
   display: flex;
   align-items: center;
