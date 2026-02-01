@@ -64,6 +64,48 @@ async function authorize() {
 // ===============================
 // UI логика
 // ===============================
+
+function getShortName(fullName) {
+  const parts = fullName.split(" ");
+  if (parts.length < 2) return fullName;
+
+  const lastName = parts[0];
+  const initials = parts.slice(1)
+    .map(p => p[0] + ".")
+    .join("");
+
+  return `${lastName} ${initials}`;
+}
+
+function initDoctorSelect() {
+  const select = document.getElementById("doctorSelect");
+  if (!select) return;
+
+  function updateClosedText() {
+    const selectedOption = select.options[select.selectedIndex];
+    const short = selectedOption.dataset.short;
+    selectedOption.textContent = short;
+  }
+
+  function restoreFullText() {
+    Array.from(select.options).forEach(option => {
+      option.textContent = option.dataset.full;
+    });
+  }
+
+  // При открытии
+  select.addEventListener("mousedown", restoreFullText);
+
+  // При выборе
+  select.addEventListener("change", () => {
+    updateClosedText();
+  });
+
+  // Инициализация
+  updateClosedText();
+}
+
+
 function setActive(tab) {
   visitsTab.classList.remove('active');
   scheduleTab.classList.remove('active');
@@ -163,7 +205,7 @@ async function renderVisits() {
     // ===============================
     // ИНИЦИАЛИЗАЦИЯ
     // ===============================
-
+   initDoctorSelect();
     const calendarEl = document.getElementById("calendar");
     const showBtn = document.getElementById("showScheduleBtn");
     const doctorSelect = document.getElementById("doctorSelect");
