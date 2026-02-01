@@ -4,13 +4,12 @@
 
 html, body {
   height: 100%;
-  overflow: hidden;          /* 🔥 запрещаем scroll страницы */
   margin: 0;
-  padding: 0;
+  overflow: hidden;              /* страница не скроллится */
   background: #f4f7fb;
   font-family: Inter, sans-serif;
   color: #1f2d3d;
-  overscroll-behavior: none; /* 🔥 убираем bounce */
+  overscroll-behavior: none;
 }
 
 body {
@@ -20,9 +19,15 @@ body {
 
 #content {
   flex: 1;
-  overflow-y: auto;          /* scroll только здесь */
-  -webkit-overflow-scrolling: touch;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;              /* убираем scroll отсюда */
   padding-top: 6px;
+}
+#scheduleContainer {
+  flex: 1;                       /* занимает всё оставшееся место */
+  overflow-y: auto;              /* scroll только здесь */
+  -webkit-overflow-scrolling: touch;
   padding-bottom: 90px;
 }
 
