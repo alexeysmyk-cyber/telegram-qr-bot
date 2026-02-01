@@ -235,6 +235,14 @@ const editFiltersBtn = document.getElementById("editFiltersBtn");
     updateFilterSummary();
   });
 
+  
+initStepSlider((value) => {
+  selectedDuration = value;
+  updateFilterSummary();
+});
+
+
+  
   // ===============================
   // Calendar
   // ===============================
@@ -271,12 +279,61 @@ const editFiltersBtn = document.getElementById("editFiltersBtn");
 }
 
 // ===============================
+function updateFilterSummary() {
+  let parts = [];
+
+  parts.push(selectedDuration + " мин");
+
+  if (!showCancelled && !showCompleted) {
+    parts.push("Все");
+  } else {
+    if (showCancelled) parts.push("Отменённые");
+    if (showCompleted) parts.push("Завершённые");
+  }
+
+  filterSummary.innerText = parts.join(" • ");
+}
+
+
+
+
 function formatLocalDate(date) {
   const dd = String(date.getDate()).padStart(2, "0");
   const mm = String(date.getMonth() + 1).padStart(2, "0");
   const yyyy = date.getFullYear();
   return `${dd}.${mm}.${yyyy}`;
 }
+function initStepSlider(onChange) {
+
+  const points = document.querySelectorAll(".step-point");
+  const activeTrack = document.getElementById("activeTrack");
+
+  const values = [15, 30, 60, 90, 120];
+
+  points.forEach((point, index) => {
+
+    point.addEventListener("click", () => {
+
+      document.querySelectorAll(".step-point")
+        .forEach(p => p.classList.remove("active"));
+
+      point.classList.add("active");
+
+      const value = Number(point.dataset.value);
+
+      const percent = (index / (values.length - 1)) * 100;
+      activeTrack.style.width = percent + "%";
+
+      if (onChange) onChange(value);
+    });
+
+  });
+
+  const defaultIndex = values.indexOf(60);
+  activeTrack.style.width =
+    (defaultIndex / (values.length - 1)) * 100 + "%";
+}
+
 
 // ===============================
 function renderSchedule() {
