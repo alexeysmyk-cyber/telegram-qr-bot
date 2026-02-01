@@ -381,25 +381,9 @@ initStepSlider((value) => {
       });
     },
     selectedDate
+);
+  
 
-let touchStartX = 0;
-
-container.addEventListener("touchstart", (e) => {
-  touchStartX = e.changedTouches[0].screenX;
-});
-
-container.addEventListener("touchend", (e) => {
-  const touchEndX = e.changedTouches[0].screenX;
-  const diff = touchEndX - touchStartX;
-
-  if (Math.abs(diff) > 50) {
-    if (diff > 0) {
-      changeDay(-1); // свайп вправо → назад
-    } else {
-      changeDay(1); // свайп влево → вперёд
-    }
-  }
-});
 
 
 
