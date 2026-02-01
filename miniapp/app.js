@@ -1,3 +1,7 @@
+console.log("Telegram:", window.Telegram);
+console.log("initData:", window.Telegram?.WebApp?.initData);
+console.log("initDataUnsafe:", window.Telegram?.WebApp?.initDataUnsafe);
+
 // ===============================
 // Telegram Mini App Init
 // ===============================
