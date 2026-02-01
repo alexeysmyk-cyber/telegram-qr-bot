@@ -23,7 +23,7 @@ export function renderCalendar(container, onSelect) {
   }
 
   function buildFull() {
-
+    container.parentElement.classList.remove("compact");
     container.innerHTML = "";
     collapsed = false;
 
