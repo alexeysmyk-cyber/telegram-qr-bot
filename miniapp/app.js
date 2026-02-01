@@ -325,32 +325,29 @@ const prevBtn = document.getElementById("prevDayBtn");
 const nextBtn = document.getElementById("nextDayBtn");
 
 // начальное состояние
+// ===== ИНИЦИАЛИЗАЦИЯ КАЛЕНДАРЯ =====
+
 header.classList.add("hidden");
-calendarEl.classList.remove("hidden");
 
-// выбор даты
-renderCalendar(calendarEl, (date) => {
-  if (!date) return;
+// сегодняшняя дата
+const today = new Date();
+selectedDate = new Date(today);
 
-  label.innerText = formatPrettyDate(date);
+// показываем выбранную дату в заголовке
+label.innerText = formatPrettyDate(selectedDate);
 
-// Удаляем старые классы
 label.classList.remove("saturday", "sunday");
-
-// Добавляем если выходной
-if (date.getDay() === 6) {
+if (selectedDate.getDay() === 6) {
   label.classList.add("saturday");
 }
-if (date.getDay() === 0) {
+if (selectedDate.getDay() === 0) {
   label.classList.add("sunday");
 }
 
-  // свернуть календарь
-
-
-  loadSchedule({
+// сразу загружаем визиты
+loadSchedule({
   container: scheduleContainer,
-  date: formatLocalDate(date),
+  date: formatLocalDate(selectedDate),
   doctorId: showAll ? null : doctorSelect.value,
   showAll: showAll,
   duration: selectedDuration,
@@ -358,7 +355,36 @@ if (date.getDay() === 0) {
   showCompleted
 });
 
+// строим календарь
+renderCalendar(calendarEl, (date) => {
+
+  if (!date) return;
+
+  selectedDate = new Date(date);
+
+  label.innerText = formatPrettyDate(selectedDate);
+
+  label.classList.remove("saturday", "sunday");
+
+  if (selectedDate.getDay() === 6) {
+    label.classList.add("saturday");
+  }
+  if (selectedDate.getDay() === 0) {
+    label.classList.add("sunday");
+  }
+
+  loadSchedule({
+    container: scheduleContainer,
+    date: formatLocalDate(selectedDate),
+    doctorId: showAll ? null : doctorSelect.value,
+    showAll: showAll,
+    duration: selectedDuration,
+    showCancelled,
+    showCompleted
+  });
+
 });
+
 
 // раскрыть календарь
 label.addEventListener("click", () => {
