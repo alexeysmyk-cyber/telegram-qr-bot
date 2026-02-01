@@ -298,8 +298,7 @@ function updateFilterSummary() {
     // ИНИЦИАЛИЗАЦИЯ
     // ===============================
    initDoctorSelect();
-    const calendarEl = document.getElementById("calendar");
-    const showBtn = document.getElementById("showScheduleBtn");
+     const showBtn = document.getElementById("showScheduleBtn");
     const doctorSelect = document.getElementById("doctorSelect");
     const scheduleContainer = document.getElementById("scheduleContainer");
 
