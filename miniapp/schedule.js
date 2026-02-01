@@ -188,15 +188,33 @@ function isPast(dateString) {
   const [datePart, timePart] = dateString.split(" ");
   const [dd, mm, yyyy] = datePart.split(".");
 
-  const visitDate = new Date(
+  // создаём дату визита как московское время
+  const visitUTC = Date.UTC(
     yyyy,
     mm - 1,
     dd,
     ...timePart.split(":")
   );
 
-  return visitDate < new Date();
+  // получаем текущее московское время
+  const now = new Date();
+
+  const nowMoscow = new Date(
+    now.toLocaleString("en-US", { timeZone: "Europe/Moscow" })
+  );
+
+  const nowUTC = Date.UTC(
+    nowMoscow.getFullYear(),
+    nowMoscow.getMonth(),
+    nowMoscow.getDate(),
+    nowMoscow.getHours(),
+    nowMoscow.getMinutes(),
+    nowMoscow.getSeconds()
+  );
+
+  return visitUTC < nowUTC;
 }
+
 
 
 
