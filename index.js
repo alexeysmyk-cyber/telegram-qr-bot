@@ -269,7 +269,13 @@ function mainKeyboard() {
     reply_markup: {
       keyboard: [
         ['💰 Финансы', '⚙️ Настройки'],
-        ['🏥 Работа в МИС','📅 Визиты']
+        [
+          {
+            text: '🏥 Работа в МИС',
+            web_app: { url: 'https://sreda-clinic.bothost.ru/miniapp' }
+          },
+          '📅 Визиты'
+        ]
       ],
       resize_keyboard: true
     }
@@ -999,20 +1005,6 @@ bot.on('message', (msg) => {
     return bot.sendMessage(chatId, 'Главное меню', keyboard);
   }
 
-if (text === '🏥 Работа в МИС') {
-  return bot.sendMessage(chatId, '🏥 Работа в МИС', {
-    reply_markup: {
-      inline_keyboard: [
-        [{
-          text: 'Открыть систему',
-          web_app: {
-            url: 'https://sreda-clinic.bothost.ru/miniapp'
-          }
-        }]
-      ]
-    }
-  });
-}
 
   
 if (text === '⬅️ Назад' && db.state[chatId] === 'MIS') {
@@ -1360,6 +1352,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
