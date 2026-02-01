@@ -260,7 +260,7 @@ let html = `
 
     content.innerHTML = html;
 
-    let showCancelled = false;
+let showCancelled = false;
 let showCompleted = false;
 
 const filterPanel = document.getElementById("filterPanel");
@@ -380,11 +380,15 @@ showBtn.addEventListener("click", () => {
     return;
   }
 
-  loadSchedule({
-    container: scheduleContainer,
-    date: formatLocalDate(selectedDate),
-    doctorId: showAll ? null : doctorSelect.value
-  });
+loadSchedule({
+  container: scheduleContainer,
+  date: formatLocalDate(selectedDate),
+  doctorId: showAll ? null : doctorSelect.value,
+  duration: selectedDuration,
+  showCancelled: showCancelled,
+  showCompleted: showCompleted
+});
+
 
 });
 
