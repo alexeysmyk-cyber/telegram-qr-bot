@@ -353,7 +353,7 @@ if (date.getDay() === 0) {
 // раскрыть календарь
 label.addEventListener("click", () => {
   header.classList.add("hidden");
-  calendarEl.classList.remove("hidden");
+  calendarEl.classList.remove("calendar-hidden");
 });
 
 // смена дня стрелками
