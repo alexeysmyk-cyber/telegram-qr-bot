@@ -74,9 +74,10 @@ html, body {
 #content {
   flex: 1;
   overflow-y: auto;
-  padding-top: 12px;
-  padding-bottom: 100px; /* место под кнопку */
+  padding-top: 6px;   /* было 12 */
+  padding-bottom: 90px;
 }
+
 
 /* ============================= */
 /* КАРТОЧКИ */
@@ -84,10 +85,10 @@ html, body {
 
 .card {
   background: white;
-  padding: 14px;
+  padding: 10px 12px;   /* было 14 */
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-  margin-bottom: 12px;
+  box-shadow: 0 3px 8px rgba(0,0,0,0.04);
+  margin-bottom: 8px;   /* было 12 */
 }
 
 /* ============================= */
