@@ -330,19 +330,43 @@ const nextBtn = document.getElementById("nextDayBtn");
 header.classList.add("hidden");
 
 // сегодняшняя дата
+// сегодняшняя дата
 const today = new Date();
 selectedDate = new Date(today);
 
-// показываем выбранную дату в заголовке
+// выводим дату
 label.innerText = formatPrettyDate(selectedDate);
 
 label.classList.remove("saturday", "sunday");
-if (selectedDate.getDay() === 6) {
-  label.classList.add("saturday");
-}
-if (selectedDate.getDay() === 0) {
-  label.classList.add("sunday");
-}
+if (selectedDate.getDay() === 6) label.classList.add("saturday");
+if (selectedDate.getDay() === 0) label.classList.add("sunday");
+
+// строим календарь
+renderCalendar(calendarEl, (date) => {
+  if (!date) return;
+
+  selectedDate = new Date(date);
+
+  label.innerText = formatPrettyDate(selectedDate);
+
+  label.classList.remove("saturday", "sunday");
+  if (selectedDate.getDay() === 6) label.classList.add("saturday");
+  if (selectedDate.getDay() === 0) label.classList.add("sunday");
+
+  loadSchedule({
+    container: scheduleContainer,
+    date: formatLocalDate(selectedDate),
+    doctorId: showAll ? null : doctorSelect.value,
+    showAll: showAll,
+    duration: selectedDuration,
+    showCancelled,
+    showCompleted
+  });
+
+  // сворачиваем после выбора
+  calendarEl.classList.add("calendar-hidden");
+  header.classList.remove("hidden");
+});
 
 // сразу загружаем визиты
 loadSchedule({
@@ -355,64 +379,9 @@ loadSchedule({
   showCompleted
 });
 
-// строим календарь
-renderCalendar(calendarEl, (date) => {
-
-  if (!date) return;
-
-  selectedDate = new Date(date);
-
-  label.innerText = formatPrettyDate(selectedDate);
-
-  label.classList.remove("saturday", "sunday");
-
-  if (selectedDate.getDay() === 6) {
-    label.classList.add("saturday");
-  }
-  if (selectedDate.getDay() === 0) {
-    label.classList.add("sunday");
-  }
-
-  loadSchedule({
-    container: scheduleContainer,
-    date: formatLocalDate(selectedDate),
-    doctorId: showAll ? null : doctorSelect.value,
-    showAll: showAll,
-    duration: selectedDuration,
-    showCancelled,
-    showCompleted
-  });
-
-});
-
-
-// раскрыть календарь
-label.addEventListener("click", () => {
-  header.classList.add("hidden");
-  calendarEl.classList.remove("calendar-hidden");
-});
-
-// смена дня стрелками
-function changeDay(delta) {
-  if (!selectedDate) return;
-
-  selectedDate.setDate(selectedDate.getDate() + delta);
-
-  label.innerText = formatPrettyDate(selectedDate);
-
-loadSchedule({
-  container: scheduleContainer,
-  date: formatLocalDate(selectedDate),
-  doctorId: showAll ? null : doctorSelect.value,
-  showAll: showAll,
-  duration: selectedDuration,
-  showCancelled,
-  showCompleted
-});
-}
-
-prevBtn.addEventListener("click", () => changeDay(-1));
-nextBtn.addEventListener("click", () => changeDay(1));
+// 🔥 ВАЖНО — сразу свернуть календарь при старте
+calendarEl.classList.add("calendar-hidden");
+header.classList.remove("hidden");
 
     // слайдер
     if (typeof initStepSlider === "function") {
