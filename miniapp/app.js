@@ -245,7 +245,7 @@ scheduleWrapper.addEventListener("touchend", (e) => {
     selectedDate.setDate(selectedDate.getDate() + 1);
   }
 
-  // обновляем календарь
+  // 🔥 Обновляем календарь
   renderCalendar(
     document.getElementById("calendar"),
     (date) => {
@@ -255,6 +255,8 @@ scheduleWrapper.addEventListener("touchend", (e) => {
     selectedDate
   );
 
+  // 🔥 ОБЯЗАТЕЛЬНО обновляем визиты
+  refreshSchedule();
 });
 
 
