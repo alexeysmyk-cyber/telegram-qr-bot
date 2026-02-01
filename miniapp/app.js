@@ -179,6 +179,16 @@ async function renderVisits() {
   // STATE
   // ===============================
   const doctorSelect = document.getElementById("doctorSelect");
+
+doctorSelect.addEventListener("change", () => {
+  refreshSchedule();
+});
+
+
+
+
+
+  
   const scheduleContainer = document.getElementById("scheduleContainer");
 
 let touchStartX = 0;
@@ -248,6 +258,20 @@ editFiltersBtn.addEventListener("click", () => {
   let showCompleted = false;
   let showAll = false;
 
+  function refreshSchedule() {
+  if (!selectedDate) return;
+
+  loadSchedule({
+    container: scheduleContainer,
+    date: formatLocalDate(selectedDate),
+    doctorId: showAll ? null : doctorSelect.value,
+    showAll,
+    duration: selectedDuration,
+    showCancelled,
+    showCompleted
+  });
+}
+
 function updateFilterSummary() {
   let parts = [];
 
@@ -277,6 +301,9 @@ function updateFilterSummary() {
         btn.classList.add("active");
         showAll = btn.dataset.mode === "all";
         doctorSelect.disabled = showAll;
+        
+        refreshSchedule();
+        
       });
     });
   }
@@ -285,22 +312,22 @@ function updateFilterSummary() {
   // Filters
   // ===============================
 
-  toggleCancelled.addEventListener("change", () => {
-    showCancelled = toggleCancelled.checked;
-    updateFilterSummary();
-  });
-
-  toggleCompleted.addEventListener("change", () => {
-    showCompleted = toggleCompleted.checked;
-    updateFilterSummary();
-  });
-
+toggleCancelled.addEventListener("change", () => {
+  showCancelled = toggleCancelled.checked;
+  updateFilterSummary();
+  refreshSchedule(); // ← добавили
+});
+toggleCompleted.addEventListener("change", () => {
+  showCompleted = toggleCompleted.checked;
+  updateFilterSummary();
+  refreshSchedule();
+});
   
 initStepSlider((value) => {
   selectedDuration = value;
   updateFilterSummary();
+  refreshSchedule();
 });
-
 
   
   // ===============================
