@@ -482,19 +482,29 @@ html, body {
 
 /* Свернутый календарь */
 
+.calendar-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 6px 12px;
+}
+
 .calendar-collapsed button {
   background: none;
   border: none;
-  font-size: 18px;
+  font-size: 20px;
   color: #00a4c7;
   cursor: pointer;
+  width: 32px;
 }
 
 .collapsed-title {
+  flex: 1;
+  text-align: center;
   font-weight: 600;
   font-size: 14px;
 }
-
 .collapsed-title.saturday,
 .collapsed-title.sunday {
   color: #d9534f;
