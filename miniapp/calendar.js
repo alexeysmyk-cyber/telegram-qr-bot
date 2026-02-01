@@ -72,38 +72,45 @@ export function renderCalendar(container, onSelect) {
     container.appendChild(grid);
   }
 
-  function collapse() {
+function collapse() {
 
-    if (!selectedDate) return;
+  if (!selectedDate) return;
 
-    container.innerHTML = "";
-    collapsed = true;
+  container.innerHTML = "";
+  collapsed = true;
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "calendar-collapsed";
+  const wrapper = document.createElement("div");
+  wrapper.className = "calendar-collapsed";
 
-    const prev = document.createElement("button");
-    prev.innerText = "‹";
+  const prev = document.createElement("button");
+  prev.innerText = "‹";
 
-    const next = document.createElement("button");
-    next.innerText = "›";
+  const next = document.createElement("button");
+  next.innerText = "›";
 
-    const title = document.createElement("div");
-    title.className = "collapsed-title";
-    title.innerText = formatHeader(selectedDate);
+  const title = document.createElement("div");
+  title.className = "collapsed-title";
+  title.innerText = formatHeader(selectedDate);
 
-    if (selectedDate.getDay() === 6)
-      title.classList.add("saturday");
+  if (selectedDate.getDay() === 6)
+    title.classList.add("saturday");
 
-    if (selectedDate.getDay() === 0)
-      title.classList.add("sunday");
+  if (selectedDate.getDay() === 0)
+    title.classList.add("sunday");
 
-    prev.onclick = () => changeDay(-1);
-    next.onclick = () => changeDay(1);
+  // 🔥 ВОТ ЭТО ДОБАВИТЬ
+  title.style.cursor = "pointer";
+  title.onclick = () => {
+    buildFull();
+  };
 
-    wrapper.append(prev, title, next);
-    container.appendChild(wrapper);
-  }
+  prev.onclick = () => changeDay(-1);
+  next.onclick = () => changeDay(1);
+
+  wrapper.append(prev, title, next);
+  container.appendChild(wrapper);
+}
+
 
   function changeDay(offset) {
     selectedDate.setDate(selectedDate.getDate() + offset);
