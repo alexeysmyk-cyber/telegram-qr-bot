@@ -171,60 +171,57 @@ let html = `
   </div>
 
 
-
-<div class="card filter-summary">
+<div class="card filter-card">
 
   <div class="filter-header">
     <span class="filter-title">Фильтры</span>
-
     <button id="editFiltersBtn" class="link-btn">
       Изменить
     </button>
   </div>
 
   <div class="filter-values" id="filterSummary">
-    60 мин · Предстоящие
+    60 мин · Все
+  </div>
+
+  <div class="filter-panel hidden" id="filterPanel">
+
+    <label>Длительность приёма:</label>
+
+    <div class="step-slider" id="durationSlider">
+      <div class="step-track"></div>
+      <div class="step-active" id="activeTrack"></div>
+
+      <div class="step-point" data-value="15">15</div>
+      <div class="step-point" data-value="30">30</div>
+      <div class="step-point active" data-value="60">60</div>
+      <div class="step-point" data-value="90">90</div>
+      <div class="step-point" data-value="120">120</div>
+    </div>
+
+    <div class="toggles">
+
+      <div class="toggle-line">
+        <span>Показать отменённые</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleCancelled">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+      <div class="toggle-line">
+        <span>Показать завершённые</span>
+        <label class="switch">
+          <input type="checkbox" id="toggleCompleted">
+          <span class="slider"></span>
+        </label>
+      </div>
+
+    </div>
+
   </div>
 
 </div>
-
-<div class="card filter-panel hidden" id="filterPanel">
-
-  <label>Длительность приёма:</label>
-
-  <div class="step-slider" id="durationSlider">
-    <div class="step-track"></div>
-    <div class="step-active" id="activeTrack"></div>
-
-    <div class="step-point" data-value="15">15</div>
-    <div class="step-point" data-value="30">30</div>
-    <div class="step-point active" data-value="60">60</div>
-    <div class="step-point" data-value="90">90</div>
-    <div class="step-point" data-value="120">120</div>
-  </div>
-
-  <div class="toggles">
-
-    <div class="toggle-line">
-      <span>Показать отменённые</span>
-      <label class="switch">
-        <input type="checkbox" id="toggleCancelled">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-    <div class="toggle-line">
-      <span>Показать завершённые</span>
-      <label class="switch">
-        <input type="checkbox" id="toggleCompleted">
-        <span class="slider"></span>
-      </label>
-    </div>
-
-  </div>
-
-</div>
-
 
 
 <div class="card calendar-wrapper">
@@ -260,8 +257,19 @@ const toggleCancelled = document.getElementById("toggleCancelled");
 const toggleCompleted = document.getElementById("toggleCompleted");
 
 toggleFiltersBtn.addEventListener("click", () => {
-  filterPanel.classList.toggle("hidden");
+
+  const isHidden = filterPanel.classList.contains("hidden");
+
+  if (isHidden) {
+    filterPanel.classList.remove("hidden");
+    toggleFiltersBtn.innerText = "Свернуть";
+  } else {
+    filterPanel.classList.add("hidden");
+    toggleFiltersBtn.innerText = "Изменить";
+  }
+
 });
+
 
 toggleCancelled.addEventListener("change", () => {
   showCancelled = toggleCancelled.checked;
