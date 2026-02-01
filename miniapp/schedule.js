@@ -63,8 +63,7 @@ function showLoader(container) {
 }
 
 
-
-function renderScheduleGrid(data, container, showAll) {
+function renderScheduleGrid(data, container, showAll, date) {
 
  // ===== ЕСЛИ ВИЗИТОВ НЕТ =====
   if (!data || data.length === 0) {
@@ -74,6 +73,8 @@ function renderScheduleGrid(data, container, showAll) {
       </div>
     `;
     return;
+  }
+    
 // ===== ЕСЛИ ОДИН ВРАЧ =====
   if (!showAll) {
 
