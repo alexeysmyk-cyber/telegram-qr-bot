@@ -138,7 +138,10 @@ async function renderVisits() {
 
 <div class="filter-panel hidden" id="filterPanel">
 
-  <label>Длительность приёма:</label>
+ <label>
+  Длительность приёма:
+  <span id="durationValue">60 минут</span>
+</label>
 
   <div class="step-slider" id="durationSlider">
     <div class="step-track"></div>
