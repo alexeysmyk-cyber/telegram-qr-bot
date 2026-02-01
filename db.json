@@ -67,27 +67,16 @@
   "state": {
     "133334492": "MIS",
     "260414970": "MIS",
+    "310418501": "MIS",
     "648009056": "WAIT_MIS_ID",
     "1582980728": null,
     "5900607039": "MIS",
     "7485978153": "MIS",
-    "5280146224": "MIS",
-    "310418501": "MIS"
+    "5280146224": "MIS"
   },
   "pending": [],
   "notify_pending": [],
   "notify_settings": {
-    "5280146224": {
-      "visit_create": "all",
-      "visit_cancel": "all",
-      "visit_finish": "all",
-      "patient_create": true,
-      "invoice_create": true,
-      "invoice_pay": true,
-      "lab_partial": true,
-      "lab_full": true,
-      "visit_move": "all"
-    }, 
     "133334492": {
       "visit_create": "all",
       "visit_cancel": "all",
@@ -98,8 +87,30 @@
       "lab_partial": true,
       "lab_full": true,
       "visit_move": "all"
-    }, 
-      "1582980728": {
+    },
+    "310418501": {
+      "visit_create": "none",
+      "visit_cancel": "none",
+      "visit_finish": "none",
+      "invoice_create": false,
+      "patient_create": false,
+      "invoice_pay": false,
+      "lab_partial": false,
+      "lab_full": false,
+      "visit_move": "none"
+    },
+    "1582980728": {
+      "visit_create": "all",
+      "visit_cancel": "all",
+      "visit_finish": "all",
+      "patient_create": true,
+      "invoice_create": true,
+      "invoice_pay": true,
+      "lab_partial": true,
+      "lab_full": true,
+      "visit_move": "all"
+    },
+    "5280146224": {
       "visit_create": "all",
       "visit_cancel": "all",
       "visit_finish": "all",
@@ -120,36 +131,16 @@
       "lab_partial": false,
       "lab_full": false,
       "visit_move": "none"
-    },
-       "310418501": {
-      "visit_create": "none",
-      "visit_cancel": "none",
-      "visit_finish": "none",
-      "invoice_create": false,
-      "patient_create": false,
-      "invoice_pay": false,
-      "lab_partial": false,
-      "lab_full": false,
-      "visit_move": "none"
     }
   },
   "notify_admin_limits": {
+    "133334492": {},
+    "310418501": {},
     "1582980728": {},
     "7485978153": {},
-     "133334492": {},
-     "5280146224": {},
-     "310418501": {}
+    "5280146224": {}
   },
   "users": {
-   "1582980728": {
-      "username": "Admin",
-      "mis_id": "43347"
-    },
-    
-     "310418501": {
-      "username": "Dmitrii_Bogoslovski",
-      "mis_id": "440099"
-    },
     "133334492": {
       "username": "Dr_EkaterinaSmyk",
       "mis_id": "43347"
@@ -158,9 +149,17 @@
       "username": "urolog_ageeva",
       "mis_id": null
     },
+    "310418501": {
+      "username": "Dmitrii_Bogoslovski",
+      "mis_id": "440099"
+    },
     "648009056": {
       "username": "ssierrraa",
       "mis_id": null
+    },
+    "1582980728": {
+      "username": "Admin",
+      "mis_id": "43347"
     },
     "5900607039": {
       "username": "SPBPeptides",
@@ -176,6 +175,17 @@
     }
   },
   "scheduled_notifications": {
+    "133334492": {
+      "upcoming_visits": [
+        {
+          "id": "uv_1700000004444",
+          "enabled": true,
+          "mode": "all",
+          "time": "18:00",
+          "last_sent": null
+        }
+      ]
+    },
     "7485978153": {
       "upcoming_visits": [
         {
@@ -193,21 +203,32 @@
           "last_sent": null
         }
       ]
-    },
-  "133334492": {
-      "upcoming_visits": [
-               {
-          "id": "uv_1700000004444",
-          "enabled": true,
-          "mode": "all",
-          "time": "18:00",
-          "last_sent": null
-        }
-      ]
     }
-
-
-    
   },
-  "lab_history": []
+  "lab_history": [
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "33762799",
+      "patient": "Фельзинг Ксения Юрьевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_33762799_1769895939278.pdf",
+      "date": "2026-01-31T21:45:39.279Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "33833126",
+      "patient": "Ломаченко Елена Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_33833126_1769895941234.pdf",
+      "date": "2026-01-31T21:45:41.236Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "33833126",
+      "patient": "Ломаченко Елена Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_33833126_1769895943049.pdf",
+      "date": "2026-01-31T21:45:43.051Z"
+    }
+  ]
 }
