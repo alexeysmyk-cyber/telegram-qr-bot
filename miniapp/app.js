@@ -338,8 +338,7 @@ if (date.getDay() === 0) {
 }
 
   // свернуть календарь
-  calendarEl.classList.add("hidden");
-  header.classList.remove("hidden");
+
 
   loadSchedule({
     container: scheduleContainer,
