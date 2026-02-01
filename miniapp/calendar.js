@@ -167,13 +167,10 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // СТАБИЛЬНЫЙ TOUCH SWIPE
+  // ПРАВИЛЬНЫЙ SWIPE
   // ===============================
 
   container.addEventListener("touchstart", (e) => {
-    if (!container.parentElement.classList.contains("compact")) {
-      e.stopPropagation();
-    }
     touchStartX = e.changedTouches[0].screenX;
     hasMoved = false;
   });
@@ -193,6 +190,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     const diff = e.changedTouches[0].screenX - touchStartX;
 
     if (hasMoved && Math.abs(diff) > 60) {
+
+      e.stopPropagation(); // только при реальном свайпе
 
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
