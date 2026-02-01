@@ -357,3 +357,50 @@ html, body {
 .slot:hover {
   transform: translateY(-2px);
 }
+/* ============================= */
+/* ВЫБОР ВРАЧА */
+/* ============================= */
+
+.doctor-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.doctor-select-wrapper {
+  flex: 1;
+}
+
+#doctorSelect {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid #e6e6e6;
+  background: white;
+  font-size: 14px;
+  font-weight: 600;
+  color: #1f2d3d;
+}
+
+/* Toggle Мои / Все */
+
+.doctor-toggle {
+  display: flex;
+  background: #f0f6f8;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.toggle-btn {
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #6b7b8c;
+  transition: all 0.2s ease;
+}
+
+.toggle-btn.active {
+  background: #00a4c7;
+  color: white;
+}
