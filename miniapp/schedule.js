@@ -2,6 +2,7 @@ export async function loadSchedule({
   container,
   date,
   doctorId,
+  showAll,
   duration,
   showCancelled,
   showCompleted
@@ -27,6 +28,26 @@ export async function loadSchedule({
       return;
     }
 
+let visits = data.data;
+
+visits = visits.filter(v => {
+
+  // если ни один фильтр не выбран → только upcoming
+  if (!showCancelled && !showCompleted) {
+    return v.status === "upcoming";
+  }
+
+  if (showCancelled && v.status === "refused") return true;
+  if (showCompleted && v.status === "completed") return true;
+  if (v.status === "upcoming") return true;
+
+  return false;
+});
+
+renderScheduleGrid(visits, container);
+
+
+    
     renderScheduleGrid(data.data, container);
 
   } catch (err) {
@@ -54,14 +75,18 @@ function renderScheduleGrid(data, container) {
     return;
   }
 
-  const grouped = {};
+  if (!showAll) {
+  renderDoctorBlock("Мои визиты", data, container);
+  return;
+}
+const grouped = {};
+data.forEach(item => {
+  if (!grouped[item.doctor]) {
+    grouped[item.doctor] = [];
+  }
+  grouped[item.doctor].push(item);
+});
 
-  data.forEach(item => {
-    if (!grouped[item.doctor]) {
-      grouped[item.doctor] = [];
-    }
-    grouped[item.doctor].push(item);
-  });
 
   let html = "";
 
