@@ -170,7 +170,7 @@ let html = `
 
   </div>
 
-<div class="card filter-summary">
+
 
 <div class="card filter-summary">
 
@@ -248,7 +248,7 @@ let showCancelled = false;
 let showCompleted = false;
 
 const filterPanel = document.getElementById("filterPanel");
-const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+const toggleFiltersBtn = document.getElementById("editFiltersBtn");
 const filterSummary = document.getElementById("filterSummary");
 const toggleCancelled = document.getElementById("toggleCancelled");
 const toggleCompleted = document.getElementById("toggleCompleted");
@@ -299,22 +299,9 @@ function updateFilterSummary() {
 
     let showAll = false;
     let selectedDate = null;
-    let selectedDuration = 60;
+  //  let selectedDuration = 60;
 if (showBtn) {
-  showBtn.addEventListener("click", () => {
 
-    if (!selectedDate) {
-      alert("Выберите дату");
-      return;
-    }
-
-    loadSchedule({
-      container: scheduleContainer,
-      date: formatLocalDate(selectedDate),
-      doctorId: showAll ? null : doctorSelect.value
-    });
-
-  });
 }
 
 
