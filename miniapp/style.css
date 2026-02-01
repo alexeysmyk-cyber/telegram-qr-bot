@@ -511,5 +511,34 @@ html, body {
 .collapsed-title.sunday {
   color: #d9534f;
 }
+.calendar-wrapper {
+  padding: 12px;
+}
+
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.calendar-header.hidden {
+  display: none;
+}
+
+.selected-date {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.nav-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #00a4c7;
+  cursor: pointer;
+}
 
 
