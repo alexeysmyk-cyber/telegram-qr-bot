@@ -6,26 +6,23 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   let selectedDate = null;
 
   let touchStartX = 0;
-  let isSwiping = false;
+  let swipeTriggered = false;
 
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
-  // Именительный (развернутый)
   const monthsNominative = [
     "Январь","Февраль","Март","Апрель",
     "Май","Июнь","Июль","Август",
     "Сентябрь","Октябрь","Ноябрь","Декабрь"
   ];
 
-  // Родительный (свернутый)
   const monthsGenitive = [
     "Января","Февраля","Марта","Апреля",
     "Мая","Июня","Июля","Августа",
     "Сентября","Октября","Ноября","Декабря"
   ];
 
-  // ===== Формат полной даты (свернутый)
   function formatFullDate(date) {
     return `${daysFull[date.getDay()]}, ${
       date.getDate()
@@ -34,7 +31,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     }`;
   }
 
-  // ===== Формат месяца (развернутый)
   function formatMonthYear(date) {
     return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
   }
@@ -75,7 +71,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     header.append(prev, title, next);
     container.appendChild(header);
 
-    // ===== Дни недели
     const weekdays = document.createElement("div");
     weekdays.className = "cal-weekdays";
 
@@ -91,7 +86,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
     container.appendChild(weekdays);
 
-    // ===== Сетка дней
     const grid = document.createElement("div");
     grid.className = "cal-grid";
 
@@ -125,9 +119,6 @@ export function renderCalendar(container, onSelect, initialDate = null) {
       }
 
       btn.onclick = () => {
-
-        if (isSwiping) return;   // 🔥 защита от ложного клика
-
         selectedDate = new Date(date);
         collapse();
         if (onSelect) onSelect(selectedDate);
@@ -184,17 +175,17 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // SWIPE (исправленный)
+  // SWIPE (ИСПРАВЛЕННЫЙ БЕЗ GHOST CLICK)
   // ===============================
   container.addEventListener("touchstart", (e) => {
     touchStartX = e.changedTouches[0].screenX;
-    isSwiping = false;
+    swipeTriggered = false;
   });
 
   container.addEventListener("touchmove", (e) => {
     const diff = e.changedTouches[0].screenX - touchStartX;
     if (Math.abs(diff) > 20) {
-      isSwiping = true;
+      swipeTriggered = true;
     }
   });
 
@@ -212,11 +203,14 @@ export function renderCalendar(container, onSelect, initialDate = null) {
       }
 
       buildFull();
-    }
 
-    setTimeout(() => {
-      isSwiping = false;
-    }, 50);
+      // 🔥 Блокируем ghost click после свайпа
+      container.style.pointerEvents = "none";
+
+      setTimeout(() => {
+        container.style.pointerEvents = "auto";
+      }, 300);
+    }
   });
 
   // ===============================
