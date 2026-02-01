@@ -180,6 +180,47 @@ async function renderVisits() {
   // ===============================
   const doctorSelect = document.getElementById("doctorSelect");
   const scheduleContainer = document.getElementById("scheduleContainer");
+
+let touchStartX = 0;
+
+scheduleContainer.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+scheduleContainer.addEventListener("touchend", (e) => {
+  const touchEndX = e.changedTouches[0].screenX;
+  const diff = touchEndX - touchStartX;
+
+  if (Math.abs(diff) > 50) {
+
+    if (diff > 0) {
+      selectedDate.setDate(selectedDate.getDate() - 1);
+    } else {
+      selectedDate.setDate(selectedDate.getDate() + 1);
+    }
+
+    loadSchedule({
+      container: scheduleContainer,
+      date: formatLocalDate(selectedDate),
+      doctorId: showAll ? null : doctorSelect.value,
+      showAll,
+      duration: selectedDuration,
+      showCancelled,
+      showCompleted
+    });
+  }
+});
+
+
+
+
+
+
+
+
+
+
+  
   const toggleCancelled = document.getElementById("toggleCancelled");
   const toggleCompleted = document.getElementById("toggleCompleted");
   const filterSummary = document.getElementById("filterSummary");
@@ -283,6 +324,32 @@ initStepSlider((value) => {
       });
     },
     selectedDate
+
+let touchStartX = 0;
+
+container.addEventListener("touchstart", (e) => {
+  touchStartX = e.changedTouches[0].screenX;
+});
+
+container.addEventListener("touchend", (e) => {
+  const touchEndX = e.changedTouches[0].screenX;
+  const diff = touchEndX - touchStartX;
+
+  if (Math.abs(diff) > 50) {
+    if (diff > 0) {
+      changeDay(-1); // свайп вправо → назад
+    } else {
+      changeDay(1); // свайп влево → вперёд
+    }
+  }
+});
+
+
+
+
+
+
+    
   );
 
   // 🔥 Автозагрузка сегодняшнего дня
