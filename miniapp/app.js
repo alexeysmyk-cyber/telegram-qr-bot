@@ -145,60 +145,31 @@ async function renderVisits() {
       return;
     }
 
-    let html = `
-      <div class="card">
-        <label>Врач:</label>
-        <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
-          ${doctors.map(d => `
-           <option value="${d.id}"
-        data-full="${d.name}"
-        data-short="${getShortName(d.name)}"
-        ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
-  ${d.name}
-</option>
-          `).join('')}
-        </select>
+let html = `
+  <div class="card doctor-row">
 
-        ${isDirector ? `
-          <div class="toggle-all">
-            <button id="toggleAllBtn" class="secondary-btn">
-              Показать для всех
-            </button>
-          </div>
-        ` : ``}
+    <div class="doctor-select-wrapper">
+      <select id="doctorSelect" ${!isDirector ? 'disabled' : ''}>
+        ${doctors.map(d => `
+          <option value="${d.id}" 
+                  data-short="${d.shortName || d.name}" 
+                  ${String(d.id) === String(currentDoctorId) ? 'selected' : ''}>
+            ${d.name}
+          </option>
+        `).join('')}
+      </select>
+    </div>
+
+    ${isDirector ? `
+      <div class="doctor-toggle" id="doctorToggle">
+        <div class="toggle-btn active" data-mode="self">Мои</div>
+        <div class="toggle-btn" data-mode="all">Все</div>
       </div>
+    ` : ``}
 
-      <div class="card">
-        <div id="calendar"></div>
-      </div>
+  </div>
+`;
 
-      <div class="card">
-        <label>Длительность приёма:</label>
-
-        <div class="step-slider" id="durationSlider">
-          <div class="step-track"></div>
-          <div class="step-active" id="activeTrack"></div>
-
-          <div class="step-point" data-value="15">15</div>
-          <div class="step-point" data-value="30">30</div>
-          <div class="step-point active" data-value="60">60</div>
-          <div class="step-point" data-value="90">90</div>
-          <div class="step-point" data-value="120">120</div>
-        </div>
-
-        <div class="slot-value">
-          <span id="slotLabel">60 минут</span>
-        </div>
-      </div>
-
-      <div id="scheduleContainer"></div>
-
-      <div class="fixed-bottom">
-        <button id="showScheduleBtn" class="primary-btn">
-          Показать
-        </button>
-      </div>
-    `;
 
     content.innerHTML = html;
 
