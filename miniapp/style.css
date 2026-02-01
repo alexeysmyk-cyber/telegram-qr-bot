@@ -537,3 +537,8 @@ html, body {
 .hidden {
   display: none !important;
 }
+.selected-date.saturday,
+.selected-date.sunday {
+  color: #d9534f;
+}
+
