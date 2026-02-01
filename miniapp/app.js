@@ -224,17 +224,6 @@ let html = `
 </div>
 
 
-<div class="card calendar-wrapper">
-  <div id="calendarHeader" class="calendar-header hidden">
-    <button id="prevDayBtn" class="nav-btn">‹</button>
-    <div id="selectedDateLabel" class="selected-date"></div>
-    <button id="nextDayBtn" class="nav-btn">›</button>
-  </div>
-
-  <div id="calendar"></div>
-</div>
-
-
   <div id="scheduleContainer"></div>
 
   <div class="fixed-bottom">
@@ -319,70 +308,35 @@ if (showBtn) {
 
 
 const calendarEl = document.getElementById("calendar");
-const header = document.getElementById("calendarHeader");
-const label = document.getElementById("selectedDateLabel");
-const prevBtn = document.getElementById("prevDayBtn");
-const nextBtn = document.getElementById("nextDayBtn");
+
+// сегодняшняя дата
+selectedDate = new Date();
+
+// строим календарь
+renderCalendar(
+  calendarEl,
+  (date) => {
+
+    selectedDate = new Date(date);
+
+    loadSchedule({
+      container: scheduleContainer,
+      date: formatLocalDate(selectedDate),
+      doctorId: showAll ? null : doctorSelect.value,
+      showAll: showAll,
+      duration: selectedDuration,
+      showCancelled,
+      showCompleted
+    });
+
+  },
+  selectedDate // ← передаём сегодняшнюю дату
+);
+
 
 // начальное состояние
 // ===== ИНИЦИАЛИЗАЦИЯ КАЛЕНДАРЯ =====
 
-header.classList.add("hidden");
-
-// сегодняшняя дата
-// сегодняшняя дата
-const today = new Date();
-selectedDate = new Date(today);
-
-// выводим дату
-label.innerText = formatPrettyDate(selectedDate);
-
-label.classList.remove("saturday", "sunday");
-if (selectedDate.getDay() === 6) label.classList.add("saturday");
-if (selectedDate.getDay() === 0) label.classList.add("sunday");
-
-// строим календарь
-renderCalendar(calendarEl, (date) => {
-  if (!date) return;
-
-  selectedDate = new Date(date);
-
-  label.innerText = formatPrettyDate(selectedDate);
-
-  label.classList.remove("saturday", "sunday");
-  if (selectedDate.getDay() === 6) label.classList.add("saturday");
-  if (selectedDate.getDay() === 0) label.classList.add("sunday");
-
-  loadSchedule({
-    container: scheduleContainer,
-    date: formatLocalDate(selectedDate),
-    doctorId: showAll ? null : doctorSelect.value,
-    showAll: showAll,
-    duration: selectedDuration,
-    showCancelled,
-    showCompleted
-  });
-
-  // сворачиваем после выбора
-  // после renderCalendar(...)
-calendarEl.classList.add("calendar-hidden");
-header.classList.remove("hidden");
-});
-
-// сразу загружаем визиты
-loadSchedule({
-  container: scheduleContainer,
-  date: formatLocalDate(selectedDate),
-  doctorId: showAll ? null : doctorSelect.value,
-  showAll: showAll,
-  duration: selectedDuration,
-  showCancelled,
-  showCompleted
-});
-
-// 🔥 ВАЖНО — сразу свернуть календарь при старте
-calendarEl.classList.add("calendar-hidden");
-header.classList.remove("hidden");
 
     // слайдер
     if (typeof initStepSlider === "function") {
