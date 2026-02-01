@@ -602,3 +602,32 @@ html, body {
   margin-bottom: 4px;
 }
 
+.slot-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.meta-left {
+  color: #999;
+}
+
+.meta-right {
+  font-weight: 500;
+}
+
+/* Цвета статусов */
+
+.slot-active .meta-right {
+  color: #00a4c7;
+}
+
+.slot-cancelled .meta-right {
+  color: #d9534f;
+}
+
+.slot-default .meta-right {
+  color: #6c757d;
+}
+
