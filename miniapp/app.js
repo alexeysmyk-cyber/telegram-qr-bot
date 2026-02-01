@@ -188,12 +188,41 @@ async function renderVisits() {
   const filterPanel = document.getElementById("filterPanel");
 const editFiltersBtn = document.getElementById("editFiltersBtn");
 
-  const filterPanel = document.getElementById("filterPanel");
-const editFiltersBtn = document.getElementById("editFiltersBtn");
+editFiltersBtn.addEventListener("click", () => {
+
+  const isHidden = filterPanel.classList.contains("hidden");
+
+  if (isHidden) {
+    filterPanel.classList.remove("hidden");
+    editFiltersBtn.innerText = "Свернуть";
+  } else {
+    filterPanel.classList.add("hidden");
+    editFiltersBtn.innerText = "Изменить";
+  }
+
+});
+  
 
   let showCancelled = false;
   let showCompleted = false;
   let showAll = false;
+
+function updateFilterSummary() {
+  let parts = [];
+
+  parts.push(selectedDuration + " мин");
+
+  if (!showCancelled && !showCompleted) {
+    parts.push("Все");
+  } else {
+    if (showCancelled) parts.push("Отменённые");
+    if (showCompleted) parts.push("Завершённые");
+  }
+
+  filterSummary.innerText = parts.join(" • ");
+}
+
+  
 
   // ===============================
   // Director toggle
@@ -214,16 +243,6 @@ const editFiltersBtn = document.getElementById("editFiltersBtn");
   // ===============================
   // Filters
   // ===============================
-  function updateFilterSummary() {
-    let parts = ["60 мин"];
-    if (!showCancelled && !showCompleted) {
-      parts.push("Все");
-    } else {
-      if (showCancelled) parts.push("Отменённые");
-      if (showCompleted) parts.push("Завершённые");
-    }
-    filterSummary.innerText = parts.join(" • ");
-  }
 
   toggleCancelled.addEventListener("change", () => {
     showCancelled = toggleCancelled.checked;
@@ -279,20 +298,7 @@ initStepSlider((value) => {
 }
 
 // ===============================
-function updateFilterSummary() {
-  let parts = [];
 
-  parts.push(selectedDuration + " мин");
-
-  if (!showCancelled && !showCompleted) {
-    parts.push("Все");
-  } else {
-    if (showCancelled) parts.push("Отменённые");
-    if (showCompleted) parts.push("Завершённые");
-  }
-
-  filterSummary.innerText = parts.join(" • ");
-}
 
 
 
