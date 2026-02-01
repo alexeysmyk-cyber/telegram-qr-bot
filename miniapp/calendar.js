@@ -21,9 +21,19 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     container.parentElement.classList.remove("compact");
     container.innerHTML = "";
 
-    const header = document.createElement("div");
-    header.className = "calendar-title";
-    header.innerText = formatHeader(current);
+  const header = document.createElement("div");
+header.className = "calendar-title";
+header.innerText = formatHeader(current);
+
+// 👉 добавляем возможность свернуть календарь
+header.style.cursor = "pointer";
+header.onclick = () => {
+  if (!selectedDate) {
+    selectedDate = new Date(current);
+  }
+  collapse();
+  if (onSelect) onSelect(selectedDate);
+};
 
     container.appendChild(header);
 
