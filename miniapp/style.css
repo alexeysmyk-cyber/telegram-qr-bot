@@ -541,4 +541,7 @@ html, body {
 .selected-date.sunday {
   color: #d9534f;
 }
+.calendar-hidden {
+  display: none;
+}
 
