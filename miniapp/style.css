@@ -414,6 +414,10 @@ html, body {
   overflow: hidden;           /* ВАЖНО */
   text-overflow: ellipsis;    /* если не помещается — ... */
 }
+.filter-panel {
+  margin-top: 12px;
+  transition: all 0.25s ease;
+}
 
 .link-btn {
   background: none;
