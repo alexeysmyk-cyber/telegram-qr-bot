@@ -365,33 +365,24 @@ initStepSlider((value) => {
   // ===============================
   selectedDate = new Date();
 
-  renderCalendar(
-    document.getElementById("calendar"),
-    (date) => {
-      selectedDate = new Date(date);
+renderCalendar(
+  document.getElementById("calendar"),
+  (date) => {
+    selectedDate = new Date(date);
 
-      loadSchedule({
-        container: scheduleContainer,
-        date: formatLocalDate(selectedDate),
-        doctorId: showAll ? null : doctorSelect.value,
-        showAll,
-        duration: selectedDuration,
-        showCancelled,
-        showCompleted
-      });
-    },
-    selectedDate
+    loadSchedule({
+      container: scheduleContainer,
+      date: formatLocalDate(selectedDate),
+      doctorId: showAll ? null : doctorSelect.value,
+      showAll,
+      duration: selectedDuration,
+      showCancelled,
+      showCompleted
+    });
+  },
+  selectedDate
 );
-  
 
-
-
-
-
-
-
-    
-  );
 
   // 🔥 Автозагрузка сегодняшнего дня
   loadSchedule({
