@@ -1,7 +1,10 @@
 export async function loadSchedule({
   container,
   date,
-  doctorId
+  doctorId,
+  duration,
+  showCancelled,
+  showCompleted
 }) {
 
   showLoader(container);
