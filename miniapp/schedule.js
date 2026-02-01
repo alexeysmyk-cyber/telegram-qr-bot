@@ -125,7 +125,11 @@ function getSlotClass(status) {
   return "slot-default";
 }
 
-
+function isPast(dateString) {
+  const now = new Date();
+  const visitDate = new Date(dateString);
+  return visitDate < now;
+}
 
 function attachSlotEvents() {
   document.querySelectorAll(".slot").forEach(slot => {
