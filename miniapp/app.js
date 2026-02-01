@@ -166,7 +166,7 @@ async function renderVisits() {
   </div>
 
 </div>
-
+</div>
 
     <div class="card calendar-wrapper">
       <div id="calendar"></div>
