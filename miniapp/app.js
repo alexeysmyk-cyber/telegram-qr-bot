@@ -172,17 +172,18 @@ let html = `
 
 <div class="card filter-summary">
 
-  <div class="filter-row">
-    <div class="filter-info">
-      <div class="filter-title">Фильтры</div>
-      <div class="filter-values" id="filterSummary">
-        60 мин • Все
-      </div>
-    </div>
+<div class="card filter-summary">
 
-    <button id="toggleFiltersBtn" class="text-btn">
+  <div class="filter-header">
+    <span class="filter-title">Фильтры</span>
+
+    <button id="editFiltersBtn" class="link-btn">
       Изменить
     </button>
+  </div>
+
+  <div class="filter-values" id="filterSummary">
+    60 мин · все
   </div>
 
 </div>
@@ -230,23 +231,6 @@ let html = `
     <div id="calendar"></div>
   </div>
 
-  <div class="card">
-    <label>Длительность приёма:</label>
-    <div class="step-slider" id="durationSlider">
-      <div class="step-track"></div>
-      <div class="step-active" id="activeTrack"></div>
-
-      <div class="step-point" data-value="15">15</div>
-      <div class="step-point" data-value="30">30</div>
-      <div class="step-point active" data-value="60">60</div>
-      <div class="step-point" data-value="90">90</div>
-      <div class="step-point" data-value="120">120</div>
-    </div>
-
-    <div class="slot-value">
-      <span id="slotLabel">60 минут</span>
-    </div>
-  </div>
 
   <div id="scheduleContainer"></div>
 
