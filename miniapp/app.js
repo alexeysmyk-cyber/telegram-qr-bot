@@ -425,6 +425,11 @@ function initStepSlider(onChange) {
       point.classList.add("active");
 
       const value = Number(point.dataset.value);
+const durationValue = document.getElementById("durationValue");
+if (durationValue) {
+  durationValue.innerText = value + " минут";
+}
+      
 
       const percent = (index / (values.length - 1)) * 100;
       activeTrack.style.width = percent + "%";
