@@ -312,10 +312,18 @@ if (showBtn) {
 
 
     // календарь
-    renderCalendar(calendarEl, (date) => {
+renderCalendar(calendarEl, (date) => {
   selectedDate = date;
-
   if (!date) return;
+
+  const header = document.getElementById("calendarHeader");
+  const calendarBlock = document.getElementById("calendar");
+  const label = document.getElementById("selectedDateLabel");
+
+  label.innerText = formatPrettyDate(date);
+
+  header.classList.remove("hidden");
+  calendarBlock.style.display = "none";
 
   loadSchedule({
     container: scheduleContainer,
@@ -326,6 +334,39 @@ if (showBtn) {
     showCompleted
   });
 });
+
+
+    const header = document.getElementById("calendarHeader");
+const calendarBlock = document.getElementById("calendar");
+const label = document.getElementById("selectedDateLabel");
+const prevBtn = document.getElementById("prevDayBtn");
+const nextBtn = document.getElementById("nextDayBtn");
+
+label.addEventListener("click", () => {
+  header.classList.add("hidden");
+  calendarBlock.style.display = "block";
+});
+
+    function changeDay(delta) {
+  if (!selectedDate) return;
+
+  selectedDate.setDate(selectedDate.getDate() + delta);
+
+  label.innerText = formatPrettyDate(selectedDate);
+
+  loadSchedule({
+    container: scheduleContainer,
+    date: formatLocalDate(selectedDate),
+    doctorId: showAll ? null : doctorSelect.value,
+    duration: selectedDuration,
+    showCancelled,
+    showCompleted
+  });
+}
+
+prevBtn.addEventListener("click", () => changeDay(-1));
+nextBtn.addEventListener("click", () => changeDay(1));
+
 
     // слайдер
     if (typeof initStepSlider === "function") {
