@@ -16,70 +16,40 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     return `${days[date.getDay()]}. ${String(date.getDate()).padStart(2,"0")}-${months[date.getMonth()]}-${date.getFullYear()}`;
   }
 
-  function buildFull() {
-
-    container.parentElement.classList.remove("compact");
-    container.innerHTML = "";
+function buildFull() {
+  container.parentElement.classList.remove("compact");
+  container.innerHTML = "";
+  collapsed = false;
 
   const header = document.createElement("div");
-header.className = "calendar-title";
-header.innerText = formatHeader(current);
+  header.className = "calendar-title full-header";
 
-// 👉 добавляем возможность свернуть календарь
-header.style.cursor = "pointer";
-header.onclick = () => {
-  if (!selectedDate) {
+  const prev = document.createElement("button");
+  prev.innerText = "‹";
+  prev.className = "nav-btn";
+
+  const next = document.createElement("button");
+  next.innerText = "›";
+  next.className = "nav-btn";
+
+  const title = document.createElement("div");
+  title.className = "collapsed-title";
+  title.innerText = formatHeader(current);
+
+  // клик по заголовку → свернуть
+  title.style.cursor = "pointer";
+  title.onclick = () => {
     selectedDate = new Date(current);
-  }
-  collapse();
-  if (onSelect) onSelect(selectedDate);
-};
+    collapse();
+    if (onSelect) onSelect(selectedDate);
+  };
 
-    container.appendChild(header);
+  prev.onclick = () => changeDay(-1);
+  next.onclick = () => changeDay(1);
 
-    const grid = document.createElement("div");
-    grid.className = "cal-grid";
+  header.append(prev, title, next);
+  container.appendChild(header);
 
-    const firstDay = new Date(current.getFullYear(), current.getMonth(), 1);
-    let start = firstDay.getDay();
-    if (start === 0) start = 7;
-
-    const daysInMonth =
-      new Date(current.getFullYear(), current.getMonth()+1, 0).getDate();
-
-    for (let i = 1; i < start; i++) {
-      grid.appendChild(document.createElement("div"));
-    }
-
-    for (let d = 1; d <= daysInMonth; d++) {
-
-      const date = new Date(current.getFullYear(), current.getMonth(), d);
-      date.setHours(0,0,0,0);
-
-      const btn = document.createElement("button");
-      btn.className = "cal-day";
-      btn.innerText = d;
-
-      if (selectedDate &&
-          date.getTime() === selectedDate.getTime()) {
-        btn.classList.add("selected");
-      }
-
-      const dow = date.getDay();
-      if (dow === 6) btn.classList.add("saturday");
-      if (dow === 0) btn.classList.add("sunday");
-
-      btn.onclick = () => {
-        selectedDate = new Date(date);
-        collapse();
-        if (onSelect) onSelect(selectedDate);
-      };
-
-      grid.appendChild(btn);
-    }
-
-    container.appendChild(grid);
-  }
 
   function collapse() {
 
