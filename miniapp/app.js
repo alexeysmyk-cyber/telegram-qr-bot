@@ -133,7 +133,7 @@ async function renderVisits() {
       </div>
 
       <div class="filter-values" id="filterSummary">
-        60 мин · Все
+        60 мин · Предстоящие
       </div>
 
 <div class="filter-panel hidden" id="filterPanel">
