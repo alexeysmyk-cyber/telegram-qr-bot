@@ -213,9 +213,10 @@ let html = `
     const doctorSelect = document.getElementById("doctorSelect");
     const scheduleContainer = document.getElementById("scheduleContainer");
 
+    let showAll = false;
     let selectedDate = null;
     let selectedDuration = 60;
-    if (showBtn) {
+if (showBtn) {
   showBtn.addEventListener("click", () => {
 
     if (!selectedDate) {
@@ -231,7 +232,7 @@ let html = `
 
   });
 }
- = false;
+
 
     // календарь
     renderCalendar(calendarEl, (date) => {
