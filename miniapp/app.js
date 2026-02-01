@@ -227,9 +227,15 @@ let html = `
 
 
 
-  <div class="card">
-    <div id="calendar"></div>
+<div class="card calendar-wrapper">
+  <div id="calendarHeader" class="calendar-header hidden">
+    <button id="prevDayBtn" class="nav-btn">‹</button>
+    <div id="selectedDateLabel" class="selected-date"></div>
+    <button id="nextDayBtn" class="nav-btn">›</button>
   </div>
+
+  <div id="calendar"></div>
+</div>
 
 
   <div id="scheduleContainer"></div>
