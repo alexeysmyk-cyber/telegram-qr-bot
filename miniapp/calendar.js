@@ -9,21 +9,36 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
-  const months = [
-    "Января","Февраля","Марта","Апреля",
-    "Мая","Июня","Июля","Августа",
-    "Сентября","Октября","Ноября","Декабря"
-  ];
+// Именительный (для развернутого)
+const monthsNominative = [
+  "Январь","Февраль","Март","Апрель",
+  "Май","Июнь","Июль","Август",
+  "Сентябрь","Октябрь","Ноябрь","Декабрь"
+];
+
+// Родительный (для свернутого)
+const monthsGenitive = [
+  "Января","Февраля","Марта","Апреля",
+  "Мая","Июня","Июля","Августа",
+  "Сентября","Октября","Ноября","Декабря"
+];
+
 
   // ===== Формат полной даты (для свернутого вида)
-  function formatFullDate(date) {
-    return `${daysFull[date.getDay()]}, ${date.getDate()}-${months[date.getMonth()]}-${date.getFullYear()}`;
-  }
+// ===== Полная дата (свернутый вид — родительный)
+function formatFullDate(date) {
+  return `${daysFull[date.getDay()]}, ${
+    date.getDate()
+  }-${monthsGenitive[date.getMonth()]}-${
+    date.getFullYear()
+  }`;
+}
 
-  // ===== Формат месяца (для развернутого вида)
-  function formatMonthYear(date) {
-    return `${months[date.getMonth()]} ${date.getFullYear()}`;
-  }
+// ===== Месяц + год (развернутый — именительный)
+function formatMonthYear(date) {
+  return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
+}
+
 
   // ===============================
   // FULL VIEW
