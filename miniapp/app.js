@@ -323,7 +323,7 @@ renderCalendar(calendarEl, (date) => {
   label.innerText = formatPrettyDate(date);
 
   header.classList.remove("hidden");
-  calendarBlock.style.display = "none";
+  calendarBlock.classList.add("calendar-collapsed");
 
   loadSchedule({
     container: scheduleContainer,
@@ -336,6 +336,7 @@ renderCalendar(calendarEl, (date) => {
 });
 
 
+
     const header = document.getElementById("calendarHeader");
 const calendarBlock = document.getElementById("calendar");
 const label = document.getElementById("selectedDateLabel");
@@ -343,9 +344,13 @@ const prevBtn = document.getElementById("prevDayBtn");
 const nextBtn = document.getElementById("nextDayBtn");
 
 label.addEventListener("click", () => {
+  const header = document.getElementById("calendarHeader");
+  const calendarBlock = document.getElementById("calendar");
+
   header.classList.add("hidden");
-  calendarBlock.style.display = "block";
+  calendarBlock.classList.remove("calendar-collapsed");
 });
+
 
     function changeDay(delta) {
   if (!selectedDate) return;
