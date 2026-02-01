@@ -4,32 +4,44 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   current.setHours(0,0,0,0);
 
   let selectedDate = null;
+
   let touchStartX = 0;
   let isSwiping = false;
 
   const daysShort = ["Пн","Вт","Ср","Чт","Пт","Сб","Вс"];
   const daysFull = ["Вс","Пн","Вт","Ср","Чт","Пт","Сб"];
 
+  // Именительный (развернутый)
   const monthsNominative = [
     "Январь","Февраль","Март","Апрель",
     "Май","Июнь","Июль","Август",
     "Сентябрь","Октябрь","Ноябрь","Декабрь"
   ];
 
+  // Родительный (свернутый)
   const monthsGenitive = [
     "Января","Февраля","Марта","Апреля",
     "Мая","Июня","Июля","Августа",
     "Сентября","Октября","Ноября","Декабря"
   ];
 
+  // ===== Формат полной даты (свернутый)
   function formatFullDate(date) {
-    return `${daysFull[date.getDay()]}, ${date.getDate()}-${monthsGenitive[date.getMonth()]}-${date.getFullYear()}`;
+    return `${daysFull[date.getDay()]}, ${
+      date.getDate()
+    }-${monthsGenitive[date.getMonth()]}-${
+      date.getFullYear()
+    }`;
   }
 
+  // ===== Формат месяца (развернутый)
   function formatMonthYear(date) {
     return `${monthsNominative[date.getMonth()]} ${date.getFullYear()}`;
   }
 
+  // ===============================
+  // FULL VIEW
+  // ===============================
   function buildFull() {
 
     container.parentElement.classList.remove("compact");
@@ -79,7 +91,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
     container.appendChild(weekdays);
 
-    // ===== Сетка
+    // ===== Сетка дней
     const grid = document.createElement("div");
     grid.className = "cal-grid";
 
@@ -114,7 +126,7 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
       btn.onclick = () => {
 
-        if (isSwiping) return;
+        if (isSwiping) return;   // 🔥 защита от ложного клика
 
         selectedDate = new Date(date);
         collapse();
@@ -127,6 +139,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     container.appendChild(grid);
   }
 
+  // ===============================
+  // COLLAPSED VIEW
+  // ===============================
   function collapse() {
 
     if (!selectedDate) return;
@@ -168,16 +183,17 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     if (onSelect) onSelect(selectedDate);
   }
 
-  // ===== Swipe =====
-
+  // ===============================
+  // SWIPE (исправленный)
+  // ===============================
   container.addEventListener("touchstart", (e) => {
-    isSwiping = false;
     touchStartX = e.changedTouches[0].screenX;
+    isSwiping = false;
   });
 
   container.addEventListener("touchmove", (e) => {
     const diff = e.changedTouches[0].screenX - touchStartX;
-    if (Math.abs(diff) > 15) {
+    if (Math.abs(diff) > 20) {
       isSwiping = true;
     }
   });
@@ -186,9 +202,8 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
     const diff = e.changedTouches[0].screenX - touchStartX;
 
-    if (Math.abs(diff) < 60) return;
-
-    if (!container.parentElement.classList.contains("compact")) {
+    if (!container.parentElement.classList.contains("compact") &&
+        Math.abs(diff) > 60) {
 
       if (diff > 0) {
         current.setMonth(current.getMonth() - 1);
@@ -198,10 +213,15 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
       buildFull();
     }
+
+    setTimeout(() => {
+      isSwiping = false;
+    }, 50);
   });
 
-  // ===== INIT =====
-
+  // ===============================
+  // INIT
+  // ===============================
   if (initialDate) {
     selectedDate = new Date(initialDate);
     current = new Date(initialDate);
@@ -210,4 +230,3 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     buildFull();
   }
 }
-
