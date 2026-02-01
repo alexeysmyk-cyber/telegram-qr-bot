@@ -272,7 +272,7 @@ function mainKeyboard() {
         [
           {
             text: '🏥 Работа в МИС',
-            web_app: { url: 'https://sreda-clinic.bothost.ru/miniapp' }
+            web_app: { url: 'https://sreda-clinic.bothost.ru/miniapp/' }
           },
           '📅 Визиты'
         ]
@@ -1352,6 +1352,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
