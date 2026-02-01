@@ -325,7 +325,7 @@ renderCalendar(calendarEl, (date) => {
   label.innerText = formatPrettyDate(date);
 
   header.classList.remove("hidden");
-  calendarBlock.classList.add("calendar-collapsed");
+  calendarEl.classList.add("hidden");
 
   loadSchedule({
     container: scheduleContainer,
@@ -338,13 +338,12 @@ renderCalendar(calendarEl, (date) => {
 });
 
 
-label.addEventListener("click", () => {
-  const header = document.getElementById("calendarHeader");
-  const calendarBlock = document.getElementById("calendar");
 
+label.addEventListener("click", () => {
   header.classList.add("hidden");
-  calendarBlock.classList.remove("calendar-collapsed");
+  calendarEl.classList.remove("hidden");
 });
+
 
 
 function changeDay(delta) {
