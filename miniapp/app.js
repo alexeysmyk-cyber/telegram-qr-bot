@@ -349,13 +349,15 @@ if (date.getDay() === 0) {
 
 
   loadSchedule({
-    container: scheduleContainer,
-    date: formatLocalDate(date),
-    doctorId: showAll ? null : doctorSelect.value,
-    duration: selectedDuration,
-    showCancelled,
-    showCompleted
-  });
+  container: scheduleContainer,
+  date: formatLocalDate(date),
+  doctorId: showAll ? null : doctorSelect.value,
+  showAll: showAll,
+  duration: selectedDuration,
+  showCancelled,
+  showCompleted
+});
+
 });
 
 // раскрыть календарь
@@ -372,14 +374,15 @@ function changeDay(delta) {
 
   label.innerText = formatPrettyDate(selectedDate);
 
-  loadSchedule({
-    container: scheduleContainer,
-    date: formatLocalDate(selectedDate),
-    doctorId: showAll ? null : doctorSelect.value,
-    duration: selectedDuration,
-    showCancelled,
-    showCompleted
-  });
+loadSchedule({
+  container: scheduleContainer,
+  date: formatLocalDate(selectedDate),
+  doctorId: showAll ? null : doctorSelect.value,
+  showAll: showAll,
+  duration: selectedDuration,
+  showCancelled,
+  showCompleted
+});
 }
 
 prevBtn.addEventListener("click", () => changeDay(-1));
@@ -430,6 +433,7 @@ loadSchedule({
   container: scheduleContainer,
   date: formatLocalDate(selectedDate),
   doctorId: showAll ? null : doctorSelect.value,
+  showAll: showAll,
   duration: selectedDuration,
   showCancelled: showCancelled,
   showCompleted: showCompleted
