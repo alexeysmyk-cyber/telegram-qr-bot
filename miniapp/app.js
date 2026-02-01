@@ -170,6 +170,62 @@ let html = `
 
   </div>
 
+<div class="card filter-summary">
+
+  <div class="filter-row">
+    <div class="filter-info">
+      <div class="filter-title">Фильтры</div>
+      <div class="filter-values" id="filterSummary">
+        60 мин • Все
+      </div>
+    </div>
+
+    <button id="toggleFiltersBtn" class="text-btn">
+      Изменить
+    </button>
+  </div>
+
+</div>
+
+<div class="card filter-panel hidden" id="filterPanel">
+
+  <label>Длительность приёма:</label>
+
+  <div class="step-slider" id="durationSlider">
+    <div class="step-track"></div>
+    <div class="step-active" id="activeTrack"></div>
+
+    <div class="step-point" data-value="15">15</div>
+    <div class="step-point" data-value="30">30</div>
+    <div class="step-point active" data-value="60">60</div>
+    <div class="step-point" data-value="90">90</div>
+    <div class="step-point" data-value="120">120</div>
+  </div>
+
+  <div class="toggles">
+
+    <div class="toggle-line">
+      <span>Показать отменённые</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleCancelled">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <div class="toggle-line">
+      <span>Показать завершённые</span>
+      <label class="switch">
+        <input type="checkbox" id="toggleCompleted">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+  </div>
+
+</div>
+
+
+
   <div class="card">
     <div id="calendar"></div>
   </div>
@@ -203,6 +259,50 @@ let html = `
 
 
     content.innerHTML = html;
+
+    let showCancelled = false;
+let showCompleted = false;
+
+const filterPanel = document.getElementById("filterPanel");
+const toggleFiltersBtn = document.getElementById("toggleFiltersBtn");
+const filterSummary = document.getElementById("filterSummary");
+const toggleCancelled = document.getElementById("toggleCancelled");
+const toggleCompleted = document.getElementById("toggleCompleted");
+
+toggleFiltersBtn.addEventListener("click", () => {
+  filterPanel.classList.toggle("hidden");
+});
+
+toggleCancelled.addEventListener("change", () => {
+  showCancelled = toggleCancelled.checked;
+  updateFilterSummary();
+});
+
+toggleCompleted.addEventListener("change", () => {
+  showCompleted = toggleCompleted.checked;
+  updateFilterSummary();
+});
+
+initStepSlider((value) => {
+  selectedDuration = value;
+  updateFilterSummary();
+});
+
+function updateFilterSummary() {
+  let parts = [];
+
+  parts.push(selectedDuration + " мин");
+
+  if (!showCancelled && !showCompleted) {
+    parts.push("Все");
+  } else {
+    if (showCancelled) parts.push("Отменённые");
+    if (showCompleted) parts.push("Завершённые");
+  }
+
+  filterSummary.innerText = parts.join(" • ");
+}
+
 
     // ===============================
     // ИНИЦИАЛИЗАЦИЯ
