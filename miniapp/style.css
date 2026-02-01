@@ -386,10 +386,6 @@ html, body {
   color: white;
 }
 
-.hidden {
-  display: none;
-}
-
 .filter-summary {
   padding: 12px 14px;
 }
@@ -485,14 +481,6 @@ html, body {
 }
 
 /* Свернутый календарь */
-.calendar-collapsed {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background: #f2f8fb;
-  padding: 10px 14px;
-  border-radius: 10px;
-}
 
 .calendar-collapsed button {
   background: none;
@@ -512,17 +500,14 @@ html, body {
   color: #d9534f;
 }
 .calendar-wrapper {
-  padding: 12px;
+  padding: 0;
 }
 
 .calendar-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-}
-
-.calendar-header.hidden {
-  display: none;
+  margin-bottom: 8px;
 }
 
 .selected-date {
@@ -533,6 +518,11 @@ html, body {
   cursor: pointer;
 }
 
+.selected-date.saturday,
+.selected-date.sunday {
+  color: #d9534f;
+}
+
 .nav-btn {
   background: none;
   border: none;
@@ -541,4 +531,10 @@ html, body {
   cursor: pointer;
 }
 
+.calendar-collapsed {
+  display: none;
+}
 
+.hidden {
+  display: none !important;
+}
