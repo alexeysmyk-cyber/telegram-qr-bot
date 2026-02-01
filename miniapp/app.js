@@ -311,7 +311,7 @@ function updateFilterSummary() {
     const scheduleContainer = document.getElementById("scheduleContainer");
 
     let showAll = false;
-    let selectedDate = null;
+  
   //  let selectedDuration = 60;
 if (showBtn) {
 
@@ -364,8 +364,9 @@ renderCalendar(calendarEl, (date) => {
   });
 
   // сворачиваем после выбора
-  calendarEl.classList.add("calendar-hidden");
-  header.classList.remove("hidden");
+  // после renderCalendar(...)
+calendarEl.classList.add("calendar-hidden");
+header.classList.remove("hidden");
 });
 
 // сразу загружаем визиты
