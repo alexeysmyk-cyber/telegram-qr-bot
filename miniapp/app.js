@@ -199,21 +199,27 @@ let html = `
     }
 
     // директор — показать всех
-    const toggleBtn = document.getElementById("toggleAllBtn");
-    if (toggleBtn) {
-toggleBtn.addEventListener("click", () => {
+let showAll = false;
 
-  showAll = !showAll;
+const toggleContainer = document.getElementById("doctorToggle");
 
-  toggleBtn.innerText = showAll
-    ? "Показать только выбранного"
-    : "Показать для всех";
+if (toggleContainer) {
 
-  toggleBtn.classList.toggle("active", showAll);
+  const buttons = toggleContainer.querySelectorAll(".toggle-btn");
 
-  doctorSelect.disabled = showAll;
-});
-    }
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+
+      showAll = btn.dataset.mode === "all";
+
+      doctorSelect.disabled = showAll;
+    });
+  });
+}
+
 
     // ===============================
     // ЗАГРУЗКА РАСПИСАНИЯ
