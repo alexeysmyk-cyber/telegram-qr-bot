@@ -1,15 +1,32 @@
 // ===============================
 // Telegram Mini App Init
 // ===============================
-let tg = null;
+
 let selectedDate = null;
 let selectedDuration = 60;
 
-if (window.Telegram && window.Telegram.WebApp) {
-  tg = window.Telegram.WebApp;
-  tg.expand();
-  tg.ready();
+let tg = null;
+
+function initTelegram() {
+  if (window.Telegram && window.Telegram.WebApp) {
+    tg = window.Telegram.WebApp;
+    tg.expand();
+    tg.ready();
+    return true;
+  }
+  return false;
 }
+
+document.addEventListener("DOMContentLoaded", () => {
+  if (!initTelegram()) {
+    setTimeout(() => {
+      if (!initTelegram()) {
+        document.body.innerHTML = "Откройте приложение через Telegram";
+      }
+    }, 300);
+  }
+});
+
 
 import { renderCalendar } from './calendar.js';
 import { loadSchedule } from "./schedule.js";
