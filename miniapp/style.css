@@ -3,11 +3,27 @@
 /* ============================= */
 
 html, body {
+  height: 100%;
+  overflow: hidden;          /* 🔥 запрещаем scroll страницы */
   margin: 0;
   padding: 0;
   background: #f4f7fb;
   font-family: Inter, sans-serif;
   color: #1f2d3d;
+  overscroll-behavior: none; /* 🔥 убираем bounce */
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+#content {
+  flex: 1;
+  overflow-y: auto;          /* scroll только здесь */
+  -webkit-overflow-scrolling: touch;
+  padding-top: 6px;
+  padding-bottom: 90px;
 }
 
 /* ============================= */
@@ -70,13 +86,6 @@ html, body {
 /* ============================= */
 /* КОНТЕНТ */
 /* ============================= */
-
-#content {
-  flex: 1;
-  overflow-y: auto;
-  padding-top: 6px;   /* было 12 */
-  padding-bottom: 90px;
-}
 
 
 /* ============================= */
