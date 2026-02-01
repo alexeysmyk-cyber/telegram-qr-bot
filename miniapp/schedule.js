@@ -73,19 +73,41 @@ function renderScheduleGrid(data, container) {
         <div class="slots">
     `;
 
-    grouped[doctor].forEach(slot => {
-      html += `
-        <div class="slot ${getSlotClass(slot.status)}"
-             data-id="${slot.id}">
-          <div class="time">
-            ${slot.time_start.split(" ")[1]}
-          </div>
-          <div class="name">
-            ${slot.patient_name}
-          </div>
+grouped[doctor].forEach(slot => {
+
+  const timeStart = slot.time_start.split(" ")[1];
+  const timeEnd = slot.time_end.split(" ")[1];
+
+  let star = "";
+  if (slot.is_first_clinic && slot.is_first_doctor) {
+    star = `<span class="star red">★</span>`;
+  } else if (!slot.is_first_clinic && slot.is_first_doctor) {
+    star = `<span class="star green">★</span>`;
+  }
+
+  const isPastVisit = isPast(slot.time_start);
+
+  html += `
+    <div class="slot ${getSlotClass(slot.status)}"
+         data-id="${slot.id}">
+
+      ${isPastVisit ? `<div class="past-label">Визит в прошлом</div>` : ""}
+
+      <div class="slot-top">
+        <div class="time">
+          ${timeStart} – ${timeEnd}
         </div>
-      `;
-    });
+        ${star}
+      </div>
+
+      <div class="name">
+        ${slot.patient_name}
+      </div>
+
+    </div>
+  `;
+});
+
 
     html += `</div></div>`;
   });
