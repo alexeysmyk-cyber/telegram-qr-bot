@@ -41,9 +41,22 @@ export function renderCalendar(container, onSelect, initialDate = null) {
     next.className = "nav-btn";
     next.innerText = "›";
 
-    const title = document.createElement("div");
-    title.className = "collapsed-title";
-    title.innerText = `${months[current.getMonth()]} ${current.getFullYear()}`;
+const title = document.createElement("div");
+title.className = "collapsed-title";
+
+let headerDate = selectedDate ? selectedDate : current;
+
+title.innerText = formatHeader(headerDate);
+
+// подсветка выходных
+if (headerDate.getDay() === 6) {
+  title.classList.add("saturday");
+}
+
+if (headerDate.getDay() === 0) {
+  title.classList.add("sunday");
+}
+
 
     prev.onclick = () => {
       current.setMonth(current.getMonth() - 1);
