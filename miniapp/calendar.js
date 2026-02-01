@@ -178,36 +178,45 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   }
 
   // ===============================
-  // SWIPE (исправлен, больше ничего не менялось)
+  // SWIPE (финально корректный)
   // ===============================
+
+  let isTouching = false;
+  let hasMoved = false;
+
   container.addEventListener("touchstart", (e) => {
 
     if (!container.parentElement.classList.contains("compact")) {
       e.stopPropagation();
     }
 
+    isTouching = true;
+    hasMoved = false;
     touchStartX = e.changedTouches[0].screenX;
-    swipeTriggered = false;
   });
 
   container.addEventListener("touchmove", (e) => {
 
-    if (!container.parentElement.classList.contains("compact")) {
-      e.stopPropagation();
-    }
+    if (!isTouching) return;
 
     const diff = e.changedTouches[0].screenX - touchStartX;
+
     if (Math.abs(diff) > 20) {
-      swipeTriggered = true;
+      hasMoved = true;
     }
   });
 
   container.addEventListener("touchend", (e) => {
 
     const isCompact = container.parentElement.classList.contains("compact");
+
+    if (!isTouching) return;
+
+    isTouching = false;
+
     const diff = e.changedTouches[0].screenX - touchStartX;
 
-    if (!isCompact && Math.abs(diff) > 60) {
+    if (!isCompact && hasMoved && Math.abs(diff) > 60) {
 
       e.stopPropagation();
 
@@ -221,9 +230,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
 
       buildFull();
 
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         swipeTriggered = false;
-      }, 200);
+      });
     }
   });
 
