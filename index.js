@@ -1006,7 +1006,7 @@ if (text === '🏥 Работа в МИС') {
         [{
           text: 'Открыть систему',
           web_app: {
-            url: 'https://bot_1769498299_4462_alexey-smyk.bothost.ru/miniapp'
+            url: 'https://sreda-clinic.bothost.ru/miniapp'
           }
         }]
       ]
@@ -1360,6 +1360,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
