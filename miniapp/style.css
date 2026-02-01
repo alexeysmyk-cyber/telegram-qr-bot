@@ -476,4 +476,40 @@ html, body {
 .switch input:checked + .slider:before {
   transform: translateX(20px);
 }
+/* Заголовок календаря */
+.calendar-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 12px;
+  font-size: 15px;
+}
+
+/* Свернутый календарь */
+.calendar-collapsed {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: #f2f8fb;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.calendar-collapsed button {
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #00a4c7;
+  cursor: pointer;
+}
+
+.collapsed-title {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.collapsed-title.saturday,
+.collapsed-title.sunday {
+  color: #d9534f;
+}
+
 
