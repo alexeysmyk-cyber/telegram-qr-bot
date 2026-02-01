@@ -522,7 +522,14 @@ html, body {
   justify-content: space-between;
   padding: 6px 12px;   /* ← добавь */
 }
+.calendar-wrapper.compact {
+  padding: 0;
+}
 
+.calendar-wrapper.compact .calendar-collapsed {
+  height: 36px;
+  padding: 0 8px;
+}
 
 
 .selected-date {
