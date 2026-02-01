@@ -320,9 +320,6 @@ if (showBtn) {
     showCompleted
   });
 });
-) => {
-      selectedDate = date;
-    });
 
     // слайдер
     if (typeof initStepSlider === "function") {
