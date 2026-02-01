@@ -316,10 +316,6 @@ renderCalendar(calendarEl, (date) => {
   selectedDate = date;
   if (!date) return;
 
-  const header = document.getElementById("calendarHeader");
-  const calendarBlock = document.getElementById("calendar");
-  const label = document.getElementById("selectedDateLabel");
-
   label.innerText = formatPrettyDate(date);
 
   header.classList.remove("hidden");
