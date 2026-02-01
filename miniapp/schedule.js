@@ -28,27 +28,27 @@ export async function loadSchedule({
       return;
     }
 
-let visits = data.data;
+    let visits = data.data || [];
 
-visits = visits.filter(v => {
+    // ===== ФИЛЬТРАЦИЯ =====
+    visits = visits.filter(v => {
 
-  // если ни один фильтр не выбран → только upcoming
-  if (!showCancelled && !showCompleted) {
-    return v.status === "upcoming";
-  }
+      // если фильтры не выбраны → только upcoming
+      if (!showCancelled && !showCompleted) {
+        return v.status === "upcoming";
+      }
 
-  if (showCancelled && v.status === "refused") return true;
-  if (showCompleted && v.status === "completed") return true;
-  if (v.status === "upcoming") return true;
+      // если выбран хоть один фильтр
+      if (v.status === "upcoming") return true;
 
-  return false;
-});
+      if (showCancelled && v.status === "refused") return true;
 
-renderScheduleGrid(visits, container);
+      if (showCompleted && v.status === "completed") return true;
 
+      return false;
+    });
 
-    
-    renderScheduleGrid(data.data, container);
+    renderScheduleGrid(visits, container, showAll);
 
   } catch (err) {
     container.innerHTML = `<div class="card">Ошибка сервера</div>`;
@@ -68,37 +68,76 @@ function showLoader(container) {
 
 
 
-function renderScheduleGrid(data, container) {
+function renderScheduleGrid(data, container, showAll) {
 
+  // если нет визитов — ничего не показываем
   if (!data.length) {
-    container.innerHTML = `<div class="card">Свободно</div>`;
+    container.innerHTML = "";
     return;
   }
 
-  if (!showAll) {
-  renderDoctorBlock("Мои визиты", data, container);
-  return;
-}
-const grouped = {};
-data.forEach(item => {
-  if (!grouped[item.doctor]) {
-    grouped[item.doctor] = [];
-  }
-  grouped[item.doctor].push(item);
-});
-
-
   let html = "";
+
+  // ===== ЕСЛИ ОДИН ВРАЧ — БЕЗ ГРУППИРОВКИ =====
+  if (!showAll) {
+
+    data.forEach(slot => {
+      html += renderSlot(slot);
+    });
+
+    container.innerHTML = html;
+    attachSlotEvents();
+    return;
+  }
+
+  // ===== ГРУППИРОВКА ПО ВРАЧАМ =====
+  const grouped = {};
+
+  data.forEach(item => {
+    if (!grouped[item.doctor]) {
+      grouped[item.doctor] = [];
+    }
+    grouped[item.doctor].push(item);
+  });
 
   Object.keys(grouped).forEach(doctor => {
 
+    const count = grouped[doctor].length;
+
     html += `
       <div class="doctor-block">
-        <div class="doctor-header">${doctor}</div>
-        <div class="slots">
+
+        <div class="doctor-header">
+          ${doctor}
+          <span class="count">(${count})</span>
+        </div>
+
+        <div class="slots hidden">
     `;
 
-grouped[doctor].forEach(slot => {
+    grouped[doctor].forEach(slot => {
+      html += renderSlot(slot);
+    });
+
+    html += `</div></div>`;
+  });
+
+  container.innerHTML = html;
+
+  // ===== СВОРАЧИВАНИЕ =====
+  document.querySelectorAll(".doctor-header").forEach(header => {
+    header.addEventListener("click", () => {
+      const slots = header.nextElementSibling;
+      slots.classList.toggle("hidden");
+    });
+  });
+
+  attachSlotEvents();
+}
+
+
+
+function renderSlot(slot) {
 
   const timeStart = slot.time_start.split(" ")[1];
   const timeEnd = slot.time_end.split(" ")[1];
@@ -112,7 +151,7 @@ grouped[doctor].forEach(slot => {
 
   const isPastVisit = isPast(slot.time_start);
 
-  html += `
+  return `
     <div class="slot ${getSlotClass(slot.status)}"
          data-id="${slot.id}">
 
@@ -131,15 +170,6 @@ grouped[doctor].forEach(slot => {
 
     </div>
   `;
-});
-
-
-    html += `</div></div>`;
-  });
-
-  container.innerHTML = html;
-
-  attachSlotEvents();
 }
 
 
@@ -147,14 +177,28 @@ grouped[doctor].forEach(slot => {
 function getSlotClass(status) {
   if (status === "upcoming") return "slot-active";
   if (status === "refused") return "slot-cancelled";
+  if (status === "completed") return "slot-default";
   return "slot-default";
 }
 
+
+
 function isPast(dateString) {
-  const now = new Date();
-  const visitDate = new Date(dateString);
-  return visitDate < now;
+
+  const [datePart, timePart] = dateString.split(" ");
+  const [dd, mm, yyyy] = datePart.split(".");
+
+  const visitDate = new Date(
+    yyyy,
+    mm - 1,
+    dd,
+    ...timePart.split(":")
+  );
+
+  return visitDate < new Date();
 }
+
+
 
 function attachSlotEvents() {
   document.querySelectorAll(".slot").forEach(slot => {
