@@ -307,6 +307,20 @@ if (showBtn) {
 
     // календарь
     renderCalendar(calendarEl, (date) => {
+  selectedDate = date;
+
+  if (!date) return;
+
+  loadSchedule({
+    container: scheduleContainer,
+    date: formatLocalDate(date),
+    doctorId: showAll ? null : doctorSelect.value,
+    duration: selectedDuration,
+    showCancelled,
+    showCompleted
+  });
+});
+) => {
       selectedDate = date;
     });
 
