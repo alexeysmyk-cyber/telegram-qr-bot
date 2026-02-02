@@ -1021,3 +1021,19 @@ body {
 .services-arrow.rotated {
   transform: rotate(180deg);
 }
+/* ============================= */
+/* PATIENT CENTERED NAME */
+/* ============================= */
+
+.patient-name-centered {
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #00a4c7;
+  cursor: pointer;
+  margin-bottom: 14px;
+}
+
+.patient-name-centered:hover {
+  opacity: 0.8;
+}
