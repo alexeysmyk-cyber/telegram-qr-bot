@@ -316,7 +316,6 @@ scheduleWrapper.addEventListener("touchend", (e) => {
   const filterPanel = document.getElementById("filterPanel");
 const editFiltersBtn = document.getElementById("editFiltersBtn");
 
-  scheduleContainer.addEventListener("scroll", () => {
 
 // ===============================
 // SMOOTH AUTO CLOSE FILTER ON SCROLL
