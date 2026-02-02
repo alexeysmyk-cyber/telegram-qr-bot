@@ -114,8 +114,7 @@ app.post('/api/auth/telegram', express.json(), async (req, res) => {
     // ===== Проверяем роль в MIS =====
     const body = qs.stringify({
       api_key: process.env.API_KEY,
-      clinic_id: 2997
-    });
+        });
 
     const url = process.env.BASE_URL.replace(/\/$/, '') + '/getUsers';
 
@@ -1411,6 +1410,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
