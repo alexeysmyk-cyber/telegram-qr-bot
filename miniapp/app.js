@@ -335,19 +335,28 @@ editFiltersBtn.addEventListener("click", () => {
   let showCompleted = false;
   let showAll = false;
 
-  function refreshSchedule() {
+function refreshSchedule() {
   if (!selectedDate) return;
 
-  loadSchedule({
-    container: scheduleContainer,
-    date: formatLocalDate(selectedDate),
-    doctorId: showAll ? null : doctorSelect.value,
-    showAll,
-    duration: selectedDuration,
-    showCancelled,
-    showCompleted
-  });
+  if (scheduleTimeout) {
+    clearTimeout(scheduleTimeout);
+  }
+
+  scheduleTimeout = setTimeout(() => {
+
+    loadSchedule({
+      container: scheduleContainer,
+      date: formatLocalDate(selectedDate),
+      doctorId: showAll ? null : doctorSelect.value,
+      showAll,
+      duration: selectedDuration,
+      showCancelled,
+      showCompleted
+    });
+
+  }, 350); // 🔥 задержка 350мс
 }
+
 
 function updateFilterSummary() {
   let parts = [];
