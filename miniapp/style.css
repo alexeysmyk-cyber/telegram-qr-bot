@@ -731,12 +731,11 @@ body {
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,0.35);
-  display: flex;
-  align-items: flex-end;
-  justify-content: center;
   z-index: 9999;
+
+  display: block;              /* ВАЖНО */
   opacity: 0;
-  transition: 0.25s ease;
+  transition: opacity 0.2s ease;
 }
 
 .modal-overlay.open {
