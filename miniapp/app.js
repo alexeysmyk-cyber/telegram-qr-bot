@@ -316,6 +316,23 @@ scheduleWrapper.addEventListener("touchend", (e) => {
   const filterPanel = document.getElementById("filterPanel");
 const editFiltersBtn = document.getElementById("editFiltersBtn");
 
+  scheduleContainer.addEventListener("scroll", () => {
+
+  if (
+    scheduleContainer.scrollTop > 20 &&
+    !filterPanel.classList.contains("hidden")
+  ) {
+    filterPanel.classList.add("hidden");
+    editFiltersBtn.innerText = "Изменить";
+  }
+
+});
+
+
+
+
+  
+
 editFiltersBtn.addEventListener("click", () => {
 
   const isHidden = filterPanel.classList.contains("hidden");
