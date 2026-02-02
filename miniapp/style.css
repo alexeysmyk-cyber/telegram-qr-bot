@@ -1052,4 +1052,6 @@ body {
 .visit-star.green {
   color: #28a745;
 }
-
+.move-details {
+  margin-top: 10px;
+}
