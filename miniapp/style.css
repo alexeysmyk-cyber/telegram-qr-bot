@@ -722,3 +722,89 @@ body {
 .full-header { display: flex; align-items: center; justify-content: space-between; }
 .nav-btn { background: none; border: none; font-size: 20px; color: #00a4c7; cursor: pointer; }
 .calendar-hidden { display: none; }
+
+/* ============================= */
+/* MODAL BOTTOM SHEET */
+/* ============================= */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.35);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  z-index: 9999;
+  opacity: 0;
+  transition: 0.25s ease;
+}
+
+.modal-overlay.open {
+  opacity: 1;
+}
+
+.modal-sheet {
+  width: 100%;
+  max-width: 520px;
+  background: white;
+  border-radius: 20px 20px 0 0;
+  padding: 20px;
+  transform: translateY(100%);
+  transition: 0.25s ease;
+}
+
+.modal-overlay.open .modal-sheet {
+  transform: translateY(0);
+}
+
+.modal-header {
+  margin-bottom: 16px;
+}
+
+.modal-time {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.modal-name {
+  font-size: 14px;
+  color: #666;
+}
+
+.modal-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.modal-actions button {
+  padding: 14px;
+  border-radius: 12px;
+  border: none;
+  background: #f3f6f8;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.modal-actions button:hover {
+  background: #e0edf3;
+}
+
+.modal-actions .danger {
+  background: #ffecec;
+  color: #d9534f;
+}
+
+.modal-close {
+  margin-top: 16px;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #888;
+  font-weight: 600;
+  cursor: pointer;
+}
+
