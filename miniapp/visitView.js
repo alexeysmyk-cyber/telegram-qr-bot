@@ -421,14 +421,35 @@ function attachMoveLinks(overlay) {
 
         const visit = data.data[0];
 
-        content.innerHTML = `
-          <div class="visit-row">
-            ${visit.time_start} – ${visit.time_end}
-          </div>
-          <div class="visit-row">
-            ${visit.patient_name}
-          </div>
-        `;
+const fullDate = formatFullDate(visit.time_start);
+const timeStart = getTime(visit.time_start);
+const timeEnd = getTime(visit.time_end);
+
+content.innerHTML = `
+  <div class="move-details">
+
+    <div class="visit-row right">
+      <span>Дата:</span>
+      <span>${fullDate}</span>
+    </div>
+
+    <div class="visit-row right">
+      <span>Время:</span>
+      <span>с ${timeStart} до ${timeEnd}</span>
+    </div>
+
+    <div class="visit-row right">
+      <span>Врач:</span>
+      <span>${visit.doctor || "—"}</span>
+    </div>
+
+    <div class="visit-row right">
+      <span>Кабинет:</span>
+      <span>${visit.room || "—"}</span>
+    </div>
+
+  </div>
+`;
 
       } catch {
         content.innerHTML = "Ошибка загрузки";
