@@ -1055,3 +1055,15 @@ body {
 .move-details {
   margin-top: 10px;
 }
+.move-open-visit {
+  margin-top: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #00a4c7;
+  cursor: pointer;
+  text-align: center;
+}
+
+.move-open-visit:hover {
+  text-decoration: underline;
+}
