@@ -1,7 +1,6 @@
 // ===============================
 // FULLSCREEN VISIT VIEW
 // ===============================
-
 export function openVisitView(appointmentId) {
 
   const overlay = document.createElement("div");
@@ -14,11 +13,8 @@ export function openVisitView(appointmentId) {
   `;
 
   document.body.appendChild(overlay);
-
   loadVisit(appointmentId, overlay);
 }
-
-
 
 // ===============================
 // LOAD VISIT
@@ -92,9 +88,6 @@ async function loadVisit(id, overlay) {
   }
 }
 
-
-
-
 // ===============================
 // RENDER VISIT
 // ===============================
@@ -143,11 +136,9 @@ function renderVisit(visit, overlay) {
 
   attachServicesToggle(overlay);
   attachMoveLinks(overlay);
+  enableSwipeToClose(overlay);
+  
 }
-
-
-
-
 
 
 // ===============================
@@ -202,9 +193,6 @@ function renderMainInfo(v) {
 }
 
 
-
-
-
 // ===============================
 // PATIENT INFO
 // ===============================
@@ -244,16 +232,6 @@ function renderPatientInfo(v) {
     </div>
   `;
 }
-
-
-
-
-// ===============================
-// MOVE INFO
-// ===============================
-
-
-
 
 // ===============================
 // SERVICES
@@ -322,6 +300,7 @@ function getStatusText(status) {
   if (status === "completed") return "Визит завершён";
   return "";
 }
+
 function getPrettyStatus(v) {
 
   if (v.moved_to) return "Перенесён";
@@ -348,9 +327,11 @@ function formatFullDate(dateString) {
 
   return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
+
 function getTime(dateString) {
   return dateString.split(" ")[1];
 }
+
 function renderMoveInfo(v) {
 
   if (!v.moved_from && !v.moved_to) return "";
@@ -383,6 +364,7 @@ function renderMoveInfo(v) {
     </div>
   `;
 }
+
 function attachMoveLinks(overlay) {
 
   overlay.querySelectorAll(".move-header").forEach(header => {
@@ -505,3 +487,56 @@ function getVisitType(v) {
   return "Повторный визит";
 }
 
+
+function enableSwipeToClose(overlay) {
+
+  const container = overlay.querySelector(".visit-container");
+  if (!container) return;
+
+  let startX = 0;
+  let currentX = 0;
+  let isDragging = false;
+
+  container.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+    isDragging = true;
+    container.classList.add("swiping");
+  });
+
+  container.addEventListener("touchmove", (e) => {
+    if (!isDragging) return;
+
+    currentX = e.touches[0].clientX;
+    const diff = currentX - startX;
+
+    container.style.transform = `translateX(${diff}px)`;
+  });
+
+  container.addEventListener("touchend", () => {
+    if (!isDragging) return;
+
+    const diff = currentX - startX;
+    container.classList.remove("swiping");
+
+    // если свайп больше 120px — закрываем
+    if (Math.abs(diff) > 120) {
+
+      if (diff > 0) {
+        container.classList.add("closing-right");
+      } else {
+        container.classList.add("closing-left");
+      }
+
+      setTimeout(() => {
+        overlay.remove();
+      }, 300);
+
+    } else {
+      // возвращаем назад
+      container.style.transform = "";
+    }
+
+    isDragging = false;
+  });
+
+}
