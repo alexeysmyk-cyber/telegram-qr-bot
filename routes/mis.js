@@ -1,3 +1,9 @@
+// ===== CACHE FOR APPOINTMENTS =====
+const appointmentsCache = {};
+setInterval(() => {
+  cleanExpiredCache();
+}, 60 * 1000);
+
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
@@ -20,16 +26,28 @@ router.post("/schedule", getSchedule);
 // 📌 Получение визитов (getAppointments)
 // ===============================
 router.post("/appointments", async (req, res) => {
-  console.log("----- /api/mis/appointments -----");
-  console.log("BODY:", req.body);
 
   try {
-    const { date, doctorId } = req.body;
+
+    const { date } = req.body;
 
     if (!date) {
       return res.status(400).json({ error: "NO_DATE" });
     }
 
+    cleanExpiredCache();
+
+    const now = Date.now();
+
+    // ===== CHECK CACHE =====
+    if (
+      appointmentsCache[date] &&
+      appointmentsCache[date].expires > now
+    ) {
+      return res.json(appointmentsCache[date].data);
+    }
+
+    // ===== FETCH FROM MIS =====
     const formattedDate = formatDate(date);
 
     const body = {
@@ -38,13 +56,6 @@ router.post("/appointments", async (req, res) => {
       date_to: formattedDate + " 23:59"
     };
 
-    if (doctorId) {
-      body.doctor_id = doctorId;
-    }
-
-    console.log("Calling MIS getAppointments:", body);
-
-    // ✅ ИСПРАВЛЕННЫЙ URL
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getAppointments";
 
@@ -58,19 +69,38 @@ router.post("/appointments", async (req, res) => {
       }
     );
 
-    console.log("MIS response error:", response.data?.error);
+    if (!response.data || response.data.error !== 0) {
+      return res.status(500).json({ error: "MIS_ERROR" });
+    }
 
-    res.json(response.data);
+    // ===== SAVE CACHE (30 секунд) =====
+    appointmentsCache[date] = {
+      data: response.data,
+      expires: now + 30 * 1000
+    };
+
+    return res.json(response.data);
 
   } catch (err) {
-    console.log(
-      "MIS getAppointments error:",
-      err.response?.data || err.message
-    );
-
-    res.status(500).json({ error: "MIS_ERROR" });
+    console.log("Appointments error:", err.message);
+    return res.status(500).json({ error: "SERVER_ERROR" });
   }
+
 });
+
+
+// Функция очистки кэша
+function cleanExpiredCache() {
+  const now = Date.now();
+
+  for (const key in appointmentsCache) {
+    if (appointmentsCache[key].expires <= now) {
+      delete appointmentsCache[key];
+    }
+  }
+}
+
+
 
 // ===============================
 // 📌 Формат dd.mm.yyyy
