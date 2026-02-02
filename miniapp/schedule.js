@@ -1,16 +1,29 @@
-// ===== RETRY WRAPPER =====
+// ===============================
+// REQUEST GUARD (защита от гонок)
+// ===============================
+let currentRequestId = 0;
+
+
+// ===============================
+// RETRY WRAPPER
+// ===============================
 async function fetchWithRetry(body, retries = 1) {
 
   try {
+
     const response = await fetch("/api/mis/appointments", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body)
     });
 
+    if (!response.ok) {
+      throw new Error("HTTP_ERROR");
+    }
+
     const data = await response.json();
 
-    if (!response.ok || data.error !== 0) {
+    if (data.error !== 0) {
       throw new Error("MIS_ERROR");
     }
 
@@ -27,6 +40,10 @@ async function fetchWithRetry(body, retries = 1) {
   }
 }
 
+
+// ===============================
+// LOAD SCHEDULE
+// ===============================
 export async function loadSchedule({
   container,
   date,
@@ -39,16 +56,27 @@ export async function loadSchedule({
 
   showLoader(container);
 
+  const requestId = ++currentRequestId;
+
   try {
 
     const data = await fetchWithRetry({
-      date,
-      doctorId
+      date
     });
+
+    // если уже ушёл новый запрос — этот игнорируем
+    if (requestId !== currentRequestId) return;
 
     let visits = data.data || [];
 
-    // ===== ФИЛЬТРАЦИЯ =====
+    // ===== ФИЛЬТРАЦИЯ ПО ВРАЧУ (фронт) =====
+    if (!showAll && doctorId) {
+      visits = visits.filter(v =>
+        String(v.doctor_id) === String(doctorId)
+      );
+    }
+
+    // ===== ФИЛЬТРАЦИЯ ПО СТАТУСАМ =====
     visits = visits.filter(v => {
 
       if (!showCancelled && !showCompleted) {
@@ -66,6 +94,8 @@ export async function loadSchedule({
 
   } catch (err) {
 
+    if (requestId !== currentRequestId) return;
+
     container.innerHTML = `
       <div class="card empty-state">
         Временно недоступно.<br/>
@@ -76,7 +106,9 @@ export async function loadSchedule({
 }
 
 
-
+// ===============================
+// LOADER
+// ===============================
 function showLoader(container) {
   container.innerHTML = `
     <div class="loader">
@@ -87,9 +119,12 @@ function showLoader(container) {
 }
 
 
+// ===============================
+// RENDER GRID
+// ===============================
 function renderScheduleGrid(data, container, showAll, date) {
 
- // ===== ЕСЛИ ВИЗИТОВ НЕТ =====
+  // ===== ЕСЛИ ВИЗИТОВ НЕТ =====
   if (!data || data.length === 0) {
     container.innerHTML = `
       <div class="card empty-state">
@@ -98,8 +133,8 @@ function renderScheduleGrid(data, container, showAll, date) {
     `;
     return;
   }
-    
-// ===== ЕСЛИ ОДИН ВРАЧ =====
+
+  // ===== ЕСЛИ ОДИН ВРАЧ =====
   if (!showAll) {
 
     let html = "";
@@ -116,10 +151,14 @@ function renderScheduleGrid(data, container, showAll, date) {
   const grouped = {};
 
   data.forEach(item => {
-    if (!grouped[item.doctor]) {
-      grouped[item.doctor] = [];
+
+    const doctorName = item.doctor || "Неизвестный врач";
+
+    if (!grouped[doctorName]) {
+      grouped[doctorName] = [];
     }
-    grouped[item.doctor].push(item);
+
+    grouped[doctorName].push(item);
   });
 
   const doctors = Object.keys(grouped);
@@ -173,14 +212,16 @@ function renderScheduleGrid(data, container, showAll, date) {
 }
 
 
-
-
+// ===============================
+// SLOT RENDER
+// ===============================
 function renderSlot(slot) {
 
   const timeStart = slot.time_start.split(" ")[1];
   const timeEnd = slot.time_end.split(" ")[1];
 
   let star = "";
+
   if (slot.is_first_clinic && slot.is_first_doctor) {
     star = `<span class="star red">★</span>`;
   } else if (!slot.is_first_clinic && slot.is_first_doctor) {
@@ -218,15 +259,15 @@ function renderSlot(slot) {
 }
 
 
-
+// ===============================
+// STATUS HELPERS
+// ===============================
 function getStatusText(status) {
   if (status === "upcoming") return "Визит ожидается";
   if (status === "refused") return "Визит отменён";
   if (status === "completed") return "Визит завершён";
   return "";
 }
-
-
 
 function getSlotClass(status) {
   if (status === "upcoming") return "slot-active";
@@ -236,7 +277,9 @@ function getSlotClass(status) {
 }
 
 
-
+// ===============================
+// PAST CHECK
+// ===============================
 function isPast(dateString) {
 
   const [datePart, timePart] = dateString.split(" ");
@@ -268,7 +311,9 @@ function isPast(dateString) {
 }
 
 
-
+// ===============================
+// SLOT EVENTS
+// ===============================
 function attachSlotEvents() {
   document.querySelectorAll(".slot").forEach(slot => {
     slot.addEventListener("click", () => {
