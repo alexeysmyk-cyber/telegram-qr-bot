@@ -1,13 +1,14 @@
-// ===============================
-// FULLSCREEN VISIT VIEW
-// ===============================
+// ======================================================
+// ОТКРЫТИЕ КАРТОЧКИ ВИЗИТА
+// ======================================================
 
-export function openVisitView(appointmentId) {
+export async function openVisitView(appointmentId) {
 
   const overlay = document.createElement("div");
   overlay.className = "visit-overlay";
+
   overlay.innerHTML = `
-    <div class="visit-loading">
+    <div class="visit-loader">
       <div class="spinner"></div>
       <div>Загрузка визита...</div>
     </div>
@@ -15,23 +16,12 @@ export function openVisitView(appointmentId) {
 
   document.body.appendChild(overlay);
 
-  loadVisit(appointmentId, overlay);
-}
-
-
-
-// ===============================
-// LOAD VISIT
-// ===============================
-
-async function loadVisit(id, overlay) {
-
   try {
 
-    const response = await fetch("/api/mis/appointment-by-id", {
+    const response = await fetch("/api/mis/appointment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ appointment_id: id })
+      body: JSON.stringify({ appointment_id: appointmentId })
     });
 
     const data = await response.json();
@@ -42,58 +32,87 @@ async function loadVisit(id, overlay) {
 
     const visit = data.data[0];
 
-    if (!visit) {
-      throw new Error("NOT_FOUND");
-    }
-
-    renderVisit(visit, overlay);
+    await renderVisit(visit, overlay);
 
   } catch (err) {
 
     overlay.innerHTML = `
-      <div class="visit-loading">
-        <div class="spinner"></div>
+      <div class="visit-loader">
         <div>Ошибка загрузки визита</div>
-        <button class="primary-btn" id="closeVisitBtn">Закрыть</button>
+        <button class="secondary-btn" id="closeErrorBtn">Закрыть</button>
       </div>
     `;
 
-    document.getElementById("closeVisitBtn")
+    document.getElementById("closeErrorBtn")
       .addEventListener("click", () => overlay.remove());
   }
 }
 
 
+// ======================================================
+// РЕНДЕР КАРТОЧКИ
+// ======================================================
 
-// ===============================
-// RENDER VISIT
-// ===============================
-
-function renderVisit(visit, overlay) {
+async function renderVisit(visit, overlay) {
 
   const isCompleted = visit.status === "completed";
+  const statusText = getVisitStatus(visit);
 
   overlay.innerHTML = `
     <div class="visit-container">
 
       <div class="visit-header">
-        <div class="visit-title">Визит</div>
+        <div class="visit-title">Карточка визита</div>
         <button class="close-btn" id="closeVisitBtn">✕</button>
       </div>
 
       <div class="visit-content">
 
-        ${renderMainInfo(visit)}
+        <div class="visit-card">
+
+          <div class="visit-status-badge ${visit.status}">
+            ${statusText}
+          </div>
+
+          <div class="visit-date">
+            ${formatFullDate(visit.time_start)}
+          </div>
+
+          <div class="visit-time">
+            ${formatTimeRange(visit.time_start, visit.time_end)}
+          </div>
+
+          <div class="visit-type">
+            ${getVisitType(visit)}
+          </div>
+
+          <div class="visit-row right">
+            <span>Клиника:</span>
+            <span>${visit.clinic}</span>
+          </div>
+
+          <div class="visit-row right">
+            <span>Кабинет:</span>
+            <span>${visit.room || "—"}</span>
+          </div>
+
+          <div class="visit-row right">
+            <span>Врач:</span>
+            <span>${visit.doctor}</span>
+          </div>
+
+        </div>
+
         ${renderPatientInfo(visit)}
-        ${renderMoveInfo(visit)}
+        ${await renderMoveBlocks(visit)}
         ${renderServices(visit)}
 
       </div>
 
       <div class="visit-actions">
         ${!isCompleted ? `
-          <button class="primary-btn" id="moveVisitBtn">Перенести</button>
-          <button class="danger-btn" id="cancelVisitBtn">Отменить</button>
+          <button class="primary-btn">Перенести</button>
+          <button class="danger-btn">Отменить</button>
         ` : ``}
         <button class="secondary-btn" id="closeBottomBtn">Закрыть</button>
       </div>
@@ -108,66 +127,90 @@ function renderVisit(visit, overlay) {
     .addEventListener("click", () => overlay.remove());
 
   attachServicesToggle(overlay);
+  attachMoveToggle(overlay);
 }
 
 
+// ======================================================
+// СТАТУС
+// ======================================================
 
-// ===============================
-// MAIN INFO
-// ===============================
+function getVisitStatus(v) {
 
-function renderMainInfo(v) {
-  return `
-    <div class="visit-card">
+  if (v.moved_to) return "Перенесён";
+  if (v.status === "completed") return "Завершён";
+  if (v.status === "refused") return "Отменён";
+  if (v.status === "upcoming") return "Ожидается";
 
-      <div class="visit-time">
-        ${v.time_start} – ${v.time_end}
-      </div>
-
-      <div class="visit-status ${v.status}">
-        ${getStatusText(v.status)}
-      </div>
-
-      <div class="visit-row">
-        <span>Клиника:</span>
-        <span>${v.clinic}</span>
-      </div>
-
-      <div class="visit-row">
-        <span>Кабинет:</span>
-        <span>${v.room || "—"}</span>
-      </div>
-
-      <div class="visit-row">
-        <span>Врач:</span>
-        <span>${v.doctor}</span>
-      </div>
-
-    </div>
-  `;
+  return "";
 }
 
 
+// ======================================================
+// ТИП ВИЗИТА
+// ======================================================
 
-// ===============================
-// PATIENT INFO
-// ===============================
+function getVisitType(v) {
+
+  if (v.is_first_doctor && v.is_first_clinic) {
+    return "Первичный визит в клинику";
+  }
+
+  if (v.is_first_doctor && !v.is_first_clinic) {
+    return "Первичный визит к врачу";
+  }
+
+  return "Повторный визит";
+}
+
+
+// ======================================================
+// ФОРМАТ ДАТЫ
+// ======================================================
+
+function formatFullDate(dateString) {
+
+  const [datePart] = dateString.split(" ");
+  const [dd, mm, yyyy] = datePart.split(".");
+
+  const date = new Date(yyyy, mm - 1, dd);
+
+  return date.toLocaleDateString("ru-RU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+}
+
+
+// ======================================================
+// ФОРМАТ ВРЕМЕНИ
+// ======================================================
+
+function formatTimeRange(start, end) {
+
+  const timeStart = start.split(" ")[1];
+  const timeEnd = end.split(" ")[1];
+
+  return `с ${timeStart} до ${timeEnd}`;
+}
+
+
+// ======================================================
+// ПАЦИЕНТ
+// ======================================================
 
 function renderPatientInfo(v) {
 
   return `
     <div class="visit-card">
 
-      <div class="card-title">Пациент</div>
-
-      <div class="patient-name clickable"
-           data-id="${v.patient_id}">
-        ${v.patient_name}
-      </div>
+      <div class="visit-section-title">Пациент</div>
 
       <div class="visit-row">
-        <span>Дата рождения:</span>
-        <span>${v.patient_birth_date || "—"}</span>
+        <span>ФИО:</span>
+        <span class="patient-link">${v.patient_name}</span>
       </div>
 
       <div class="visit-row">
@@ -185,75 +228,38 @@ function renderPatientInfo(v) {
 }
 
 
-
-// ===============================
-// MOVE INFO
-// ===============================
-
-function renderMoveInfo(v) {
-
-  if (!v.moved_from && !v.moved_to) return "";
-
-  return `
-    <div class="visit-card">
-
-      <div class="card-title">История переноса</div>
-
-      ${v.moved_from ? `
-        <div class="visit-row">
-          <span>Перенесён из:</span>
-          <span class="link" data-visit="${v.moved_from}">
-            Визит #${v.moved_from}
-          </span>
-        </div>
-      ` : ""}
-
-      ${v.moved_to ? `
-        <div class="visit-row">
-          <span>Перенесён в:</span>
-          <span class="link" data-visit="${v.moved_to}">
-            Визит #${v.moved_to}
-          </span>
-        </div>
-      ` : ""}
-
-    </div>
-  `;
-}
-
-
-
-// ===============================
-// SERVICES
-// ===============================
+// ======================================================
+// УСЛУГИ
+// ======================================================
 
 function renderServices(v) {
 
   if (!v.services || !v.services.length) return "";
 
   let html = `
-    <div class="visit-card services-card">
-
+    <div class="visit-card">
       <div class="services-header">
-        <span>Услуги (${v.services.length})</span>
+        Услуги (${v.services.length})
         <span class="services-arrow">▾</span>
       </div>
-
       <div class="services-content">
   `;
 
-  v.services.forEach(service => {
+  v.services.forEach(s => {
+
     html += `
-      <div class="service-row">
-        <div class="service-name">${service.title}</div>
-        <div class="service-price">${service.value} ₽</div>
+      <div class="service-item">
+        <div class="service-title">${s.title}</div>
+        <div class="service-meta">
+          ${s.count} × ${s.price} ₽ = ${s.value} ₽
+        </div>
       </div>
     `;
   });
 
   html += `
-        <div class="services-total">
-          Итого: ${v.sum_value || 0} ₽
+        <div class="service-total">
+          Итого: ${v.sum_value} ₽
         </div>
       </div>
     </div>
@@ -263,30 +269,93 @@ function renderServices(v) {
 }
 
 
-
 function attachServicesToggle(overlay) {
 
-  const header = overlay.querySelector(".services-header");
-  const content = overlay.querySelector(".services-content");
-  const arrow = overlay.querySelector(".services-arrow");
+  overlay.querySelectorAll(".services-header").forEach(header => {
 
-  if (!header || !content) return;
+    header.addEventListener("click", () => {
 
-  header.addEventListener("click", () => {
-    content.classList.toggle("open");
-    arrow.classList.toggle("rotated");
+      const content = header.nextElementSibling;
+      const arrow = header.querySelector(".services-arrow");
+
+      content.classList.toggle("open");
+      arrow.classList.toggle("rotated");
+
+    });
+
   });
 }
 
 
+// ======================================================
+// ПЕРЕНОСЫ
+// ======================================================
 
-// ===============================
-// STATUS TEXT
-// ===============================
+async function renderMoveBlocks(v) {
 
-function getStatusText(status) {
-  if (status === "upcoming") return "Визит ожидается";
-  if (status === "refused") return "Визит отменён";
-  if (status === "completed") return "Визит завершён";
-  return "";
+  let html = "";
+
+  if (v.moved_from) {
+    html += await buildMoveBlock(v.moved_from, "Перенесён из");
+  }
+
+  if (v.moved_to) {
+    html += await buildMoveBlock(v.moved_to, "Перенесён в");
+  }
+
+  return html;
+}
+
+
+async function buildMoveBlock(id, title) {
+
+  try {
+
+    const response = await fetch("/api/mis/appointment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ appointment_id: id })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error !== 0) return "";
+
+    const v = data.data[0];
+
+    return `
+      <div class="visit-card move-card">
+        <div class="move-header">
+          ${title}
+          <span class="services-arrow">▾</span>
+        </div>
+        <div class="move-content">
+          <div>${formatFullDate(v.time_start)}</div>
+          <div>${formatTimeRange(v.time_start, v.time_end)}</div>
+          <div>${v.doctor}</div>
+        </div>
+      </div>
+    `;
+
+  } catch {
+    return "";
+  }
+}
+
+
+function attachMoveToggle(overlay) {
+
+  overlay.querySelectorAll(".move-header").forEach(header => {
+
+    header.addEventListener("click", () => {
+
+      const content = header.nextElementSibling;
+      const arrow = header.querySelector(".services-arrow");
+
+      content.classList.toggle("open");
+      arrow.classList.toggle("rotated");
+
+    });
+
+  });
 }
