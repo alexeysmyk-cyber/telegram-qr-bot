@@ -743,13 +743,18 @@ body {
 }
 
 .modal-sheet {
-  width: 100%;
-  max-width: 520px;
+  position: absolute;          /* ВАЖНО */
+  left: 0;
+  right: 0;
+  bottom: 0;
+
   background: white;
   border-radius: 20px 20px 0 0;
   padding: 20px;
+
   transform: translateY(100%);
-  transition: 0.25s ease;
+  transition: transform 0.25s ease;
+  will-change: transform;
 }
 
 .modal-overlay.open .modal-sheet {
