@@ -118,31 +118,50 @@ router.post("/appointments", async (req, res) => {
 });
 
 
-router.post("/appointment", async (req, res) => {
+
+
+// ===============================
+// 📌 Получение одного визита по ID
+// ===============================
+router.post("/appointment-by-id", async (req, res) => {
 
   try {
 
     const { appointment_id } = req.body;
 
-    const body = qs.stringify({
+    if (!appointment_id) {
+      return res.status(400).json({ error: "NO_ID" });
+    }
+
+    const body = {
       api_key: process.env.API_KEY,
       appointment_id
-    });
+    };
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getAppointments";
 
     const response = await axios.post(
       url,
-      body,
-      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+      qs.stringify(body),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
     );
 
-    res.json(response.data);
+    if (!response.data || response.data.error !== 0) {
+      return res.status(500).json({ error: "MIS_ERROR" });
+    }
+
+    return res.json(response.data);
 
   } catch (err) {
-    res.status(500).json({ error: "MIS_ERROR" });
+    console.log("Appointment-by-id error:", err.message);
+    return res.status(500).json({ error: "SERVER_ERROR" });
   }
+
 });
 
 
