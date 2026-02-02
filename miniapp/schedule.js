@@ -90,7 +90,7 @@ export async function loadSchedule({
 
       return false;
     });
-
+window.currentVisits = visits;
     renderScheduleGrid(visits, container, showAll, date);
 
   } catch (err) {
