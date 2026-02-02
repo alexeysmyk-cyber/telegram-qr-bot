@@ -52,19 +52,18 @@ initMisModule({
 
 const crypto = require('crypto');
 
-app.post('/api/auth/telegram', express.json(), (req, res) => {
+app.post('/api/auth/telegram', express.json(), async (req, res) => {
   try {
     const { initData } = req.body;
 
     if (!initData) {
-      return res.status(403).send('No initData');
+      return res.status(403).json({ code: "NO_INIT_DATA" });
     }
 
     const params = new URLSearchParams(initData);
-
     const hash = params.get('hash');
     if (!hash) {
-      return res.status(403).send('No hash');
+      return res.status(403).json({ code: "NO_HASH" });
     }
 
     params.delete('hash');
@@ -74,10 +73,9 @@ app.post('/api/auth/telegram', express.json(), (req, res) => {
       .map(([key, value]) => `${key}=${value}`)
       .join('\n');
 
-    // 🔥 Правильный секрет для Telegram WebApp
     const secretKey = crypto
       .createHmac('sha256', 'WebAppData')
-      .update(TOKEN) // ← используем объявленный выше TOKEN
+      .update(TOKEN)
       .digest();
 
     const calculatedHash = crypto
@@ -86,32 +84,78 @@ app.post('/api/auth/telegram', express.json(), (req, res) => {
       .digest('hex');
 
     if (calculatedHash !== hash) {
-      console.log("HASH MISMATCH");
-      console.log("TG hash:", hash);
-      console.log("Calculated:", calculatedHash);
-      return res.status(403).send('Invalid signature');
+      return res.status(403).json({ code: "INVALID_SIGNATURE" });
     }
 
     const userRaw = params.get('user');
     if (!userRaw) {
-      return res.status(403).send('No user');
+      return res.status(403).json({ code: "NO_USER" });
     }
 
     const user = JSON.parse(userRaw);
-
     const db = loadDB();
 
     if (!db.whitelist.includes(user.id)) {
-      return res.status(403).send('Not allowed');
+      return res.status(403).json({ code: "NOT_AUTHORIZED" });
     }
 
-    return res.sendStatus(200);
+    const dbUser = db.users?.[String(user.id)];
+
+    if (!dbUser) {
+      return res.status(403).json({ code: "USER_NOT_IN_DB" });
+    }
+
+    if (!dbUser.mis_id) {
+      return res.status(403).json({ code: "NO_MIS_ID" });
+    }
+
+    // ===== Проверяем роль в MIS =====
+    const body = qs.stringify({
+      api_key: process.env.API_KEY,
+      clinic_id: 2997
+    });
+
+    const url = process.env.BASE_URL.replace(/\/$/, '') + '/getUsers';
+
+    const response = await axios.post(url, body, {
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+    });
+
+    if (!response.data || response.data.error !== 0) {
+      return res.status(500).json({ code: "MIS_ERROR" });
+    }
+
+    const users = response.data.data;
+
+    const misUser = users.find(u =>
+      String(u.id) === String(dbUser.mis_id)
+    );
+
+    if (!misUser) {
+      return res.status(403).json({ code: "MIS_USER_NOT_FOUND" });
+    }
+
+    const roles = misUser.role || [];
+
+    const isDoctor = roles.includes("16354");
+    const isDirector = roles.includes("16353");
+
+    if (!isDoctor && !isDirector) {
+      return res.status(403).json({ code: "ROLE_NOT_ALLOWED" });
+    }
+
+    return res.json({
+      ok: true,
+      isDoctor,
+      isDirector
+    });
 
   } catch (err) {
     console.error("Auth error:", err);
-    return res.status(500).send('Auth error');
+    return res.status(500).json({ code: "SERVER_ERROR" });
   }
 });
+;
 
 // ================== Роутер ==================
 const misRouter = require('./routes/mis');
@@ -1365,6 +1409,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
