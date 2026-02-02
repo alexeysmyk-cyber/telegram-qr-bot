@@ -76,12 +76,17 @@ function renderVisit(visit, overlay) {
   overlay.innerHTML = `
     <div class="visit-container">
 
-      <div class="visit-header">
-        <div class="visit-title">Карточка визита</div>
-        <button class="close-btn" id="closeVisitBtn">✕</button>
+      <div class="visit-top-bar">
+        <div class="visit-type-top">
+          ${getVisitType(visit)}
+        </div>
+
+        <div class="visit-status-top ${visit.status}">
+          ${getPrettyStatus(visit)}
+        </div>
       </div>
 
-      <div class="visit-content">
+      <div class="visit-content padded">
 
         ${renderMainInfo(visit)}
         ${renderPatientInfo(visit)}
@@ -101,15 +106,13 @@ function renderVisit(visit, overlay) {
     </div>
   `;
 
-  document.getElementById("closeVisitBtn")
-    .addEventListener("click", () => overlay.remove());
-
   document.getElementById("closeBottomBtn")
     .addEventListener("click", () => overlay.remove());
 
   attachServicesToggle(overlay);
   attachMoveLinks(overlay);
 }
+
 
 
 
