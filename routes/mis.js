@@ -1,9 +1,3 @@
-// ===== CACHE FOR APPOINTMENTS =====
-const appointmentsCache = {};
-setInterval(() => {
-  cleanExpiredCache();
-}, 60 * 1000);
-
 const express = require("express");
 const router = express.Router();
 const axios = require("axios");
@@ -12,19 +6,40 @@ const qs = require("querystring");
 const { getDoctors } = require("../controllers/mis/doctors");
 const { getSchedule } = require("../controllers/mis/schedule");
 
-// ===============================
-// 📌 Врачи
-// ===============================
+// =====================================================
+// CACHE FOR APPOINTMENTS
+// =====================================================
+const appointmentsCache = {};
+
+// очистка просроченного кэша
+function cleanExpiredCache() {
+  const now = Date.now();
+
+  for (const key in appointmentsCache) {
+    if (appointmentsCache[key].expires <= now) {
+      delete appointmentsCache[key];
+    }
+  }
+}
+
+// автоочистка раз в минуту
+setInterval(() => {
+  cleanExpiredCache();
+}, 60 * 1000);
+
+// =====================================================
+// 📌 ВРАЧИ
+// =====================================================
 router.post("/doctors", getDoctors);
 
-// ===============================
-// 📌 Расписание (если используешь отдельный контроллер)
-// ===============================
+// =====================================================
+// 📌 РАСПИСАНИЕ (если используешь отдельный контроллер)
+// =====================================================
 router.post("/schedule", getSchedule);
 
-// ===============================
-// 📌 Получение визитов (getAppointments)
-// ===============================
+// =====================================================
+// 📌 ПОЛУЧЕНИЕ ВИЗИТОВ (getAppointments)
+// =====================================================
 router.post("/appointments", async (req, res) => {
 
   try {
@@ -39,7 +54,9 @@ router.post("/appointments", async (req, res) => {
 
     const now = Date.now();
 
-    // ===== CHECK CACHE =====
+    // =====================================================
+    // CHECK CACHE
+    // =====================================================
     if (
       appointmentsCache[date] &&
       appointmentsCache[date].expires > now
@@ -47,7 +64,9 @@ router.post("/appointments", async (req, res) => {
       return res.json(appointmentsCache[date].data);
     }
 
-    // ===== FETCH FROM MIS =====
+    // =====================================================
+    // FETCH FROM MIS
+    // =====================================================
     const formattedDate = formatDate(date);
 
     const body = {
@@ -65,15 +84,19 @@ router.post("/appointments", async (req, res) => {
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
-        }
+        },
+        timeout: 8000 // защита от зависаний MIS
       }
     );
 
     if (!response.data || response.data.error !== 0) {
-      return res.status(500).json({ error: "MIS_ERROR" });
+      console.log("MIS getAppointments error:", response.data);
+      return res.status(502).json({ error: "MIS_ERROR" });
     }
 
-    // ===== SAVE CACHE (30 секунд) =====
+    // =====================================================
+    // SAVE CACHE (30 секунд)
+    // =====================================================
     appointmentsCache[date] = {
       data: response.data,
       expires: now + 30 * 1000
@@ -82,35 +105,28 @@ router.post("/appointments", async (req, res) => {
     return res.json(response.data);
 
   } catch (err) {
-    console.log("Appointments error:", err.message);
+
+    console.log(
+      "Appointments error:",
+      err.response?.data || err.message
+    );
+
     return res.status(500).json({ error: "SERVER_ERROR" });
   }
 
 });
 
-
-// Функция очистки кэша
-function cleanExpiredCache() {
-  const now = Date.now();
-
-  for (const key in appointmentsCache) {
-    if (appointmentsCache[key].expires <= now) {
-      delete appointmentsCache[key];
-    }
-  }
-}
-
-
-
-// ===============================
-// 📌 Формат dd.mm.yyyy
-// ===============================
+// =====================================================
+// 📌 ФОРМАТ dd.mm.yyyy
+// =====================================================
 function formatDate(dateString) {
+
   if (dateString.includes(".")) {
-    return dateString; // уже в dd.mm.yyyy
+    return dateString; // уже в формате dd.mm.yyyy
   }
 
   const d = new Date(dateString);
+
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const yyyy = d.getFullYear();
@@ -118,5 +134,5 @@ function formatDate(dateString) {
   return `${dd}.${mm}.${yyyy}`;
 }
 
-
 module.exports = router;
+
