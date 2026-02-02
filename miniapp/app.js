@@ -2,6 +2,7 @@
 // ===============================
 // Telegram Mini App Init
 // ===============================
+let scheduleTimeout = null;
 let tg = null;
 let selectedDate = null;
 let selectedDuration = 60;
