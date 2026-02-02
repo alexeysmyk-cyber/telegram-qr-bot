@@ -69,9 +69,9 @@ exports.getDoctors = async (req, res) => {
 //    console.log("Users count from MIS:", users.length);
 
     // --- Находим текущего пользователя в МИС ---
-    const currentMisUser = users.find(u =>
-      String(u.id) === String(tgUser.mis_id)
-    );
+  const currentMisUser = users.find(u =>
+  String(u.id).trim() === String(tgUser.mis_id).trim()
+);
 
     if (!currentMisUser) {
       console.log("❌ MIS user not found by mis_id");
@@ -80,7 +80,7 @@ exports.getDoctors = async (req, res) => {
 
 //    console.log("MIS user roles:", currentMisUser.role);
 
-    const roles = currentMisUser.role || [];
+    const roles = (currentMisUser.role || []).map(r => String(r));
 
     const isDoctor = roles.includes("16354");
     const isDirector = roles.includes("16353");
