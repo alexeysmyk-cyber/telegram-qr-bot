@@ -61,6 +61,7 @@ router.post("/appointments", async (req, res) => {
       appointmentsCache[date] &&
       appointmentsCache[date].expires > now
     ) {
+      console.log("📦 CACHE HIT for date:", date);
       return res.json(appointmentsCache[date].data);
     }
 
@@ -77,7 +78,7 @@ router.post("/appointments", async (req, res) => {
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getAppointments";
-
+    console.log("🚀 CALLING MIS getAppointments for date:", date);
     const response = await axios.post(
       url,
       qs.stringify(body),
