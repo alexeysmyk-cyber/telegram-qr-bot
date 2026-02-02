@@ -712,3 +712,13 @@ body {
   color: #1f2d3d;
 }
 
+
+.cal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.cal-header button { background: #e3f2f7; border: none; border-radius: 8px; padding: 6px 12px; font-size: 18px; }
+.cal-title { font-weight: 600; font-size: 16px; text-transform: capitalize; }
+.calendar-collapsed { display: flex; align-items: center; justify-content: space-between; height: 38px; /* фиксируем компактную высоту */ padding: 0 8px; /* уменьшаем отступы */ }
+.collapsed-title { flex: 1; text-align: center; font-weight: 600; font-size: 13px; /* было 14 */ line-height: 1; }
+.calendar-wrapper.compact { padding: 0; }
+.full-header { display: flex; align-items: center; justify-content: space-between; }
+.nav-btn { background: none; border: none; font-size: 20px; color: #00a4c7; cursor: pointer; }
+.calendar-hidden { display: none; }
