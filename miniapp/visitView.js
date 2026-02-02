@@ -26,13 +26,21 @@ export function openVisitView(appointmentId) {
 
 async function loadVisit(id, overlay) {
 
+  const controller = new AbortController();
+  const timeout = setTimeout(() => {
+    controller.abort();
+  }, 3000); // 3 секунды
+
   try {
 
     const response = await fetch("/api/mis/appointment-by-id", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ appointment_id: id })
+      body: JSON.stringify({ appointment_id: id }),
+      signal: controller.signal
     });
+
+    clearTimeout(timeout);
 
     const data = await response.json();
 
@@ -52,16 +60,38 @@ async function loadVisit(id, overlay) {
 
     overlay.innerHTML = `
       <div class="visit-loading">
-        <div class="spinner"></div>
-        <div>Ошибка загрузки визита</div>
-        <button class="primary-btn" id="closeVisitBtn">Закрыть</button>
+        <div class="visit-loader">
+          <div class="visit-spinner"></div>
+          <div class="visit-loading-text">
+            Визит временно недоступен
+          </div>
+          <div style="margin-top:16px;">
+            <button class="primary-btn" id="retryVisitBtn">
+              Обновить
+            </button>
+          </div>
+          <div style="margin-top:10px;">
+            <button class="secondary-btn" id="closeVisitBtn">
+              Закрыть
+            </button>
+          </div>
+        </div>
       </div>
     `;
 
-    document.getElementById("closeVisitBtn")
+    document
+      .getElementById("retryVisitBtn")
+      .addEventListener("click", () => {
+        openVisitView(id);
+        overlay.remove();
+      });
+
+    document
+      .getElementById("closeVisitBtn")
       .addEventListener("click", () => overlay.remove());
   }
 }
+
 
 
 
