@@ -997,9 +997,14 @@ body {
 /* SERVICES */
 /* ============================= */
 
+/* ============================= */
+/* SERVICES */
+/* ============================= */
+
 .services-header {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   cursor: pointer;
   font-weight: 600;
 }
@@ -1007,13 +1012,17 @@ body {
 .services-content {
   max-height: 0;
   overflow: hidden;
-  transition: 0.3s ease;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
+  opacity: 0;
+  margin-top: 12px;
 }
 
 .services-content.open {
-  max-height: 800px;
-  margin-top: 10px;
+  max-height: 1000px;
+  opacity: 1;
 }
+
+/* стрелка */
 
 .services-arrow {
   transition: transform 0.3s ease;
@@ -1022,6 +1031,41 @@ body {
 .services-arrow.rotated {
   transform: rotate(180deg);
 }
+
+/* каждая услуга */
+
+.service-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 10px 0;              /* расстояние между услугами */
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.service-row:last-child {
+  border-bottom: none;
+}
+
+.service-name {
+  flex: 1;
+  padding-right: 10px;
+}
+
+.service-price {
+  font-weight: 500;
+}
+
+/* итог */
+
+.services-total {
+  margin-top: 16px;             /* расстояние от услуг */
+  padding-top: 12px;
+  border-top: 1px solid #e9ecef;
+  font-weight: 700;             /* жирная сумма */
+  display: flex;
+  justify-content: space-between;
+}
+
 /* ============================= */
 /* PATIENT CENTERED NAME */
 /* ============================= */
