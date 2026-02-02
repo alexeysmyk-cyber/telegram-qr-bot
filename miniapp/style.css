@@ -460,8 +460,17 @@ body {
 }
 .filter-panel {
   margin-top: 12px;
-  transition: all 0.25s ease;
+  overflow: hidden;
+  max-height: 500px;
+  opacity: 1;
+  transition: max-height 0.35s ease, opacity 0.25s ease;
 }
+
+.filter-panel.collapsing {
+  max-height: 0;
+  opacity: 0;
+}
+
 
 .link-btn {
   background: none;
