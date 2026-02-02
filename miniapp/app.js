@@ -318,11 +318,17 @@ const editFiltersBtn = document.getElementById("editFiltersBtn");
 
   scheduleContainer.addEventListener("scroll", () => {
 
+// ===============================
+// SMOOTH AUTO CLOSE FILTER ON SCROLL
+// ===============================
+
+scheduleContainer.addEventListener("scroll", () => {
+
   if (
-    scheduleContainer.scrollTop > 20 &&
-    !filterPanel.classList.contains("hidden")
+    scheduleContainer.scrollTop > 10 &&
+    !filterPanel.classList.contains("collapsing")
   ) {
-    filterPanel.classList.add("hidden");
+    filterPanel.classList.add("collapsing");
     editFiltersBtn.innerText = "Изменить";
   }
 
@@ -337,13 +343,13 @@ editFiltersBtn.addEventListener("click", () => {
 
   const isHidden = filterPanel.classList.contains("hidden");
 
-  if (isHidden) {
-    filterPanel.classList.remove("hidden");
-    editFiltersBtn.innerText = "Свернуть";
-  } else {
-    filterPanel.classList.add("hidden");
-    editFiltersBtn.innerText = "Изменить";
-  }
+if (filterPanel.classList.contains("collapsing")) {
+  filterPanel.classList.remove("collapsing");
+  editFiltersBtn.innerText = "Свернуть";
+} else {
+  filterPanel.classList.add("collapsing");
+  editFiltersBtn.innerText = "Изменить";
+}
 
 });
   
