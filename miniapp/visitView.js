@@ -76,10 +76,8 @@ function renderVisit(visit, overlay) {
   overlay.innerHTML = `
     <div class="visit-container">
 
-      <div class="visit-top-bar">
-        <div class="visit-status-top ${visit.status}">
-          ${getPrettyStatus(visit)}
-        </div>
+      <div class="visit-status-absolute ${visit.status}">
+        ${getPrettyStatus(visit)}
       </div>
 
       <div class="visit-title-center">
@@ -117,13 +115,6 @@ function renderVisit(visit, overlay) {
   attachMoveLinks(overlay);
 }
 
-
-  document.getElementById("closeBottomBtn")
-    .addEventListener("click", () => overlay.remove());
-
-  attachServicesToggle(overlay);
-  attachMoveLinks(overlay);
-}
 
 
 
