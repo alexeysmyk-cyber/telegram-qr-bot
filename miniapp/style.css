@@ -811,4 +811,37 @@ body {
 .hidden {
   display: none;
 }
+/* ============================= */
+/* VISIT LOADER */
+/* ============================= */
+
+.visit-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.visit-loader {
+  text-align: center;
+}
+
+.visit-spinner {
+  width: 42px;
+  height: 42px;
+  border: 4px solid #e6f2f6;
+  border-top: 4px solid #00a4c7;
+  border-radius: 50%;
+  margin: 0 auto 14px;
+  animation: visitSpin 0.8s linear infinite;
+}
+
+@keyframes visitSpin {
+  to { transform: rotate(360deg); }
+}
+
+.visit-loading-text {
+  font-size: 15px;
+  font-weight: 600;
+  color: #00a4c7;
+}
 
