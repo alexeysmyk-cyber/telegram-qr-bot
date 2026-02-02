@@ -42,9 +42,8 @@ exports.getDoctors = async (req, res) => {
 
     // --- Запрос в МИС ---
     const body = qs.stringify({
-      api_key: process.env.API_KEY,
-      clinic_id: 2997
-    });
+      api_key: process.env.API_KEY
+       });
 
     const url = process.env.BASE_URL.replace(/\/$/, '') + '/getUsers';
 
