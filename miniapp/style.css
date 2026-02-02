@@ -1039,3 +1039,17 @@ body {
   opacity: 0.8;
 }
 .visit-card .patient-name-centered
+
+.visit-star {
+  margin-right: 6px;
+  font-size: 14px;
+}
+
+.visit-star.red {
+  color: #d9534f;
+}
+
+.visit-star.green {
+  color: #28a745;
+}
+
