@@ -51,6 +51,8 @@ initMisModule({
 });
 
 const crypto = require('crypto');
+const qs = require('querystring');
+const axios = require('axios');
 
 app.post('/api/auth/telegram', express.json(), async (req, res) => {
   try {
@@ -1409,6 +1411,7 @@ app.listen(PORT, () => {
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
