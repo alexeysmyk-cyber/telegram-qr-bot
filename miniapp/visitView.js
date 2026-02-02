@@ -77,16 +77,20 @@ function renderVisit(visit, overlay) {
     <div class="visit-container">
 
       <div class="visit-top-bar">
-        <div class="visit-type-top">
-          ${getVisitType(visit)}
-        </div>
-
         <div class="visit-status-top ${visit.status}">
           ${getPrettyStatus(visit)}
         </div>
       </div>
 
-      <div class="visit-content padded">
+      <div class="visit-title-center">
+        Карточка визита
+      </div>
+
+      <div class="visit-type-center">
+        ${getVisitType(visit)}
+      </div>
+
+      <div class="visit-content">
 
         ${renderMainInfo(visit)}
         ${renderPatientInfo(visit)}
@@ -114,6 +118,14 @@ function renderVisit(visit, overlay) {
 }
 
 
+  document.getElementById("closeBottomBtn")
+    .addEventListener("click", () => overlay.remove());
+
+  attachServicesToggle(overlay);
+  attachMoveLinks(overlay);
+}
+
+
 
 
 
@@ -129,10 +141,7 @@ function renderMainInfo(v) {
   return `
     <div class="visit-card main-card">
 
-      <div class="status-badge ${v.status}">
-        ${statusText}
-      </div>
-
+   
       <div class="visit-date">
         ${formatFullDate(v.time_start)}
       </div>
