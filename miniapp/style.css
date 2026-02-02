@@ -812,3 +812,86 @@ body {
   cursor: pointer;
 }
 
+.visit-overlay {
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 2000;
+  overflow-y: auto;
+  animation: fadeIn 0.2s ease;
+}
+
+.visit-container {
+  padding: 16px;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.visit-header {
+  margin-bottom: 20px;
+}
+
+.visit-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.visit-status {
+  font-size: 13px;
+  margin-top: 4px;
+  color: #00a4c7;
+}
+
+.visit-section {
+  background: #f8fbfd;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 14px;
+}
+
+.visit-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.visit-row.total {
+  font-weight: 600;
+}
+
+.link {
+  color: #00a4c7;
+  cursor: pointer;
+}
+
+.visit-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.danger-btn {
+  background: #ff5c5c;
+  color: white;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.secondary-btn {
+  background: #e6f8fb;
+  border: none;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+.service-item {
+  margin-bottom: 8px;
+}
+
+.hidden {
+  display: none;
+}
+
