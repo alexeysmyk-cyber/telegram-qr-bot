@@ -184,7 +184,7 @@ function renderPatientInfo(v) {
   return `
     <div class="visit-card">
 
-      <div style="height:12px;"></div>
+      <div style="height:22px;"></div>
 
       <div class="patient-name-centered clickable"
            data-id="${v.patient_id}">
@@ -192,8 +192,18 @@ function renderPatientInfo(v) {
       </div>
 
       <div class="visit-row">
+        <span>Пол:</span>
+        <span>${v.patient_gender || "—"}</span>
+      </div>
+
+      <div class="visit-row">
         <span>Дата рождения:</span>
         <span>${v.patient_birth_date || "—"}</span>
+      </div>
+
+      <div class="visit-row">
+        <span>Телефон:</span>
+        <span>${v.patient_phone || "—"}</span>
       </div>
 
       <div class="visit-row">
