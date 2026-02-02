@@ -77,7 +77,7 @@ function renderVisit(visit, overlay) {
     <div class="visit-container">
 
       <div class="visit-header">
-        <div class="visit-title">Визит</div>
+        <div class="visit-title">Карточка визита</div>
         <button class="close-btn" id="closeVisitBtn">✕</button>
       </div>
 
@@ -85,7 +85,7 @@ function renderVisit(visit, overlay) {
 
         ${renderMainInfo(visit)}
         ${renderPatientInfo(visit)}
-        ${renderMoveInfo(visit)}
+        ${renderMoveInfo(visit, overlay)}
         ${renderServices(visit)}
 
       </div>
@@ -108,7 +108,9 @@ function renderVisit(visit, overlay) {
     .addEventListener("click", () => overlay.remove());
 
   attachServicesToggle(overlay);
+  attachMoveLinks(overlay);
 }
+
 
 
 
@@ -117,28 +119,40 @@ function renderVisit(visit, overlay) {
 // ===============================
 
 function renderMainInfo(v) {
+
+  const statusText = getPrettyStatus(v);
+  const visitType = getVisitType(v);
+
   return `
-    <div class="visit-card">
+    <div class="visit-card main-card">
+
+      <div class="status-badge ${v.status}">
+        ${statusText}
+      </div>
+
+      <div class="visit-date">
+        ${formatFullDate(v.time_start)}
+      </div>
 
       <div class="visit-time">
-        ${v.time_start} – ${v.time_end}
+        с ${getTime(v.time_start)} до ${getTime(v.time_end)}
       </div>
 
-      <div class="visit-status ${v.status}">
-        ${getStatusText(v.status)}
+      <div class="visit-type">
+        ${visitType}
       </div>
 
-      <div class="visit-row">
+      <div class="visit-row right">
         <span>Клиника:</span>
         <span>${v.clinic}</span>
       </div>
 
-      <div class="visit-row">
+      <div class="visit-row right">
         <span>Кабинет:</span>
         <span>${v.room || "—"}</span>
       </div>
 
-      <div class="visit-row">
+      <div class="visit-row right">
         <span>Врач:</span>
         <span>${v.doctor}</span>
       </div>
@@ -146,6 +160,7 @@ function renderMainInfo(v) {
     </div>
   `;
 }
+
 
 
 
@@ -289,5 +304,129 @@ function getStatusText(status) {
   if (status === "refused") return "Визит отменён";
   if (status === "completed") return "Визит завершён";
   return "";
+}
+function getPrettyStatus(v) {
+
+  if (v.moved_to) return "Перенесён";
+  if (v.status === "upcoming") return "Ожидается";
+  if (v.status === "refused") return "Отменён";
+  if (v.status === "completed") return "Завершён";
+
+  return "";
+}
+function getVisitType(v) {
+
+  if (v.is_first_doctor && v.is_first_clinic)
+    return "Первичный визит в клинику";
+
+  if (v.is_first_doctor && !v.is_first_clinic)
+    return "Первичный визит к врачу";
+
+  return "Повторный визит";
+}
+function formatFullDate(dateString) {
+
+  const [datePart] = dateString.split(" ");
+  const [dd, mm, yyyy] = datePart.split(".");
+
+  const date = new Date(yyyy, mm - 1, dd);
+
+  return date.toLocaleDateString("ru-RU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+}
+function getTime(dateString) {
+  return dateString.split(" ")[1];
+}
+function renderMoveInfo(v) {
+
+  if (!v.moved_from && !v.moved_to) return "";
+
+  return `
+    <div class="visit-card">
+
+      <div class="card-title">История переноса</div>
+
+      ${v.moved_from ? `
+        <div class="move-block">
+          <div class="move-header" data-id="${v.moved_from}">
+            Перенесён из визита #${v.moved_from}
+            <span class="services-arrow">▾</span>
+          </div>
+          <div class="move-content"></div>
+        </div>
+      ` : ""}
+
+      ${v.moved_to ? `
+        <div class="move-block">
+          <div class="move-header" data-id="${v.moved_to}">
+            Перенесён в визит #${v.moved_to}
+            <span class="services-arrow">▾</span>
+          </div>
+          <div class="move-content"></div>
+        </div>
+      ` : ""}
+
+    </div>
+  `;
+}
+function attachMoveLinks(overlay) {
+
+  overlay.querySelectorAll(".move-header").forEach(header => {
+
+    header.addEventListener("click", async () => {
+
+      const id = header.dataset.id;
+      const content = header.nextElementSibling;
+
+      if (content.classList.contains("open")) {
+        content.classList.remove("open");
+        content.innerHTML = "";
+        return;
+      }
+
+      content.innerHTML = `
+        <div class="spinner"></div>
+      `;
+
+      content.classList.add("open");
+
+      try {
+
+        const response = await fetch("/api/mis/appointment-by-id", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ appointment_id: id })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.error !== 0) {
+          content.innerHTML = "Ошибка загрузки";
+          return;
+        }
+
+        const visit = data.data[0];
+
+        content.innerHTML = `
+          <div class="visit-row">
+            ${visit.time_start} – ${visit.time_end}
+          </div>
+          <div class="visit-row">
+            ${visit.patient_name}
+          </div>
+        `;
+
+      } catch {
+        content.innerHTML = "Ошибка загрузки";
+      }
+
+    });
+
+  });
+
 }
 
