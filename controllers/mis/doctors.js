@@ -102,12 +102,19 @@ exports.getDoctors = async (req, res) => {
       }));
 
 //    console.log("Doctors count:", doctors.length);
+let currentDoctorId = null;
 
-    return res.json({
-      isDirector,
-      currentDoctorId: tgUser.mis_id,
-      doctors
-    });
+if (isDoctor) {
+  currentDoctorId = tgUser.mis_id;
+} else if (isDirector) {
+  currentDoctorId = doctors.length ? doctors[0].id : null;
+}
+
+return res.json({
+  isDirector,
+  currentDoctorId,
+  doctors
+});
 
   } catch (err) {
     console.error("🔥 getDoctors fatal error:", err);
