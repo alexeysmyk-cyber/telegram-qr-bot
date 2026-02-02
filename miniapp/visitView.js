@@ -496,11 +496,16 @@ function enableSwipeToClose(overlay) {
   let startX = 0;
   let currentX = 0;
   let isDragging = false;
+  let isSwipeActive = false;
+
+  const SWIPE_THRESHOLD = 15;     // минимальный сдвиг чтобы считать свайпом
+  const CLOSE_THRESHOLD = 120;    // сколько нужно для закрытия
 
   container.addEventListener("touchstart", (e) => {
     startX = e.touches[0].clientX;
+    currentX = startX;
     isDragging = true;
-    container.classList.add("swiping");
+    isSwipeActive = false;
   });
 
   container.addEventListener("touchmove", (e) => {
@@ -509,17 +514,33 @@ function enableSwipeToClose(overlay) {
     currentX = e.touches[0].clientX;
     const diff = currentX - startX;
 
+    // если движение меньше порога — игнорируем (это клик)
+    if (!isSwipeActive && Math.abs(diff) < SWIPE_THRESHOLD) {
+      return;
+    }
+
+    isSwipeActive = true;
+
+    container.classList.add("swiping");
     container.style.transform = `translateX(${diff}px)`;
   });
 
   container.addEventListener("touchend", () => {
+
     if (!isDragging) return;
 
     const diff = currentX - startX;
+
     container.classList.remove("swiping");
 
-    // если свайп больше 120px — закрываем
-    if (Math.abs(diff) > 120) {
+    // если свайпа не было — ничего не делаем
+    if (!isSwipeActive) {
+      container.style.transform = "";
+      isDragging = false;
+      return;
+    }
+
+    if (Math.abs(diff) > CLOSE_THRESHOLD) {
 
       if (diff > 0) {
         container.classList.add("closing-right");
@@ -527,16 +548,15 @@ function enableSwipeToClose(overlay) {
         container.classList.add("closing-left");
       }
 
-      setTimeout(() => {
-        overlay.remove();
-      }, 300);
+      setTimeout(() => overlay.remove(), 300);
 
     } else {
-      // возвращаем назад
+      // вернуть на место
       container.style.transform = "";
     }
 
     isDragging = false;
+    isSwipeActive = false;
   });
 
 }
