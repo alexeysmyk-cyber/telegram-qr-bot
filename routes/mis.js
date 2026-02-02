@@ -117,6 +117,35 @@ router.post("/appointments", async (req, res) => {
 
 });
 
+
+router.post("/appointment", async (req, res) => {
+
+  try {
+
+    const { appointment_id } = req.body;
+
+    const body = qs.stringify({
+      api_key: process.env.API_KEY,
+      appointment_id
+    });
+
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/getAppointments";
+
+    const response = await axios.post(
+      url,
+      body,
+      { headers: { "Content-Type": "application/x-www-form-urlencoded" } }
+    );
+
+    res.json(response.data);
+
+  } catch (err) {
+    res.status(500).json({ error: "MIS_ERROR" });
+  }
+});
+
+
 // =====================================================
 // 📌 ФОРМАТ dd.mm.yyyy
 // =====================================================
