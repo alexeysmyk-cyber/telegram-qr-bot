@@ -1,3 +1,4 @@
+import { openVisitModal } from "./modal.js";
 // ===============================
 // REQUEST GUARD (защита от гонок)
 // ===============================
@@ -315,10 +316,20 @@ function isPast(dateString) {
 // SLOT EVENTS
 // ===============================
 function attachSlotEvents() {
-  document.querySelectorAll(".slot").forEach(slot => {
-    slot.addEventListener("click", () => {
-      const id = slot.dataset.id;
-      alert("Визит ID: " + id + "\nПозже будет перенос/отмена");
+  document.querySelectorAll(".slot").forEach(slotEl => {
+    slotEl.addEventListener("click", () => {
+
+      const id = slotEl.dataset.id;
+
+      const slotData = window.currentVisits?.find(v =>
+        String(v.id) === String(id)
+      );
+
+      if (!slotData) return;
+
+      openVisitModal(slotData);
+
     });
   });
 }
+
