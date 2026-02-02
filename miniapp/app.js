@@ -177,7 +177,7 @@ async function renderVisits() {
         60 мин · Предстоящие
       </div>
 
-<div class="filter-panel hidden" id="filterPanel">
+<div class="filter-panel" id="filterPanel">
 
  <label>
   Длительность приёма:
