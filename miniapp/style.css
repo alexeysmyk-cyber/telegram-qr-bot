@@ -109,26 +109,7 @@ body {
 /* КАЛЕНДАРЬ */
 /* ============================= */
 
-.cal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 12px;
-}
 
-.cal-header button {
-  background: #e3f2f7;
-  border: none;
-  border-radius: 8px;
-  padding: 6px 12px;
-  font-size: 18px;
-}
-
-.cal-title {
-  font-weight: 600;
-  font-size: 16px;
-  text-transform: capitalize;
-}
 
 .cal-grid {
   display: grid;
@@ -504,13 +485,7 @@ body {
 
 /* Свернутый календарь */
 
-.calendar-collapsed {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 38px;          /* фиксируем компактную высоту */
-  padding: 0 8px;        /* уменьшаем отступы */
-}
+
 
 .calendar-collapsed button {
   background: none;
@@ -529,12 +504,6 @@ body {
   border-radius: 8px;
 }
 
-.collapsed-title {
-  flex: 1;
-  text-align: center;
-  font-weight: 600;
-  font-size: 13px;   /* было 14 */
-  line-height: 1;
 }
 .collapsed-title.saturday,
 .collapsed-title.sunday {
@@ -549,20 +518,14 @@ body {
   justify-content: space-between;
   padding: 6px 12px;   /* ← добавь */
 }
-.calendar-wrapper.compact {
-  padding: 0;
-}
+
 
 .calendar-wrapper.compact .calendar-collapsed {
   height: 36px;
   padding: 0 8px;
 }
 
-.full-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
+
 .selected-date {
   flex: 1;
   text-align: center;
@@ -576,13 +539,7 @@ body {
   color: #d9534f;
 }
 
-.nav-btn {
-  background: none;
-  border: none;
-  font-size: 20px;
-  color: #00a4c7;
-  cursor: pointer;
-}
+
 
 
 .hidden {
@@ -592,9 +549,7 @@ body {
 .selected-date.sunday {
   color: #d9534f;
 }
-.calendar-hidden {
-  display: none;
-}
+
 .slot-top {
   display: flex;
   justify-content: space-between;
@@ -729,3 +684,31 @@ body {
   font-size: 14px;
   padding: 20px;
 }
+.fatal-screen {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  background: #f4f7fb;
+}
+
+.fatal-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  text-align: center;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+  max-width: 280px;
+}
+
+.fatal-icon {
+  font-size: 32px;
+  margin-bottom: 12px;
+}
+
+.fatal-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1f2d3d;
+}
+
