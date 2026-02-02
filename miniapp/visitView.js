@@ -136,15 +136,7 @@ function renderMainInfo(v) {
       <div class="visit-status-absolute ${v.status}">
         ${getPrettyStatus(v)}
       </div>
-
-      <div class="visit-title-center">
-        Карточка визита
-      </div>
-
-      <div class="visit-type-center">
-        ${getVisitType(v)}
-      </div>
-
+ 
       <div class="visit-row right">
         <span>Дата:</span>
         <span>${prettyDate}</span>
@@ -192,9 +184,9 @@ function renderPatientInfo(v) {
   return `
     <div class="visit-card">
 
-      <div class="card-title">Пациент</div>
+      <div style="height:12px;"></div>
 
-      <div class="patient-name clickable"
+      <div class="patient-name-centered clickable"
            data-id="${v.patient_id}">
         ${v.patient_name}
       </div>
@@ -205,11 +197,6 @@ function renderPatientInfo(v) {
       </div>
 
       <div class="visit-row">
-        <span>Телефон:</span>
-        <span>${v.patient_phone || "—"}</span>
-      </div>
-
-      <div class="visit-row">
         <span>Email:</span>
         <span>${v.patient_email || "—"}</span>
       </div>
@@ -217,6 +204,7 @@ function renderPatientInfo(v) {
     </div>
   `;
 }
+
 
 
 
@@ -420,19 +408,7 @@ function attachMoveLinks(overlay) {
 }
 
 function getSourceName(source) {
-
   if (!source) return "Администратор (МИС)";
-
-  const map = {
-    1: "Андройд приложение",
-    2: "На Поправку",
-    3: "Сбер Здоровье",
-    595: "Про Докторов",
-    596: "Сайт клиники",
-    746: "Imobis",
-    1090: "Телеграм бот"
-  };
-
-  return map[source] || "Администратор (МИС)";
+  return source;
 }
 
