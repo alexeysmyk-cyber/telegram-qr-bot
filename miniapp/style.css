@@ -939,13 +939,14 @@ body {
   font-size: 17px;
   font-weight: 600;
   margin-top: 28px;
+  margin-bottom: 12px;   /* ← добавили отступ вниз */
 }
 
 .visit-type-center {
   text-align: center;
   font-size: 14px;
   color: #6c757d;
-  margin-bottom: 16px;
+  margin-bottom: 20px;  /* было 14 */
 }
 
 /* ============================= */
