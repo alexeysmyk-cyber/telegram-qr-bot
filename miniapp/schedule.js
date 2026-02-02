@@ -24,7 +24,12 @@ export async function loadSchedule({
     const data = await response.json();
 
     if (!response.ok || data.error !== 0) {
-      container.innerHTML = `<div class="card">Ошибка загрузки</div>`;
+      container.innerHTML = `
+  <div class="card empty-state">
+    Временно недоступно.<br/>
+    Повторите через несколько секунд.
+  </div>
+`;
       return;
     }
 
