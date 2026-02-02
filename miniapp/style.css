@@ -1111,3 +1111,26 @@ body {
 .move-open-visit:hover {
   text-decoration: underline;
 }
+/* ============================= */
+/* SWIPE TO CLOSE VISIT */
+/* ============================= */
+
+.visit-container {
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform;
+}
+
+.visit-container.swiping {
+  transition: none;
+}
+
+.visit-container.closing-left {
+  transform: translateX(-100%);
+  opacity: 0;
+}
+
+.visit-container.closing-right {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
