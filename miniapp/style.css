@@ -868,10 +868,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-}
-
-.visit-loader {
-  text-align: center;
+  height: 100%;
 }
 
 .visit-spinner {
@@ -892,85 +889,68 @@ body {
   font-size: 15px;
   font-weight: 600;
   color: #00a4c7;
-}
-.visit-title {
   text-align: center;
-  font-weight: 700;
-  font-size: 18px;
 }
 
-.visit-status-badge {
+/* ============================= */
+/* VISIT CONTAINER */
+/* ============================= */
+
+.visit-container {
+  position: relative;
+  padding: 24px 18px 100px 18px;
+}
+
+/* ============================= */
+/* STATUS (самый верх справа) */
+/* ============================= */
+
+.visit-status-absolute {
   position: absolute;
-  top: 12px;
-  right: 14px;
-  font-weight: 700;
-  font-size: 15px;
-}
-
-.visit-date {
+  top: 6px;
+  right: 16px;
   font-size: 16px;
   font-weight: 600;
-  margin-top: 8px;
-  text-transform: capitalize;
+  padding: 6px 12px;
+  border-radius: 10px;
 }
 
-.visit-time {
-  font-size: 15px;
-  margin-top: 6px;
-}
-
-.visit-type {
-  margin-top: 6px;
-  font-weight: 500;
+.visit-status-absolute.upcoming {
+  background: #e6f8fb;
   color: #00a4c7;
 }
 
-.visit-row.right {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 6px;
+.visit-status-absolute.refused {
+  background: #ffecec;
+  color: #d9534f;
 }
 
-.move-header {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-  cursor: pointer;
+.visit-status-absolute.completed {
+  background: #e8f5e9;
+  color: #4caf50;
 }
 
-.move-content {
-  max-height: 0;
-  overflow: hidden;
-  transition: 0.3s ease;
-  opacity: 0;
-}
+/* ============================= */
+/* TITLE */
+/* ============================= */
 
-.move-content.open {
-  max-height: 300px;
-  opacity: 1;
-}
-.visit-title {
-  font-size: 18px;
-  font-weight: 700;
+.visit-title-center {
   text-align: center;
-  flex: 1;
+  font-size: 17px;
+  font-weight: 600;
+  margin-top: 28px;
 }
 
-.status-badge {
-  position: absolute;
-  top: 14px;
-  right: 16px;
+.visit-type-center {
+  text-align: center;
   font-size: 14px;
-  font-weight: 700;
+  color: #6c757d;
+  margin-bottom: 16px;
 }
 
-.status-badge.upcoming { color: #00a4c7; }
-.status-badge.refused { color: #d9534f; }
-.status-badge.completed { color: #4caf50; }
-
-.main-card {
-  position: relative;
-}
+/* ============================= */
+/* MAIN INFO */
+/* ============================= */
 
 .visit-date {
   font-weight: 600;
@@ -981,20 +961,18 @@ body {
 .visit-time {
   font-size: 16px;
   font-weight: 600;
-  margin-bottom: 10px;
-}
-
-.visit-type {
-  font-size: 13px;
-  color: #777;
   margin-bottom: 12px;
 }
 
 .visit-row.right {
   display: flex;
   justify-content: space-between;
-  text-align: right;
+  margin-top: 6px;
 }
+
+/* ============================= */
+/* MOVE BLOCK */
+/* ============================= */
 
 .move-header {
   cursor: pointer;
@@ -1013,45 +991,33 @@ body {
   max-height: 300px;
   margin-top: 8px;
 }
+
 /* ============================= */
-/* VISIT TOP BAR */
+/* SERVICES */
 /* ============================= */
 
-.visit-top-bar {
+.services-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
-  padding: 18px 20px 10px 20px;
-}
-
-.visit-type-top {
-  font-size: 18px;
+  cursor: pointer;
   font-weight: 600;
 }
 
-.visit-status-top {
-  font-size: 16px;
-  font-weight: 600;
-  padding: 6px 10px;
-  border-radius: 8px;
+.services-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s ease;
 }
 
-/* Цвета статусов */
-.visit-status-top.upcoming {
-  background: #e6f8fb;
-  color: #00a4c7;
+.services-content.open {
+  max-height: 800px;
+  margin-top: 10px;
 }
 
-.visit-status-top.refused {
-  background: #ffecec;
-  color: #d9534f;
+.services-arrow {
+  transition: transform 0.3s ease;
 }
 
-.visit-status-top.completed {
-  background: #e8f5e9;
-  color: #4caf50;
+.services-arrow.rotated {
+  transform: rotate(180deg);
 }
-
-/* Контент чуть ниже */
-
-
