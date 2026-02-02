@@ -29,7 +29,9 @@ const scheduleTab = document.getElementById('scheduleTab');
 async function authorize() {
   try {
     if (!tg) {
-      document.body.innerHTML = "Доступ только через Telegram";
+      document.body.innerHTML = renderFatal(
+        "Приложение доступно только через Telegram."
+      );
       return false;
     }
 
@@ -39,20 +41,56 @@ async function authorize() {
       body: JSON.stringify({ initData: tg.initData })
     });
 
+    const data = await response.json();
+
     if (!response.ok) {
-      const text = await response.text();
-      content.innerHTML = `<div class="card">Ошибка: ${response.status}<br>${text}</div>`;
+
+      let message = "Ошибка доступа.";
+
+      switch (data.code) {
+        case "NOT_AUTHORIZED":
+          message = "Для работы необходимо авторизоваться в боте.";
+          break;
+
+        case "NO_MIS_ID":
+          message = "Для работы в МИС необходимо внести MIS ID.";
+          break;
+
+        case "ROLE_NOT_ALLOWED":
+          message = "Ваша должностная роль не разрешает работу в МИС.";
+          break;
+
+        default:
+          message = "Доступ запрещён.";
+      }
+
+      document.body.innerHTML = renderFatal(message);
+
+      setTimeout(() => {
+        tg.close();
+      }, 3000);
+
       return false;
     }
 
     return true;
 
   } catch (err) {
-    document.body.innerHTML = "Ошибка авторизации";
+    document.body.innerHTML = renderFatal("Ошибка авторизации.");
     return false;
   }
 }
 
+function renderFatal(text) {
+  return `
+    <div class="fatal-screen">
+      <div class="fatal-card">
+        <div class="fatal-icon">⚠️</div>
+        <div class="fatal-text">${text}</div>
+      </div>
+    </div>
+  `;
+}
 // ===============================
 // UI helpers
 // ===============================
