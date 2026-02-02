@@ -205,36 +205,6 @@ function renderPatientInfo(v) {
 // MOVE INFO
 // ===============================
 
-function renderMoveInfo(v) {
-
-  if (!v.moved_from && !v.moved_to) return "";
-
-  return `
-    <div class="visit-card">
-
-      <div class="card-title">История переноса</div>
-
-      ${v.moved_from ? `
-        <div class="visit-row">
-          <span>Перенесён из:</span>
-          <span class="link" data-visit="${v.moved_from}">
-            Визит #${v.moved_from}
-          </span>
-        </div>
-      ` : ""}
-
-      ${v.moved_to ? `
-        <div class="visit-row">
-          <span>Перенесён в:</span>
-          <span class="link" data-visit="${v.moved_to}">
-            Визит #${v.moved_to}
-          </span>
-        </div>
-      ` : ""}
-
-    </div>
-  `;
-}
 
 
 
