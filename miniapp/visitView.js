@@ -126,23 +126,33 @@ function renderVisit(visit, overlay) {
 
 function renderMainInfo(v) {
 
-  const statusText = getPrettyStatus(v);
-  const visitType = getVisitType(v);
+  const sourceText = getSourceName(v.source);
+  const prettyDate = formatFullDate(v.time_start);
+  const prettyTime = `с ${getTime(v.time_start)} до ${getTime(v.time_end)}`;
 
   return `
     <div class="visit-card main-card">
 
-   
-      <div class="visit-date">
-        ${formatFullDate(v.time_start)}
+      <div class="visit-status-absolute ${v.status}">
+        ${getPrettyStatus(v)}
       </div>
 
-      <div class="visit-time">
-        с ${getTime(v.time_start)} до ${getTime(v.time_end)}
+      <div class="visit-title-center">
+        Карточка визита
       </div>
 
-      <div class="visit-type">
-        ${visitType}
+      <div class="visit-type-center">
+        ${getVisitType(v)}
+      </div>
+
+      <div class="visit-row right">
+        <span>Дата:</span>
+        <span>${prettyDate}</span>
+      </div>
+
+      <div class="visit-row right">
+        <span>Время:</span>
+        <span>${prettyTime}</span>
       </div>
 
       <div class="visit-row right">
@@ -160,9 +170,15 @@ function renderMainInfo(v) {
         <span>${v.doctor}</span>
       </div>
 
+      <div class="visit-row right">
+        <span>Источник:</span>
+        <span>${sourceText}</span>
+      </div>
+
     </div>
   `;
 }
+
 
 
 
@@ -401,5 +417,22 @@ function attachMoveLinks(overlay) {
 
   });
 
+}
+
+function getSourceName(source) {
+
+  if (!source) return "Администратор (МИС)";
+
+  const map = {
+    1: "Андройд приложение",
+    2: "На Поправку",
+    3: "Сбер Здоровье",
+    595: "Про Докторов",
+    596: "Сайт клиники",
+    746: "Imobis",
+    1090: "Телеграм бот"
+  };
+
+  return map[source] || "Администратор (МИС)";
 }
 
