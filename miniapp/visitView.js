@@ -301,16 +301,7 @@ function getPrettyStatus(v) {
 
   return "";
 }
-function getVisitType(v) {
 
-  if (v.is_first_doctor && v.is_first_clinic)
-    return "Первичный визит в клинику";
-
-  if (v.is_first_doctor && !v.is_first_clinic)
-    return "Первичный визит к врачу";
-
-  return "Повторный визит";
-}
 function formatFullDate(dateString) {
 
   const [datePart] = dateString.split(" ");
@@ -420,5 +411,25 @@ function attachMoveLinks(overlay) {
 function getSourceName(source) {
   if (!source) return "Администратор (МИС)";
   return source;
+}
+
+
+function getVisitType(v) {
+
+  if (v.is_first_doctor && v.is_first_clinic) {
+    return `
+      <span class="visit-star red">★</span>
+      Первичный визит в клинику
+    `;
+  }
+
+  if (v.is_first_doctor && !v.is_first_clinic) {
+    return `
+      <span class="visit-star green">★</span>
+      Первичный визит к врачу
+    `;
+  }
+
+  return "Повторный визит";
 }
 
