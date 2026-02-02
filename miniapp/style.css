@@ -893,4 +893,60 @@ body {
   font-weight: 600;
   color: #00a4c7;
 }
+.visit-title {
+  text-align: center;
+  font-weight: 700;
+  font-size: 18px;
+}
+
+.visit-status-badge {
+  position: absolute;
+  top: 12px;
+  right: 14px;
+  font-weight: 700;
+  font-size: 15px;
+}
+
+.visit-date {
+  font-size: 16px;
+  font-weight: 600;
+  margin-top: 8px;
+  text-transform: capitalize;
+}
+
+.visit-time {
+  font-size: 15px;
+  margin-top: 6px;
+}
+
+.visit-type {
+  margin-top: 6px;
+  font-weight: 500;
+  color: #00a4c7;
+}
+
+.visit-row.right {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+
+.move-header {
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.move-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s ease;
+  opacity: 0;
+}
+
+.move-content.open {
+  max-height: 300px;
+  opacity: 1;
+}
 
