@@ -85,7 +85,7 @@ function renderVisit(visit, overlay) {
 
         ${renderMainInfo(visit)}
         ${renderPatientInfo(visit)}
-        ${renderMoveInfo(visit, overlay)}
+        ${renderMoveInfo(visit)}
         ${renderServices(visit)}
 
       </div>
