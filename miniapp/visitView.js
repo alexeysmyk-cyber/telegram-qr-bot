@@ -309,12 +309,14 @@ function formatFullDate(dateString) {
 
   const date = new Date(yyyy, mm - 1, dd);
 
-  return date.toLocaleDateString("ru-RU", {
+  const formatted = date.toLocaleDateString("ru-RU", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric"
   });
+
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
 function getTime(dateString) {
   return dateString.split(" ")[1];
