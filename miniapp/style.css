@@ -949,4 +949,69 @@ body {
   max-height: 300px;
   opacity: 1;
 }
+.visit-title {
+  font-size: 18px;
+  font-weight: 700;
+  text-align: center;
+  flex: 1;
+}
+
+.status-badge {
+  position: absolute;
+  top: 14px;
+  right: 16px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.status-badge.upcoming { color: #00a4c7; }
+.status-badge.refused { color: #d9534f; }
+.status-badge.completed { color: #4caf50; }
+
+.main-card {
+  position: relative;
+}
+
+.visit-date {
+  font-weight: 600;
+  margin-bottom: 6px;
+  text-transform: capitalize;
+}
+
+.visit-time {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.visit-type {
+  font-size: 13px;
+  color: #777;
+  margin-bottom: 12px;
+}
+
+.visit-row.right {
+  display: flex;
+  justify-content: space-between;
+  text-align: right;
+}
+
+.move-header {
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+}
+
+.move-content {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s ease;
+}
+
+.move-content.open {
+  max-height: 300px;
+  margin-top: 8px;
+}
+
 
