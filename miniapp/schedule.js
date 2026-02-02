@@ -1,3 +1,32 @@
+// ===== RETRY WRAPPER =====
+async function fetchWithRetry(body, retries = 1) {
+
+  try {
+    const response = await fetch("/api/mis/appointments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body)
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error !== 0) {
+      throw new Error("MIS_ERROR");
+    }
+
+    return data;
+
+  } catch (err) {
+
+    if (retries > 0) {
+      await new Promise(r => setTimeout(r, 600));
+      return fetchWithRetry(body, retries - 1);
+    }
+
+    throw err;
+  }
+}
+
 export async function loadSchedule({
   container,
   date,
@@ -12,26 +41,10 @@ export async function loadSchedule({
 
   try {
 
-    const response = await fetch("/api/mis/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        date,
-        doctorId
-      })
+    const data = await fetchWithRetry({
+      date,
+      doctorId
     });
-
-    const data = await response.json();
-
-    if (!response.ok || data.error !== 0) {
-      container.innerHTML = `
-  <div class="card empty-state">
-    Временно недоступно.<br/>
-    Повторите через несколько секунд.
-  </div>
-`;
-      return;
-    }
 
     let visits = data.data || [];
 
@@ -52,7 +65,13 @@ export async function loadSchedule({
     renderScheduleGrid(visits, container, showAll, date);
 
   } catch (err) {
-    container.innerHTML = `<div class="card">Ошибка сервера</div>`;
+
+    container.innerHTML = `
+      <div class="card empty-state">
+        Временно недоступно.<br/>
+        Повторите через несколько секунд.
+      </div>
+    `;
   }
 }
 
