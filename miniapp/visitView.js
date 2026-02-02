@@ -448,8 +448,27 @@ content.innerHTML = `
       <span>${visit.room || "—"}</span>
     </div>
 
+    <div class="move-open-visit"
+         data-id="${visit.id}">
+      Просмотреть визит
+    </div>
+
   </div>
 `;
+
+        content.querySelector(".move-open-visit")
+  .addEventListener("click", (e) => {
+
+    e.stopPropagation();
+
+    // закрываем текущий overlay
+    overlay.remove();
+
+    // открываем новый визит
+    openVisitView(visit.id);
+
+  });
+
 
       } catch {
         content.innerHTML = "Ошибка загрузки";
