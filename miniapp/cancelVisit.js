@@ -79,74 +79,84 @@ export function openCancelModal(visit) {
 
   document.body.appendChild(overlay);
 
-// ===== DOM ELEMENTS =====
-const reasonSelect = document.getElementById("cancelReasonSelect");
-const commentInput = document.getElementById("cancelComment");
-const confirmBtn = document.getElementById("confirmCancelBtn");
-const closeBtn = document.getElementById("closeCancelBtn");
+  // ===============================
+  // DOM ELEMENTS
+  // ===============================
+  const reasonSelect = document.getElementById("cancelReasonSelect");
+  const commentInput = document.getElementById("cancelComment");
+  const confirmBtn = document.getElementById("confirmCancelBtn");
+  const closeBtn = document.getElementById("closeCancelBtn");
 
-// ===== ERROR MESSAGE =====
-let errorMessage = document.createElement("div");
-errorMessage.className = "cancel-error";
-reasonSelect.parentElement.appendChild(errorMessage);
+  // ===============================
+  // ERROR MESSAGE
+  // ===============================
+  const errorMessage = document.createElement("div");
+  errorMessage.className = "cancel-error";
+  reasonSelect.parentElement.appendChild(errorMessage);
 
-// ===== INITIAL STATE =====
-confirmBtn.disabled = true;
-confirmBtn.classList.add("btn-disabled");
-  
-function validateCancelForm() {
+  // ===============================
+  // INITIAL STATE
+  // ===============================
+  confirmBtn.disabled = true;
+  confirmBtn.classList.add("btn-disabled");
 
-  const reason = reasonSelect.value;
-  const comment = commentInput.value.trim();
+  // ===============================
+  // VALIDATION
+  // ===============================
+  function validateCancelForm() {
 
-  if (!reason) {
-    confirmBtn.disabled = true;
-  } else if (reason === "2" && comment.length === 0) {
-    // "Другое" требует комментарий
-    confirmBtn.disabled = true;
-  } else {
-    confirmBtn.disabled = false;
+    const reason = reasonSelect.value;
+    const comment = commentInput.value.trim();
+
+    clearCancelError();
+
+    if (!reason) {
+      confirmBtn.disabled = true;
+    }
+    else if (reason === "2" && comment.length === 0) {
+      confirmBtn.disabled = true;
+    }
+    else {
+      confirmBtn.disabled = false;
+    }
+
+    confirmBtn.classList.toggle("btn-disabled", confirmBtn.disabled);
+    confirmBtn.classList.toggle("btn-active", !confirmBtn.disabled);
   }
 
-  confirmBtn.classList.toggle("btn-disabled", confirmBtn.disabled);
-  confirmBtn.classList.toggle("btn-active", !confirmBtn.disabled);
-}
-
-reasonSelect.addEventListener("change", validateCancelForm);
-commentInput.addEventListener("input", validateCancelForm);
-
+  reasonSelect.addEventListener("change", validateCancelForm);
+  commentInput.addEventListener("input", validateCancelForm);
 
   // ===============================
-  // BUTTON EFFECT (визуальный отклик)
+  // BUTTON PRESS EFFECT
   // ===============================
- function addPressEffect(btn) {
+  function addPressEffect(btn) {
 
-  btn.addEventListener("touchstart", () => {
-    if (btn.disabled) return;
-    btn.style.transform = "scale(0.96)";
-    btn.style.opacity = "0.9";
-  });
+    btn.addEventListener("touchstart", () => {
+      if (btn.disabled) return;
+      btn.style.transform = "scale(0.96)";
+      btn.style.opacity = "0.9";
+    });
 
-  btn.addEventListener("touchend", () => {
-    btn.style.transform = "";
-    btn.style.opacity = "";
-  });
+    btn.addEventListener("touchend", () => {
+      btn.style.transform = "";
+      btn.style.opacity = "";
+    });
 
-  btn.addEventListener("mousedown", () => {
-    if (btn.disabled) return;
-    btn.style.transform = "scale(0.96)";
-    btn.style.opacity = "0.9";
-  });
+    btn.addEventListener("mousedown", () => {
+      if (btn.disabled) return;
+      btn.style.transform = "scale(0.96)";
+      btn.style.opacity = "0.9";
+    });
 
-  btn.addEventListener("mouseup", () => {
-    btn.style.transform = "";
-    btn.style.opacity = "";
-  });
-}
+    btn.addEventListener("mouseup", () => {
+      btn.style.transform = "";
+      btn.style.opacity = "";
+    });
+  }
 
-addPressEffect(confirmBtn);
-addPressEffect(closeBtn);
-
+  addPressEffect(confirmBtn);
+  addPressEffect(closeBtn);
 
   // ===============================
   // CLOSE
@@ -156,68 +166,66 @@ addPressEffect(closeBtn);
   // ===============================
   // CONFIRM CANCEL
   // ===============================
-confirmBtn.addEventListener("click", async () => {
+  confirmBtn.addEventListener("click", async () => {
 
-  const reason = reasonSelect.value;
-  const comment = commentInput.value.trim();
+    const reason = reasonSelect.value;
+    const comment = commentInput.value.trim();
 
-  // ===== ВАЛИДАЦИЯ =====
-  if (!reason) {
-    showCancelError("Выберите причину отмены");
-    reasonSelect.classList.add("input-error");
-    return;
-  }
-
-  if (reason === "2" && comment.length === 0) {
-    showCancelError("Укажите комментарий для причины 'Другое'");
-    commentInput.classList.add("input-error");
-    return;
-  }
-
-  clearCancelError();
-
-  try {
-    const response = await fetch("/api/mis/cancel-appointment", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        appointment_id: visit.id,
-        reason,
-        comment
-      })
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      throw new Error();
+    if (!reason) {
+      showCancelError("Выберите причину отмены");
+      reasonSelect.classList.add("input-error");
+      return;
     }
 
-    overlay.remove();
-    window.location.reload();
+    if (reason === "2" && comment.length === 0) {
+      showCancelError("Укажите комментарий для причины 'Другое'");
+      commentInput.classList.add("input-error");
+      return;
+    }
 
-  } catch {
-    showCancelError(
-      "Визит не может быть отменён.\nВозможно он завершён или содержит неоплаченные услуги."
-    );
+    try {
+
+      const response = await fetch("/api/mis/cancel-appointment", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          appointment_id: visit.id,
+          reason,
+          comment
+        })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error();
+      }
+
+      overlay.remove();
+      window.location.reload();
+
+    } catch {
+
+      showCancelError(
+        "Визит не может быть отменён.\nВозможно он завершён или содержит неоплаченные услуги."
+      );
+    }
+
+  });
+
+  // ===============================
+  // ERROR HELPERS
+  // ===============================
+  function showCancelError(text) {
+    errorMessage.innerText = text;
+    errorMessage.classList.add("visible");
   }
-});
 
-function showCancelError(text) {
-  errorMessage.innerText = text;
-  errorMessage.classList.add("visible");
-}
-
-function clearCancelError() {
-  errorMessage.innerText = "";
-  errorMessage.classList.remove("visible");
-  reasonSelect.classList.remove("input-error");
-  commentInput.classList.remove("input-error");
-}
-
-reasonSelect.addEventListener("change", clearCancelError);
-commentInput.addEventListener("input", clearCancelError);
-
-  
+  function clearCancelError() {
+    errorMessage.innerText = "";
+    errorMessage.classList.remove("visible");
+    reasonSelect.classList.remove("input-error");
+    commentInput.classList.remove("input-error");
+  }
 
 }
