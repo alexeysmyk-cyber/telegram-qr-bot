@@ -326,3 +326,62 @@ function attachSlotEvents() {
   });
 }
 
+function enableLongTap() {
+
+  let timer = null;
+
+  document.querySelectorAll(".slot").forEach(slot => {
+
+    slot.addEventListener("touchstart", (e) => {
+
+      timer = setTimeout(() => {
+
+        activateLongTap(slot);
+
+      }, 500);
+
+    });
+
+    slot.addEventListener("touchend", () => {
+      clearTimeout(timer);
+    });
+
+    slot.addEventListener("touchmove", () => {
+      clearTimeout(timer);
+    });
+
+  });
+
+}
+function activateLongTap(slot) {
+
+  document.body.classList.add("blur-mode");
+  slot.classList.add("lifted");
+
+  let startX = 0;
+
+  slot.addEventListener("touchstart", (e) => {
+    startX = e.touches[0].clientX;
+  });
+
+  slot.addEventListener("touchend", (e) => {
+
+    const diff = e.changedTouches[0].clientX - startX;
+
+    if (diff < -100) {
+      const visit = window.currentVisits.find(v => v.id == slot.dataset.id);
+      openCancelModal(visit);
+    }
+
+    if (diff > 100) {
+      alert("Перенос (реализуем позже)");
+    }
+
+    slot.classList.remove("lifted");
+    document.body.classList.remove("blur-mode");
+
+  }, { once: true });
+
+}
+
+
