@@ -201,9 +201,9 @@ export function renderCalendar(container, onSelect, initialDate = null) {
       swipeDone = true;
 
       if (diff > 0) {
-        current.setMonth(current.getMonth() - 1);
-      } else {
         current.setMonth(current.getMonth() + 1);
+      } else {
+        current.setMonth(current.getMonth() - 1);
       }
 
       buildFull();
