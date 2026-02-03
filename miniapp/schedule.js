@@ -415,14 +415,19 @@ function activateLongPressMode(slot) {
   document.body.classList.add("longpress-active");
   slot.classList.add("slot-lifted");
 
-  const hint = document.createElement("div");
-  hint.className = "longpress-hint";
-  hint.innerHTML = `
-    <span class="hint-left">← Удалить</span>
-    <span class="hint-right">Перенести →</span>
-  `;
-
-  document.body.appendChild(hint);
+const hint = document.createElement("div");
+hint.className = "longpress-hint";
+hint.innerHTML = `
+  <div class="hint-wrapper">
+    <div class="hint-left">
+      ⬅ Удалить
+    </div>
+    <div class="hint-right">
+      Перенести ➡
+    </div>
+  </div>
+`;
+document.body.appendChild(hint);
 }
 
 function deactivateLongPressMode(slot) {
