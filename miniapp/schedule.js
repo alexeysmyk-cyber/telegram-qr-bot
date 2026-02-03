@@ -320,6 +320,10 @@ function isPast(dateString) {
 
 function attachSlotEvents() {
 
+   console.log("attachSlotEvents called");
+
+
+
   document.querySelectorAll(".slot").forEach(slot => {
 
     let pressTimer = null;
@@ -332,11 +336,13 @@ function attachSlotEvents() {
     // TOUCH START
     // ===============================
     slot.addEventListener("touchstart", (e) => {
-
+console.log("touchstart");
+      
       isLongPress = false;
       startX = e.touches[0].clientX;
 
       pressTimer = setTimeout(() => {
+          console.log("LONG PRESS ACTIVATED");
 
         isLongPress = true;
         activateLongPressMode(slot);
