@@ -225,7 +225,13 @@ export function openCancelModal(visit, parentOverlay) {
         
 const visitDate = visit.time_start.split(" ")[0];
 
-overlay.remove();
+// закрываем cancel
+  overlay.remove();
+
+  // закрываем карточку визита
+  if (parentOverlay) {
+    parentOverlay.remove();
+  }
 
 if (window.reloadSchedule) {
   window.reloadSchedule(visitDate);
