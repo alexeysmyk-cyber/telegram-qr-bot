@@ -399,7 +399,7 @@ slot.addEventListener("touchmove", (e) => {
       // свайп влево — удаление
       else if (diff < -120) {
         const visit = window.currentVisits?.find(v => v.id == appointmentId);
-        if (visit) open(visit);
+        if (visit) openCancelModal(visit);
       }
 
       slot.style.transform = "";
