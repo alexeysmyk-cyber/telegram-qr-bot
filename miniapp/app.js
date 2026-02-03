@@ -269,9 +269,13 @@ const scheduleWrapper = scheduleContainer.parentElement;
 let touchStartX = 0;
 
 scheduleWrapper.addEventListener("touchstart", (e) => {
+
+  if (window.isLongPressActive) return;
+  if (window.isLongPressActive) return;
+
   touchStartX = e.changedTouches[0].screenX;
 });
-
+  
 scheduleWrapper.addEventListener("touchend", (e) => {
 
   if (!selectedDate) return;
