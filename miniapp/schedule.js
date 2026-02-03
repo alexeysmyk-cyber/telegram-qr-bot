@@ -5,6 +5,10 @@ import { openCancelModal } from "./cancelVisit.js"; // если нужно
 // REQUEST GUARD (защита от гонок)
 // ===============================
 let currentRequestId = 0;
+// ===============================
+// LAST SCHEDULE STATE
+// ===============================
+let lastScheduleParams = null;
 
 
 // ===============================
@@ -57,12 +61,17 @@ export async function loadSchedule({
   showCompleted
 }) {
 
-  // восстановление даты после отмены визита
-  const savedDate = localStorage.getItem("schedule_selected_date");
-  if (savedDate) {
-    date = savedDate;
-    localStorage.removeItem("schedule_selected_date");
-  }
+    lastScheduleParams = {
+    container,
+    date,
+    doctorId,
+    showAll,
+    duration,
+    showCancelled,
+    showCompleted
+  };
+
+ 
 
   
   showLoader(container);
@@ -466,4 +475,20 @@ if (overlay) overlay.remove();
   const hint = document.querySelector(".longpress-hint");
   if (hint) hint.remove();
 }
+
+// ===============================
+// RELOAD LAST SCHEDULE
+// ===============================
+window.reloadSchedule = function(dateOverride = null) {
+
+  if (!lastScheduleParams) return;
+
+  const params = { ...lastScheduleParams };
+
+  if (dateOverride) {
+    params.date = dateOverride;
+  }
+
+  loadSchedule(params);
+};
 
