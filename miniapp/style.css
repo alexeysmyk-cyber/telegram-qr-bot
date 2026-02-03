@@ -371,6 +371,7 @@ body {
   border-radius: 10px;
   cursor: pointer;
   transition: 0.2s;
+  touch-action: pan-y;
 }
 
 .slot-active {
