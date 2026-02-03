@@ -354,20 +354,24 @@ console.log("touchstart");
     // ===============================
     // TOUCH MOVE
     // ===============================
-    slot.addEventListener("touchmove", (e) => {
+slot.addEventListener("touchmove", (e) => {
 
-      // если ещё не long press — отменяем таймер
-      if (!isLongPress) {
-        clearTimeout(pressTimer);
-        return;
-      }
+  const currentX = e.touches[0].clientX;
+  const diff = currentX - startX;
 
-      const currentX = e.touches[0].clientX;
-      const diff = currentX - startX;
+  // если палец сильно сдвинулся ДО long press — отменяем
+  if (!isLongPress && Math.abs(diff) > 10) {
+    clearTimeout(pressTimer);
+    return;
+  }
 
-      slot.style.transform = `translateX(${diff}px)`;
+  // если уже long press — двигаем карточку
+  if (isLongPress) {
+    slot.style.transform = `translateX(${diff}px)`;
+  }
 
-    });
+});
+
 
     // ===============================
     // TOUCH END
