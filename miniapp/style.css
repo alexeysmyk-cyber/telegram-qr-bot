@@ -1325,18 +1325,31 @@ body {
 }
 
 .hint-wrapper {
-  width: 90%;
+  width: 92%;
   display: flex;
   justify-content: space-between;
-  font-size: 20px;
+  gap: 12px;
+  font-size: 18px;
   font-weight: 700;
 }
 
+.hint-left,
+.hint-right {
+  flex: 1;
+  text-align: center;
+  padding: 12px 0;
+  border-radius: 14px;
+  backdrop-filter: blur(6px);
+}
 .hint-left {
-  color: #ff4d4f;
+  color: #fff;
+  background: rgba(255, 77, 79, 0.9);
+  box-shadow: 0 6px 18px rgba(255, 77, 79, 0.3);
+}
+.hint-right {
+  color: #fff;
+  background: rgba(0, 164, 199, 0.9);
+  box-shadow: 0 6px 18px rgba(0, 164, 199, 0.3);
 }
 
-.hint-right {
-  color: #00a4c7;
-}
 
