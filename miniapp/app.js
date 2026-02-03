@@ -299,9 +299,9 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
   const absY = Math.abs(diffY);
 
   // ждём пока жест станет заметным
-  if (absX < 15 && absY < 15) return;
+  if (absX < 12 && absY < 12) return;
 
-  if (absX > absY * 1.5) {
+  if (absX > absY * 1.3) {
     gestureType = "horizontal";
   } else {
     gestureType = "vertical";
