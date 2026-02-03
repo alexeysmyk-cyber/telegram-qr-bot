@@ -336,7 +336,8 @@ function attachSlotEvents() {
     // TOUCH START
     // ===============================
     slot.addEventListener("touchstart", (e) => {
-console.log("touchstart");
+
+e.stopPropagation();
       
       isLongPress = false;
       startX = e.touches[0].clientX;
@@ -413,23 +414,27 @@ slot.addEventListener("touchmove", (e) => {
 function activateLongPressMode(slot) {
 
   window.isLongPressActive = true;
-  
+
   document.body.classList.add("longpress-active");
   slot.classList.add("slot-lifted");
 
-const hint = document.createElement("div");
-hint.className = "longpress-hint";
-hint.innerHTML = `
-  <div class="hint-wrapper">
-    <div class="hint-left">
-      ⬅ Удалить
+  // 🔥 ОСТАНАВЛИВАЕМ СКРОЛЛ И СВАЙПЫ ВЫШЕ
+  slot.addEventListener("touchmove", stopPropagation, { passive: false });
+  slot.addEventListener("touchend", stopPropagation);
+
+  const hint = document.createElement("div");
+  hint.className = "longpress-hint";
+  hint.innerHTML = `
+    <div class="hint-wrapper">
+      <div class="hint-left">⬅ Удалить</div>
+      <div class="hint-right">Перенести ➡</div>
     </div>
-    <div class="hint-right">
-      Перенести ➡
-    </div>
-  </div>
-`;
-document.body.appendChild(hint);
+  `;
+  document.body.appendChild(hint);
+}
+
+function stopPropagation(e) {
+  e.stopPropagation();
 }
 
 function deactivateLongPressMode(slot) {
