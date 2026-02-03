@@ -78,53 +78,71 @@ export function openCancelModal(visit) {
   `;
 
   document.body.appendChild(overlay);
+const reasonSelect = document.getElementById("cancelReasonSelect");
+const commentInput = document.getElementById("cancelComment");
+const confirmBtn = document.getElementById("confirmCancelBtn");
+const closeBtn = document.getElementById("closeCancelBtn");
 
-  const reasonSelect = document.getElementById("cancelReasonSelect");
-  const commentInput = document.getElementById("cancelComment");
-  const confirmBtn = document.getElementById("confirmCancelBtn");
-  const closeBtn = document.getElementById("closeCancelBtn");
+// начальное состояние
+confirmBtn.disabled = true;
+confirmBtn.classList.add("btn-disabled");
 
-  // ===============================
-  // VALIDATION
-  // ===============================
-  function validate() {
+// ===============================
+// VALIDATION
+// ===============================
+function validateCancelForm() {
 
-    const reasonSelected = reasonSelect.value !== "";
-    const commentFilled = commentInput.value.trim().length > 2;
+  const reason = reasonSelect.value;
+  const comment = commentInput.value.trim();
 
-    confirmBtn.disabled = !(reasonSelected && commentFilled);
+  if (!reason) {
+    confirmBtn.disabled = true;
+  } else if (reason === "2" && comment.length === 0) {
+    // "Другое" требует комментарий
+    confirmBtn.disabled = true;
+  } else {
+    confirmBtn.disabled = false;
   }
 
-  reasonSelect.addEventListener("change", validate);
-  commentInput.addEventListener("input", validate);
+  confirmBtn.classList.toggle("btn-disabled", confirmBtn.disabled);
+  confirmBtn.classList.toggle("btn-active", !confirmBtn.disabled);
+}
+
+reasonSelect.addEventListener("change", validateCancelForm);
+commentInput.addEventListener("input", validateCancelForm);
+
 
   // ===============================
   // BUTTON EFFECT (визуальный отклик)
   // ===============================
-  function addPressEffect(btn) {
-    btn.addEventListener("touchstart", () => {
-      btn.style.transform = "scale(0.97)";
-      btn.style.opacity = "0.85";
-    });
+ function addPressEffect(btn) {
 
-    btn.addEventListener("touchend", () => {
-      btn.style.transform = "";
-      btn.style.opacity = "";
-    });
+  btn.addEventListener("touchstart", () => {
+    if (btn.disabled) return;
+    btn.style.transform = "scale(0.96)";
+    btn.style.opacity = "0.9";
+  });
 
-    btn.addEventListener("mousedown", () => {
-      btn.style.transform = "scale(0.97)";
-      btn.style.opacity = "0.85";
-    });
+  btn.addEventListener("touchend", () => {
+    btn.style.transform = "";
+    btn.style.opacity = "";
+  });
 
-    btn.addEventListener("mouseup", () => {
-      btn.style.transform = "";
-      btn.style.opacity = "";
-    });
-  }
+  btn.addEventListener("mousedown", () => {
+    if (btn.disabled) return;
+    btn.style.transform = "scale(0.96)";
+    btn.style.opacity = "0.9";
+  });
 
-  addPressEffect(confirmBtn);
-  addPressEffect(closeBtn);
+  btn.addEventListener("mouseup", () => {
+    btn.style.transform = "";
+    btn.style.opacity = "";
+  });
+}
+
+addPressEffect(confirmBtn);
+addPressEffect(closeBtn);
+
 
   // ===============================
   // CLOSE
