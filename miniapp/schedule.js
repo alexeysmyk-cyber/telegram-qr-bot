@@ -404,38 +404,37 @@ slot.addEventListener("touchmove", (e) => {
     // ===============================
     // TOUCH END
     // ===============================
- slot.addEventListener("touchend", (e) => {
+slot.addEventListener("touchend", (e) => {
 
   clearTimeout(pressTimer);
-
-  // если был long press — блокируем всё наружу
-  if (isLongPress) {
-    e.stopPropagation();
-    e.preventDefault();
-  }
-
-  // обычный клик
- 
 
   const endX = e.changedTouches[0].clientX;
   const diff = endX - startX;
 
-  deactivateLongPressMode(slot);
-
   const threshold = 60;
+
+  // ❗ если не было long press — ничего не делаем
+  if (!isLongPress) {
+    slot.style.transform = "";
+    return;
+  }
+
+  // если был long press — блокируем наружу
+  e.stopPropagation();
+  e.preventDefault();
 
   if (diff > threshold) {
     console.log("Перенос визита", appointmentId);
   }
-
   else if (diff < -threshold) {
     const visit = window.currentVisits?.find(v => v.id == appointmentId);
     if (visit) openCancelModal(visit);
   }
 
-  // 🔥 ВСЕГДА возвращаем слот
+  deactivateLongPressMode(slot);
   slot.style.transform = "";
 });
+
 
 
     slot.addEventListener("click", (e) => {
