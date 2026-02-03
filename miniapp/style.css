@@ -1156,4 +1156,78 @@ body {
   background: white !important;
 }
 
+/* ============================= */
+/* CANCEL VISIT */
+/* ============================= */
+
+.cancel-container {
+  padding-top: 36px;
+}
+
+.cancel-info {
+  margin-top: 18px;
+  margin-bottom: 22px;
+}
+
+.cancel-row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+
+.cancel-label {
+  display: block;
+  font-weight: 600;
+  margin: 14px 0 6px 0;
+  font-size: 14px;
+}
+
+.cancel-select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e0e6ed;
+  font-size: 14px;
+  background: white;
+  margin-bottom: 12px;
+}
+
+.cancel-select:focus {
+  outline: none;
+  border-color: #00a4c7;
+  box-shadow: 0 0 0 2px rgba(0,164,199,0.15);
+}
+
+.cancel-textarea {
+  width: 100%;
+  min-height: 90px;
+  padding: 12px;
+  border-radius: 14px;
+  border: 1px solid #e0e6ed;
+  font-size: 14px;
+  resize: none;
+  transition: 0.2s ease;
+}
+
+.cancel-textarea:focus {
+  outline: none;
+  border-color: #00a4c7;
+  box-shadow: 0 0 0 2px rgba(0,164,199,0.15);
+}
+
+.danger-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+/* Нажатие кнопок */
+.pressable {
+  transition: 0.15s ease;
+}
+
+.pressable:active {
+  transform: scale(0.97);
+  opacity: 0.85;
+}
 
