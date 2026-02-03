@@ -209,12 +209,23 @@ export function openCancelModal(visit) {
 
       const data = await response.json();
 
-      if (!response.ok || !data.success) {
-        throw new Error();
-      }
+// если HTTP ошибка
+if (!response.ok) {
+  throw new Error("HTTP_ERROR");
+}
 
-      overlay.remove();
-      window.location.reload();
+// если сервер вернул ошибку
+if (data.error && data.error !== 0) {
+  const message = data?.data?.desc || 
+    "Визит не может быть отменён.";
+  showCancelError(message);
+  return;
+}
+
+// если всё успешно
+overlay.remove();
+window.location.reload();
+
 
     } catch {
       showCancelError(
