@@ -1231,3 +1231,19 @@ body {
   opacity: 0.85;
 }
 
+.btn-disabled {
+  background: #ffb3b3 !important;
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-active {
+  background: #ff5c5c !important;
+  opacity: 1;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.btn-active:active {
+  transform: scale(0.96);
+}
