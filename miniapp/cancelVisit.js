@@ -152,50 +152,68 @@ addPressEffect(closeBtn);
   // ===============================
   // CONFIRM CANCEL
   // ===============================
-  confirmBtn.addEventListener("click", async () => {
+confirmBtn.addEventListener("click", async () => {
 
-    if (confirmBtn.disabled) return;
+  const reason = reasonSelect.value;
+  const comment = commentInput.value.trim();
 
-    confirmBtn.innerText = "Отмена...";
-    confirmBtn.disabled = true;
+  // ===== ВАЛИДАЦИЯ =====
+  if (!reason) {
+    showCancelError("Выберите причину отмены");
+    reasonSelect.classList.add("input-error");
+    return;
+  }
 
-    try {
+  if (reason === "2" && comment.length === 0) {
+    showCancelError("Укажите комментарий для причины 'Другое'");
+    commentInput.classList.add("input-error");
+    return;
+  }
 
-      const response = await fetch("/api/mis/cancel-appointment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          appointment_id: visit.id,
-          reason: reasonSelect.value,
-          comment: commentInput.value.trim()
-        })
-      });
+  clearCancelError();
 
-      const data = await response.json();
+  try {
+    const response = await fetch("/api/mis/cancel-appointment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        appointment_id: visit.id,
+        reason,
+        comment
+      })
+    });
 
-      if (!response.ok || !data.success) {
-        throw new Error();
-      }
+    const data = await response.json();
 
-      overlay.remove();
-
-      if (window.refreshSchedule) {
-        window.refreshSchedule();
-      } else {
-        window.location.reload();
-      }
-
-    } catch {
-
-      confirmBtn.innerText = "Отменить визит";
-      confirmBtn.disabled = false;
-
-      alert(
-        "Визит не может быть отменён.\n\n" +
-        "Возможно он завершён или содержит неоплаченные услуги."
-      );
+    if (!response.ok || !data.success) {
+      throw new Error();
     }
 
-  });
+    overlay.remove();
+    window.location.reload();
+
+  } catch {
+    showCancelError(
+      "Визит не может быть отменён.\nВозможно он завершён или содержит неоплаченные услуги."
+    );
+  }
+});
+
+function showCancelError(text) {
+  errorMessage.innerText = text;
+  errorMessage.classList.add("visible");
+}
+
+function clearCancelError() {
+  errorMessage.innerText = "";
+  errorMessage.classList.remove("visible");
+  reasonSelect.classList.remove("input-error");
+  commentInput.classList.remove("input-error");
+}
+
+reasonSelect.addEventListener("change", clearCancelError);
+commentInput.addEventListener("input", clearCancelError);
+
+  
 
 }
