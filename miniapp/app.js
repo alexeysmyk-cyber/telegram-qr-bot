@@ -273,7 +273,7 @@ doctorSelect.addEventListener("change", () => {
 
   
 const scheduleContainer = document.getElementById("scheduleContainer");
-const scheduleWrapper = scheduleContainer;
+const scheduleWrapper = scheduleContainer.parentElement;
 
 let touchStartX = 0;
 
