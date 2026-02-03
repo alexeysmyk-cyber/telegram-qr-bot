@@ -1292,3 +1292,25 @@ body {
   opacity: 1 !important;
 }
 
+.longpress-hint {
+  position: fixed;
+  bottom: 90px;
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 30px;
+  font-weight: 600;
+  font-size: 14px;
+  color: #7a8a9a;
+  pointer-events: none;
+  z-index: 9998;
+}
+
+.hint-left {
+  color: #d9534f;
+}
+
+.hint-right {
+  color: #00a4c7;
+}
