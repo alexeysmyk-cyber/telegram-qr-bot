@@ -273,7 +273,7 @@ doctorSelect.addEventListener("change", () => {
 
   
 const scheduleContainer = document.getElementById("scheduleContainer");
-const scheduleWrapper = scheduleContainer.parentElement;
+const scheduleWrapper = scheduleContainer;
 
 let touchStartX = 0;
 
@@ -281,12 +281,16 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 
   if (window.isLongPressActive) return;
 
+  // свайп даты работает только когда список в самом верху
+  if (scheduleContainer.scrollTop !== 0) return;
+
   touchStartX = e.changedTouches[0].screenX;
   touchStartY = e.changedTouches[0].screenY;
 
   gestureLocked = false;
   gestureType = null;
 });
+
 
   scheduleWrapper.addEventListener("touchmove", (e) => {
 
@@ -313,36 +317,53 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
   
 scheduleWrapper.addEventListener("touchend", (e) => {
 
-  if (window.isLongPressActive) return;
-  if (!selectedDate) return;
-
-  if (gestureType !== "horizontal") return;
-
-  const diffX = e.changedTouches[0].screenX - touchStartX;
-
-  if (Math.abs(diffX) < 120) return;
-
-  if (diffX > 0) {
-    selectedDate.setDate(selectedDate.getDate() - 1);
-  } else {
-    selectedDate.setDate(selectedDate.getDate() + 1);
+  if (window.isLongPressActive) {
+    gestureLocked = false;
+    gestureType = null;
+    return;
   }
 
-  renderCalendar(
-    document.getElementById("calendar"),
-    (date) => {
-      selectedDate = new Date(date);
-      refreshSchedule();
-    },
-    selectedDate
-  );
+  if (!selectedDate) {
+    gestureLocked = false;
+    gestureType = null;
+    return;
+  }
 
-  refreshSchedule();
+  if (gestureType === "horizontal") {
+
+    const diffX = e.changedTouches[0].screenX - touchStartX;
+
+    if (Math.abs(diffX) >= 120) {
+
+      if (diffX > 0) {
+        selectedDate.setDate(selectedDate.getDate() - 1);
+      } else {
+        selectedDate.setDate(selectedDate.getDate() + 1);
+      }
+
+      renderCalendar(
+        document.getElementById("calendar"),
+        (date) => {
+          selectedDate = new Date(date);
+          refreshSchedule();
+        },
+        selectedDate
+      );
+
+      refreshSchedule();
+    }
+  }
+
+  // 🔥 ВСЕГДА сбрасываем
+  gestureLocked = false;
+  gestureType = null;
 });
 
 
-
-
+scheduleWrapper.addEventListener("touchcancel", () => {
+  gestureLocked = false;
+  gestureType = null;
+});
 
 
 
