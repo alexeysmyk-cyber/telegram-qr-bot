@@ -141,7 +141,7 @@ const cancelBtn = document.getElementById("cancelVisitBtn");
 
 if (cancelBtn) {
   cancelBtn.addEventListener("click", () => {
-    openCancelModal(visit);
+    openCancelModal(visit, overlay); // передаём overlay карточки
   });
 }
 
