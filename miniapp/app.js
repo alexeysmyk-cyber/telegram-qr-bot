@@ -1,4 +1,5 @@
 
+
 // ===============================
 // Telegram Mini App Init
 // ===============================
@@ -10,6 +11,9 @@ let selectedDuration = 60;
 if (window.Telegram && window.Telegram.WebApp)
 { tg = window.Telegram.WebApp; tg.expand(); tg.ready(); }
 
+if (window.Telegram?.WebApp) {
+  Telegram.WebApp.enableClosingConfirmation();
+}
 
 
 
