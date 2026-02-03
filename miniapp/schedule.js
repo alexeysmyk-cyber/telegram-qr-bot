@@ -317,7 +317,7 @@ function isPast(dateString) {
 // ===============================
 // SLOT EVENTS
 // ===============================
-
+window.isLongPressActive = false;
 function attachSlotEvents() {
 
    console.log("attachSlotEvents called");
@@ -412,6 +412,8 @@ slot.addEventListener("touchmove", (e) => {
 
 function activateLongPressMode(slot) {
 
+  window.isLongPressActive = true;
+  
   document.body.classList.add("longpress-active");
   slot.classList.add("slot-lifted");
 
@@ -432,6 +434,9 @@ document.body.appendChild(hint);
 
 function deactivateLongPressMode(slot) {
 
+  window.isLongPressActive = false;
+
+  
   document.body.classList.remove("longpress-active");
   slot.classList.remove("slot-lifted");
 
