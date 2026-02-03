@@ -1274,8 +1274,21 @@ body {
 
 .slot-lifted {
   position: relative;
-  z-index: 1000;
-  transform: scale(1.05);
-  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  z-index: 9999;
+  transform: scale(1.06);
+  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
+  background: white;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.longpress-active .slot {
+  filter: blur(4px);
+  opacity: 0.5;
   transition: 0.2s;
 }
+
+.longpress-active .slot-lifted {
+  filter: none !important;
+  opacity: 1 !important;
+}
+
