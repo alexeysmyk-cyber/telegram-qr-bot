@@ -230,6 +230,7 @@ overlay.remove();
 if (window.reloadSchedule) {
   window.reloadSchedule(visitDate);
 }
+     return; // ← ВАЖНО
       }
 
       // если структура странная
