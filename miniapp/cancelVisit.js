@@ -204,3 +204,5 @@ export function openCancelModal(visit) {
   }
 
 });
+
+}
