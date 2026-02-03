@@ -1315,17 +1315,15 @@ body {
   box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
-.hint-left {
-  color: #d9534f;
-}
-
+.hint-left,
 .hint-right {
-  color: #00a4c7;
+  animation: pulseHint 1.2s infinite;
 }
 
-@keyframes fadeHint {
-  from { opacity: 0; transform: translateY(-6px); }
-  to { opacity: 1; transform: translateY(0); }
+@keyframes pulseHint {
+  0% { opacity: 1; }
+  50% { opacity: 0.6; }
+  100% { opacity: 1; }
 }
 .longpress-active .tabs,
 .longpress-active .app {
