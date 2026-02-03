@@ -7,6 +7,8 @@ let scheduleTimeout = null;
 let tg = null;
 let selectedDate = null;
 let selectedDuration = 60;
+let touchStartX = 0;
+let touchStartY = 0;
 
 if (window.Telegram && window.Telegram.WebApp)
 { tg = window.Telegram.WebApp; tg.expand(); tg.ready(); }
@@ -276,37 +278,49 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 
   if (window.isLongPressActive) return;
 
-
   touchStartX = e.changedTouches[0].screenX;
+  touchStartY = e.changedTouches[0].screenY;
 });
   
 scheduleWrapper.addEventListener("touchend", (e) => {
- if (window.isLongPressActive) return;
+
+  if (window.isLongPressActive) return;
   if (!selectedDate) return;
 
-  const diff = e.changedTouches[0].screenX - touchStartX;
+  const diffX = e.changedTouches[0].screenX - touchStartX;
+  const diffY = e.changedTouches[0].screenY - touchStartY;
 
-  if (Math.abs(diff) < 60) return;
+  const absX = Math.abs(diffX);
+  const absY = Math.abs(diffY);
 
-  if (diff > 0) {
-    selectedDate.setDate(selectedDate.getDate() - 1);
-  } else {
-    selectedDate.setDate(selectedDate.getDate() + 1);
+  // минимальный сдвиг
+  if (absX < 60) return;
+
+  // если вертикальная составляющая слишком большая — это скролл
+  if (absY > absX * 0.7) return;
+
+  // если горизонталь доминирует
+  if (absX > absY * 1.3) {
+
+    if (diffX > 0) {
+      selectedDate.setDate(selectedDate.getDate() - 1);
+    } else {
+      selectedDate.setDate(selectedDate.getDate() + 1);
+    }
+
+    renderCalendar(
+      document.getElementById("calendar"),
+      (date) => {
+        selectedDate = new Date(date);
+        refreshSchedule();
+      },
+      selectedDate
+    );
+
+    refreshSchedule();
   }
-
-  // 🔥 Обновляем календарь
-  renderCalendar(
-    document.getElementById("calendar"),
-    (date) => {
-      selectedDate = new Date(date);
-      refreshSchedule();
-    },
-    selectedDate
-  );
-
-  // 🔥 ОБЯЗАТЕЛЬНО обновляем визиты
-  refreshSchedule();
 });
+
 
 
 
