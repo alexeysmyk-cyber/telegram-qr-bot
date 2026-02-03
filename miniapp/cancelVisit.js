@@ -69,7 +69,7 @@ export function openCancelModal(visit) {
           Назад
         </button>
 
-        <button class="danger-btn pressable" id="confirmCancelBtn" disabled>
+        <button class="danger-btn pressable btn-disabled" id="confirmCancelBtn">
           Отменить визит
         </button>
       </div>
@@ -88,17 +88,23 @@ export function openCancelModal(visit) {
   const closeBtn = document.getElementById("closeCancelBtn");
 
   // ===============================
-  // ERROR MESSAGE
+  // ERROR BLOCK
   // ===============================
-  const errorMessage = document.createElement("div");
+  let errorMessage = document.createElement("div");
   errorMessage.className = "cancel-error";
   reasonSelect.parentElement.appendChild(errorMessage);
 
-  // ===============================
-  // INITIAL STATE
-  // ===============================
-  confirmBtn.disabled = true;
-  confirmBtn.classList.add("btn-disabled");
+  function showCancelError(text) {
+    errorMessage.innerText = text;
+    errorMessage.classList.add("visible");
+  }
+
+  function clearCancelError() {
+    errorMessage.innerText = "";
+    errorMessage.classList.remove("visible");
+    reasonSelect.classList.remove("input-error");
+    commentInput.classList.remove("input-error");
+  }
 
   // ===============================
   // VALIDATION
@@ -108,24 +114,31 @@ export function openCancelModal(visit) {
     const reason = reasonSelect.value;
     const comment = commentInput.value.trim();
 
-    clearCancelError();
+    let isValid = false;
 
     if (!reason) {
-      confirmBtn.disabled = true;
+      isValid = false;
     }
     else if (reason === "2" && comment.length === 0) {
-      confirmBtn.disabled = true;
+      isValid = false;
     }
     else {
-      confirmBtn.disabled = false;
+      isValid = true;
     }
 
-    confirmBtn.classList.toggle("btn-disabled", confirmBtn.disabled);
-    confirmBtn.classList.toggle("btn-active", !confirmBtn.disabled);
+    confirmBtn.classList.toggle("btn-disabled", !isValid);
+    confirmBtn.classList.toggle("btn-active", isValid);
   }
 
-  reasonSelect.addEventListener("change", validateCancelForm);
-  commentInput.addEventListener("input", validateCancelForm);
+  reasonSelect.addEventListener("change", () => {
+    clearCancelError();
+    validateCancelForm();
+  });
+
+  commentInput.addEventListener("input", () => {
+    clearCancelError();
+    validateCancelForm();
+  });
 
   // ===============================
   // BUTTON PRESS EFFECT
@@ -133,7 +146,6 @@ export function openCancelModal(visit) {
   function addPressEffect(btn) {
 
     btn.addEventListener("touchstart", () => {
-      if (btn.disabled) return;
       btn.style.transform = "scale(0.96)";
       btn.style.opacity = "0.9";
     });
@@ -144,7 +156,6 @@ export function openCancelModal(visit) {
     });
 
     btn.addEventListener("mousedown", () => {
-      if (btn.disabled) return;
       btn.style.transform = "scale(0.96)";
       btn.style.opacity = "0.9";
     });
@@ -171,6 +182,7 @@ export function openCancelModal(visit) {
     const reason = reasonSelect.value;
     const comment = commentInput.value.trim();
 
+    // ---- ВАЛИДАЦИЯ ПЕРЕД ОТПРАВКОЙ ----
     if (!reason) {
       showCancelError("Выберите причину отмены");
       reasonSelect.classList.add("input-error");
@@ -205,27 +217,11 @@ export function openCancelModal(visit) {
       window.location.reload();
 
     } catch {
-
       showCancelError(
-        "Визит не может быть отменён.\nВозможно он завершён или содержит неоплаченные услуги."
+        "Визит не может быть отменён. Возможно он завершён или содержит неоплаченные услуги."
       );
     }
 
   });
-
-  // ===============================
-  // ERROR HELPERS
-  // ===============================
-  function showCancelError(text) {
-    errorMessage.innerText = text;
-    errorMessage.classList.add("visible");
-  }
-
-  function clearCancelError() {
-    errorMessage.innerText = "";
-    errorMessage.classList.remove("visible");
-    reasonSelect.classList.remove("input-error");
-    commentInput.classList.remove("input-error");
-  }
 
 }
