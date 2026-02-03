@@ -78,18 +78,22 @@ export function openCancelModal(visit) {
   `;
 
   document.body.appendChild(overlay);
+
+// ===== DOM ELEMENTS =====
 const reasonSelect = document.getElementById("cancelReasonSelect");
 const commentInput = document.getElementById("cancelComment");
 const confirmBtn = document.getElementById("confirmCancelBtn");
 const closeBtn = document.getElementById("closeCancelBtn");
 
-// начальное состояние
+// ===== ERROR MESSAGE =====
+let errorMessage = document.createElement("div");
+errorMessage.className = "cancel-error";
+reasonSelect.parentElement.appendChild(errorMessage);
+
+// ===== INITIAL STATE =====
 confirmBtn.disabled = true;
 confirmBtn.classList.add("btn-disabled");
-
-// ===============================
-// VALIDATION
-// ===============================
+  
 function validateCancelForm() {
 
   const reason = reasonSelect.value;
