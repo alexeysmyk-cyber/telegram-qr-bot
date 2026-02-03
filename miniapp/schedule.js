@@ -417,12 +417,12 @@ function activateLongPressMode(slot) {
 
   window.isLongPressActive = true;
 
-  document.body.classList.add("longpress-active");
-  slot.classList.add("slot-lifted");
+  // создаём overlay
+  const overlay = document.createElement("div");
+  overlay.className = "longpress-overlay";
+  document.body.appendChild(overlay);
 
-  // 🔥 ОСТАНАВЛИВАЕМ СКРОЛЛ И СВАЙПЫ ВЫШЕ
-  slot.addEventListener("touchmove", stopPropagation, { passive: false });
-  slot.addEventListener("touchend", stopPropagation);
+  slot.classList.add("slot-lifted");
 
   const hint = document.createElement("div");
   hint.className = "longpress-hint";
@@ -443,10 +443,12 @@ function deactivateLongPressMode(slot) {
 
   window.isLongPressActive = false;
 
-  
-  document.body.classList.remove("longpress-active");
   slot.classList.remove("slot-lifted");
+
+  const overlay = document.querySelector(".longpress-overlay");
+  if (overlay) overlay.remove();
 
   const hint = document.querySelector(".longpress-hint");
   if (hint) hint.remove();
 }
+
