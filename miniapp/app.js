@@ -292,7 +292,9 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 });
 
 
-  scheduleWrapper.addEventListener("touchmove", (e) => {
+scheduleWrapper.addEventListener("touchmove", (e) => {
+
+  if (scheduleContainer.scrollTop !== 0) return;
 
   if (gestureLocked) return;
 
@@ -302,7 +304,6 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
   const absX = Math.abs(diffX);
   const absY = Math.abs(diffY);
 
-  // ждём пока жест станет заметным
   if (absX < 12 && absY < 12) return;
 
   if (absX > absY * 1.3) {
@@ -313,6 +314,7 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 
   gestureLocked = true;
 });
+
 
   
 scheduleWrapper.addEventListener("touchend", (e) => {
