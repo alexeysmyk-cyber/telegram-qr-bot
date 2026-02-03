@@ -1,3 +1,5 @@
+import { openVisitView } from "./visitView.js";
+import { openCancelModal } from "./cancelModal.js"; // если нужно
 
 // ===============================
 // REQUEST GUARD (защита от гонок)
@@ -315,8 +317,6 @@ function isPast(dateString) {
 // ===============================
 // SLOT EVENTS
 // ===============================
-import { openVisitView } from "./visitView.js";
-import { openCancelModal } from "./cancelModal.js"; // если нужно
 
 function attachSlotEvents() {
 
