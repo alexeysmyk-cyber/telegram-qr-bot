@@ -57,6 +57,14 @@ export async function loadSchedule({
   showCompleted
 }) {
 
+  // восстановление даты после отмены визита
+  const savedDate = localStorage.getItem("schedule_selected_date");
+  if (savedDate) {
+    date = savedDate;
+    localStorage.removeItem("schedule_selected_date");
+  }
+
+  
   showLoader(container);
 
   const requestId = ++currentRequestId;
