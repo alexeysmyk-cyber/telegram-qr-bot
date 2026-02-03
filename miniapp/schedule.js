@@ -336,19 +336,18 @@ function isPast(dateString) {
 // ===============================
 window.isLongPressActive = false;
 function attachSlotEvents() {
-let startY = 0;
-
-
    console.log("attachSlotEvents called");
 
 
 
   document.querySelectorAll(".slot").forEach(slot => {
 
-    let pressTimer = null;
-    let isLongPress = false;
-    let startX = 0;
+  let pressTimer = null;
+  let isLongPress = false;
 
+  let startX = 0;
+  let startY = 0;
+  let moved = false;   // ← ДОБАВИТЬ
     const appointmentId = slot.dataset.id;
 
     // ===============================
@@ -359,8 +358,10 @@ let startY = 0;
 e.stopPropagation();
       
       isLongPress = false;
-      startX = e.touches[0].clientX;
-      startY = e.touches[0].clientY;
+    moved = false;
+
+  startX = e.touches[0].clientX;
+  startY = e.touches[0].clientY;;
 
       pressTimer = setTimeout(() => {
           console.log("LONG PRESS ACTIVATED");
@@ -383,24 +384,20 @@ slot.addEventListener("touchmove", (e) => {
   const diffX = currentX - startX;
   const diffY = currentY - startY;
 
-  // если пользователь начал вертикально скроллить — отменяем long press
-  if (!isLongPress && Math.abs(diffY) > 10) {
+  // фиксируем движение
+  if (Math.abs(diffX) > 5 || Math.abs(diffY) > 5) {
+    moved = true;
     clearTimeout(pressTimer);
-    return;
   }
 
-  // если горизонтальный свайп до long press — тоже отменяем
-  if (!isLongPress && Math.abs(diffX) > 10) {
-    clearTimeout(pressTimer);
-    return;
-  }
-
+  // если это long press — двигаем слот
   if (isLongPress) {
     e.stopPropagation();
     e.preventDefault();
     slot.style.transform = `translateX(${diffX}px)`;
   }
 });
+
 
 
 
@@ -418,10 +415,7 @@ slot.addEventListener("touchmove", (e) => {
   }
 
   // обычный клик
-  if (!isLongPress) {
-    openVisitView(appointmentId);
-    return;
-  }
+ 
 
   const endX = e.changedTouches[0].clientX;
   const diff = endX - startX;
@@ -441,6 +435,18 @@ slot.addEventListener("touchmove", (e) => {
 
   // 🔥 ВСЕГДА возвращаем слот
   slot.style.transform = "";
+});
+
+
+    slot.addEventListener("click", (e) => {
+
+  if (moved) {
+    e.preventDefault();
+    e.stopPropagation();
+    return;
+  }
+
+  openVisitView(appointmentId);
 });
 
 
