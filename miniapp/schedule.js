@@ -320,11 +320,7 @@ function isPast(dateString) {
 window.isLongPressActive = false;
 function attachSlotEvents() {
 
-  slot.addEventListener("touchcancel", () => {
-  clearTimeout(pressTimer);
-  deactivateLongPressMode(slot);
-  slot.style.transform = "";
-});
+
 
    console.log("attachSlotEvents called");
 
