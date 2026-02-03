@@ -1,5 +1,5 @@
 import { openVisitView } from "./visitView.js";
-//import { openCancelModal } from "./cancelModal.js"; // если нужно
+import { openCancelModal } from "./cancelVisit.js"; // если нужно
 
 // ===============================
 // REQUEST GUARD (защита от гонок)
@@ -389,7 +389,7 @@ function attachSlotEvents() {
       // свайп влево — удаление
       else if (diff < -120) {
         const visit = window.currentVisits?.find(v => v.id == appointmentId);
-        if (visit) openCancelModal(visit);
+        if (visit) open(visit);
       }
 
       slot.style.transform = "";
