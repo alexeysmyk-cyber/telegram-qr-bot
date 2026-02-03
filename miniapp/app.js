@@ -10,6 +10,9 @@ let selectedDuration = 60;
 let touchStartX = 0;
 let touchStartY = 0;
 
+let gestureLocked = false;
+let gestureType = null; // "horizontal" | "vertical"
+
 if (window.Telegram && window.Telegram.WebApp)
 { tg = window.Telegram.WebApp; tg.expand(); tg.ready(); }
 
@@ -280,12 +283,14 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 
   touchStartX = e.changedTouches[0].screenX;
   touchStartY = e.changedTouches[0].screenY;
-});
-  
-scheduleWrapper.addEventListener("touchend", (e) => {
 
-  if (window.isLongPressActive) return;
-  if (!selectedDate) return;
+  gestureLocked = false;
+  gestureType = null;
+});
+
+  scheduleWrapper.addEventListener("touchmove", (e) => {
+
+  if (gestureLocked) return;
 
   const diffX = e.changedTouches[0].screenX - touchStartX;
   const diffY = e.changedTouches[0].screenY - touchStartY;
@@ -293,33 +298,48 @@ scheduleWrapper.addEventListener("touchend", (e) => {
   const absX = Math.abs(diffX);
   const absY = Math.abs(diffY);
 
-  // минимальный сдвиг
-  if (absX < 100) return;
+  // ждём пока жест станет заметным
+  if (absX < 15 && absY < 15) return;
 
-  // если вертикальная составляющая слишком большая — это скролл
-  if (absY > absX * 0.7) return;
-
-  // если горизонталь доминирует
-  if (absX > absY * 1.8) {
-
-    if (diffX > 0) {
-      selectedDate.setDate(selectedDate.getDate() - 1);
-    } else {
-      selectedDate.setDate(selectedDate.getDate() + 1);
-    }
-
-    renderCalendar(
-      document.getElementById("calendar"),
-      (date) => {
-        selectedDate = new Date(date);
-        refreshSchedule();
-      },
-      selectedDate
-    );
-
-    refreshSchedule();
+  if (absX > absY * 1.5) {
+    gestureType = "horizontal";
+  } else {
+    gestureType = "vertical";
   }
+
+  gestureLocked = true;
 });
+
+  
+scheduleWrapper.addEventListener("touchend", (e) => {
+
+  if (window.isLongPressActive) return;
+  if (!selectedDate) return;
+
+  if (gestureType !== "horizontal") return;
+
+  const diffX = e.changedTouches[0].screenX - touchStartX;
+
+  if (Math.abs(diffX) < 120) return;
+
+  if (diffX > 0) {
+    selectedDate.setDate(selectedDate.getDate() - 1);
+  } else {
+    selectedDate.setDate(selectedDate.getDate() + 1);
+  }
+
+  renderCalendar(
+    document.getElementById("calendar"),
+    (date) => {
+      selectedDate = new Date(date);
+      refreshSchedule();
+    },
+    selectedDate
+  );
+
+  refreshSchedule();
+});
+
 
 
 
