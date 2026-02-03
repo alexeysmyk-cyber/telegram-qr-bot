@@ -294,13 +294,13 @@ scheduleWrapper.addEventListener("touchend", (e) => {
   const absY = Math.abs(diffY);
 
   // минимальный сдвиг
-  if (absX < 60) return;
+  if (absX < 100) return;
 
   // если вертикальная составляющая слишком большая — это скролл
   if (absY > absX * 0.7) return;
 
   // если горизонталь доминирует
-  if (absX > absY * 1.3) {
+  if (absX > absY * 1.8) {
 
     if (diffX > 0) {
       selectedDate.setDate(selectedDate.getDate() - 1);
