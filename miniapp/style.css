@@ -1354,4 +1354,53 @@ body {
   box-shadow: 0 20px 40px rgba(0,0,0,0.25);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
+/* ============================= */
+/* LONG PRESS OVERLAY */
+/* ============================= */
+
+.longpress-overlay {
+  position: fixed;
+  inset: 0;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.15);
+  z-index: 1500; /* выше tabs */
+  pointer-events: none;
+}
+
+/* поднятый слот */
+.slot-lifted {
+  position: relative;
+  z-index: 2000;
+  transform: scale(1.05);
+  box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  background: white !important;
+}
+
+/* подсказка */
+.longpress-hint {
+  position: fixed;
+  top: 60px; /* ниже Telegram header */
+  left: 0;
+  right: 0;
+  z-index: 2500;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.hint-wrapper {
+  width: 90%;
+  display: flex;
+  justify-content: space-between;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.hint-left {
+  color: #ff4d4f;
+}
+
+.hint-right {
+  color: #00a4c7;
+}
 
