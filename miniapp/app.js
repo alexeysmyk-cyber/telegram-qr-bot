@@ -281,9 +281,9 @@ scheduleWrapper.addEventListener("touchend", (e) => {
   if (Math.abs(diff) < 60) return;
 
   if (diff > 0) {
-    selectedDate.setDate(selectedDate.getDate() - 1);
-  } else {
     selectedDate.setDate(selectedDate.getDate() + 1);
+  } else {
+    selectedDate.setDate(selectedDate.getDate() - 1);
   }
 
   // 🔥 Обновляем календарь
