@@ -164,6 +164,62 @@ router.post("/appointment-by-id", async (req, res) => {
 
 });
 
+// ===============================
+// 📌 ОТМЕНА ВИЗИТА
+// ===============================
+router.post("/cancel-appointment", async (req, res) => {
+
+  try {
+
+    const {
+      appointment_id,
+      comment,
+      reason
+    } = req.body;
+
+    if (!appointment_id || !reason) {
+      return res.status(400).json({ error: "NO_DATA" });
+    }
+
+    const body = {
+      api_key: process.env.API_KEY,
+      appointment_id,
+      comment: comment || "",
+      source: "Telegram Bot",
+      is_handled: true,
+      cancel_reason: reason
+    };
+
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/cancelAppointment";
+
+    const response = await axios.post(
+      url,
+      qs.stringify(body),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    // MIS возвращает true
+    if (response.data === true) {
+      return res.json({ success: true });
+    }
+
+    return res.status(400).json({ error: "CANNOT_CANCEL" });
+
+  } catch (err) {
+
+    console.log("Cancel error:", err.response?.data || err.message);
+
+    return res.status(500).json({ error: "SERVER_ERROR" });
+  }
+
+});
+
+
 
 // =====================================================
 // 📌 ФОРМАТ dd.mm.yyyy
