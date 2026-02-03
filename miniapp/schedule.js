@@ -1,5 +1,5 @@
 import { openVisitView } from "./visitView.js";
-import { openCancelModal } from "./cancelModal.js"; // если нужно
+//import { openCancelModal } from "./cancelModal.js"; // если нужно
 
 // ===============================
 // REQUEST GUARD (защита от гонок)
