@@ -1,4 +1,4 @@
-export function openCancelModal(visit) {
+export function openCancelModal(visit, parentOverlay) {
 
   const overlay = document.createElement("div");
   overlay.className = "visit-overlay";
