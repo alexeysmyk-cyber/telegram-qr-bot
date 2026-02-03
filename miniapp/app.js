@@ -9,6 +9,7 @@ let selectedDate = null;
 let selectedDuration = 60;
 let touchStartX = 0;
 let touchStartY = 0;
+let swipeBlockedUntil = 0;
 
 let gestureLocked = false;
 let gestureType = null; // "horizontal" | "vertical"
@@ -281,10 +282,11 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 
   if (window.isLongPressActive) return;
 
+  // 🔥 если недавно был скролл — свайп даты отключён
+  if (Date.now() < swipeBlockedUntil) return;
+
   // если начали на слоте — свайп даты не активируем
   if (e.target.closest(".slot")) return;
-
-  if (scheduleContainer.scrollTop !== 0) return;
 
   touchStartX = e.changedTouches[0].screenX;
   touchStartY = e.changedTouches[0].screenY;
@@ -299,8 +301,8 @@ scheduleWrapper.addEventListener("touchmove", (e) => {
 
   if (e.target.closest(".slot")) return;
 
-
-  if (scheduleContainer.scrollTop !== 0) return;
+  // если недавно был скролл — свайп даты отключён
+  if (Date.now() < swipeBlockedUntil) return;
 
   if (gestureLocked) return;
 
@@ -320,6 +322,7 @@ scheduleWrapper.addEventListener("touchmove", (e) => {
 
   gestureLocked = true;
 });
+
 
 
   
@@ -394,6 +397,9 @@ const editFiltersBtn = document.getElementById("editFiltersBtn");
 
 scheduleContainer.addEventListener("scroll", () => {
 
+  // 🔥 блокируем свайп даты на 800 мс
+  swipeBlockedUntil = Date.now() + 800;
+
   if (
     scheduleContainer.scrollTop > 10 &&
     !filterPanel.classList.contains("collapsing")
@@ -403,6 +409,8 @@ scheduleContainer.addEventListener("scroll", () => {
   }
 
 });
+
+
 
 
 
