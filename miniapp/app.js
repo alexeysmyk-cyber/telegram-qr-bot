@@ -277,7 +277,7 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 });
   
 scheduleWrapper.addEventListener("touchend", (e) => {
-
+ if (window.isLongPressActive) return;
   if (!selectedDate) return;
 
   const diff = e.changedTouches[0].screenX - touchStartX;
