@@ -415,6 +415,14 @@ function activateLongPressMode(slot) {
   document.body.classList.add("longpress-active");
   slot.classList.add("slot-lifted");
 
+  const hint = document.createElement("div");
+  hint.className = "longpress-hint";
+  hint.innerHTML = `
+    <span class="hint-left">← Удалить</span>
+    <span class="hint-right">Перенести →</span>
+  `;
+
+  document.body.appendChild(hint);
 }
 
 function deactivateLongPressMode(slot) {
@@ -422,4 +430,6 @@ function deactivateLongPressMode(slot) {
   document.body.classList.remove("longpress-active");
   slot.classList.remove("slot-lifted");
 
+  const hint = document.querySelector(".longpress-hint");
+  if (hint) hint.remove();
 }
