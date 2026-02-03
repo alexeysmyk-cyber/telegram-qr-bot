@@ -219,6 +219,10 @@ export function openCancelModal(visit) {
       if (data.error === 0 &&
           (data.data === true || data.data === "true")) {
 
+
+const visitDate = visit.time_start.split(" ")[0];
+  localStorage.setItem("schedule_selected_date", visitDate);
+        
         alert("Визит успешно отменён");
 
         overlay.remove();
