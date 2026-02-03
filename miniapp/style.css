@@ -1,3 +1,22 @@
+* {
+  -webkit-user-select: none;
+  user-select: none;
+}
+textarea,
+input {
+  -webkit-user-select: text;
+  user-select: text;
+}
+button,
+.slot,
+.tab,
+.doctor-header,
+.hint-wrapper {
+  -webkit-touch-callout: none;
+}
+
+
+
 /* ============================= */
 /* БАЗА */
 /* ============================= */
@@ -40,17 +59,6 @@ body {
   text-align: center;
 }
 
-.visit-overlay {
-  position: fixed;
-  inset: 0;
-  background: #f4f7fb;
-  z-index: 9999;
-  overflow-y: auto;
-}
-
-.visit-container {
-  padding: 16px;
-}
 
 .services-header {
   display: flex;
@@ -563,7 +571,6 @@ body {
   border-radius: 8px;
 }
 
-}
 .collapsed-title.saturday,
 .collapsed-title.sunday {
   color: #d9534f;
@@ -601,9 +608,7 @@ body {
 
 
 
-.hidden {
-  display: none !important;
-}
+
 .selected-date.saturday,
 .selected-date.sunday {
   color: #d9534f;
@@ -1092,7 +1097,6 @@ body {
 .patient-name-centered:hover {
   opacity: 0.8;
 }
-.visit-card .patient-name-centered
 
 .visit-star {
   margin-right: 6px;
@@ -1144,18 +1148,6 @@ body {
   opacity: 0;
 }
 
-.blur-mode #scheduleContainer {
-  filter: blur(6px);
-  pointer-events: none;
-}
-
-.slot.lifted {
-  position: relative;
-  z-index: 2000;
-  transform: scale(1.05);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-  background: white !important;
-}
 
 /* ============================= */
 /* CANCEL VISIT */
@@ -1269,52 +1261,21 @@ body {
   border-color: #d9534f !important;
   box-shadow: 0 0 0 2px rgba(217,83,79,0.1);
 }
-.longpress-active {
-  backdrop-filter: blur(4px);
-}
 
-.slot-lifted {
-  position: relative;
-  z-index: 9999;
-  transform: scale(1.06);
-  box-shadow: 0 18px 40px rgba(0,0,0,0.25);
-  background: white;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
 
 .longpress-active .slot {
-  filter: blur(4px);
+
   opacity: 0.5;
   transition: 0.2s;
 }
 
 .longpress-active .slot-lifted {
-  filter: none !important;
+ 
   opacity: 1 !important;
 }
 
-.longpress-hint {
-  position: fixed;
-  top: 18px;
-  left: 0;
-  right: 0;
-  z-index: 20;
-  display: flex;
-  justify-content: center;
-  pointer-events: none;
-  animation: fadeHint 0.2s ease;
-.hint-wrapper {
-  width: 90%;
-  display: flex;
-  justify-content: space-between;
-  font-size: 17px;
-  font-weight: 700;
-  padding: 10px 18px;
-  border-radius: 14px;
-  background: rgba(255,255,255,0.9);
-  backdrop-filter: blur(6px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-}
+
+  
 
 .hint-left,
 .hint-right {
@@ -1326,34 +1287,9 @@ body {
   50% { opacity: 0.6; }
   100% { opacity: 1; }
 }
-.longpress-active .tabs,
-.longpress-active .app {
-  filter: blur(6px);
-  transition: filter 0.25s ease;
-}
-.longpress-active::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  backdrop-filter: blur(4px);
-  z-index: 5;
-}
-.longpress-active::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,0.25);
-  backdrop-filter: blur(4px);
-  z-index: 5;
-}
-.slot-lifted {
-  position: relative;
-  z-index: 10;
-  transform: scale(1.05);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.25);
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
+
+
+
 /* ============================= */
 /* LONG PRESS OVERLAY */
 /* ============================= */
