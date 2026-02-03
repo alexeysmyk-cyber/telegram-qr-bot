@@ -1250,3 +1250,22 @@ body {
 .btn-active:active {
   transform: scale(0.96);
 }
+
+.cancel-error {
+  font-size: 13px;
+  color: #d9534f;
+  margin-top: 8px;
+  opacity: 0;
+  transition: 0.2s ease;
+  white-space: pre-line;
+}
+
+.cancel-error.visible {
+  opacity: 1;
+}
+
+.input-error {
+  border-color: #d9534f !important;
+  box-shadow: 0 0 0 2px rgba(217,83,79,0.1);
+}
+
