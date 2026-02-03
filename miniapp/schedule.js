@@ -418,9 +418,9 @@ function activateLongPressMode(slot) {
   window.isLongPressActive = true;
 
   // создаём overlay
-  const overlay = document.createElement("div");
-  overlay.className = "longpress-overlay";
-  document.body.appendChild(overlay);
+ const overlay = document.createElement("div");
+overlay.className = "longpress-overlay";
+document.body.appendChild(overlay);
 
   slot.classList.add("slot-lifted");
 
@@ -445,8 +445,8 @@ function deactivateLongPressMode(slot) {
 
   slot.classList.remove("slot-lifted");
 
-  const overlay = document.querySelector(".longpress-overlay");
-  if (overlay) overlay.remove();
+const overlay = document.querySelector(".longpress-overlay");
+if (overlay) overlay.remove();
 
   const hint = document.querySelector(".longpress-hint");
   if (hint) hint.remove();
