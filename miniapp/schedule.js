@@ -316,72 +316,100 @@ function isPast(dateString) {
 // SLOT EVENTS
 // ===============================
 import { openVisitView } from "./visitView.js";
+import { openCancelModal } from "./cancelModal.js"; // если нужно
 
 function attachSlotEvents() {
-  document.querySelectorAll(".slot").forEach(slot => {
-    slot.addEventListener("click", () => {
-      const id = slot.dataset.id;
-      openVisitView(id);
-    });
-  });
-}
-
-function enableLongTap() {
-
-  let timer = null;
 
   document.querySelectorAll(".slot").forEach(slot => {
 
+    let pressTimer = null;
+    let isLongPress = false;
+    let startX = 0;
+
+    const appointmentId = slot.dataset.id;
+
+    // ===============================
+    // TOUCH START
+    // ===============================
     slot.addEventListener("touchstart", (e) => {
 
-      timer = setTimeout(() => {
+      isLongPress = false;
+      startX = e.touches[0].clientX;
 
-        activateLongTap(slot);
+      pressTimer = setTimeout(() => {
 
-      }, 500);
+        isLongPress = true;
+        activateLongPressMode(slot);
+
+      }, 600);
 
     });
 
-    slot.addEventListener("touchend", () => {
-      clearTimeout(timer);
+    // ===============================
+    // TOUCH MOVE
+    // ===============================
+    slot.addEventListener("touchmove", (e) => {
+
+      // если ещё не long press — отменяем таймер
+      if (!isLongPress) {
+        clearTimeout(pressTimer);
+        return;
+      }
+
+      const currentX = e.touches[0].clientX;
+      const diff = currentX - startX;
+
+      slot.style.transform = `translateX(${diff}px)`;
+
     });
 
-    slot.addEventListener("touchmove", () => {
-      clearTimeout(timer);
+    // ===============================
+    // TOUCH END
+    // ===============================
+    slot.addEventListener("touchend", (e) => {
+
+      clearTimeout(pressTimer);
+
+      // обычный клик
+      if (!isLongPress) {
+        openVisitView(appointmentId);
+        return;
+      }
+
+      const endX = e.changedTouches[0].clientX;
+      const diff = endX - startX;
+
+      deactivateLongPressMode(slot);
+
+      // свайп вправо — перенос
+      if (diff > 120) {
+        console.log("Перенос визита", appointmentId);
+      }
+
+      // свайп влево — удаление
+      else if (diff < -120) {
+        const visit = window.currentVisits?.find(v => v.id == appointmentId);
+        if (visit) openCancelModal(visit);
+      }
+
+      slot.style.transform = "";
+
     });
 
   });
 
 }
-function activateLongTap(slot) {
 
-  document.body.classList.add("blur-mode");
-  slot.classList.add("lifted");
+function activateLongPressMode(slot) {
 
-  let startX = 0;
-
-  slot.addEventListener("touchstart", (e) => {
-    startX = e.touches[0].clientX;
-  });
-
-  slot.addEventListener("touchend", (e) => {
-
-    const diff = e.changedTouches[0].clientX - startX;
-
-    if (diff < -100) {
-      const visit = window.currentVisits.find(v => v.id == slot.dataset.id);
-      openCancelModal(visit);
-    }
-
-    if (diff > 100) {
-      alert("Перенос (реализуем позже)");
-    }
-
-    slot.classList.remove("lifted");
-    document.body.classList.remove("blur-mode");
-
-  }, { once: true });
+  document.body.classList.add("longpress-active");
+  slot.classList.add("slot-lifted");
 
 }
 
+function deactivateLongPressMode(slot) {
 
+  document.body.classList.remove("longpress-active");
+  slot.classList.remove("slot-lifted");
+
+}
