@@ -79,17 +79,11 @@ export function openCancelModal(visit) {
 
   document.body.appendChild(overlay);
 
-  // ===============================
-  // DOM ELEMENTS
-  // ===============================
   const reasonSelect = document.getElementById("cancelReasonSelect");
   const commentInput = document.getElementById("cancelComment");
   const confirmBtn = document.getElementById("confirmCancelBtn");
   const closeBtn = document.getElementById("closeCancelBtn");
 
-  // ===============================
-  // ERROR BLOCK
-  // ===============================
   let errorMessage = document.createElement("div");
   errorMessage.className = "cancel-error";
   reasonSelect.parentElement.appendChild(errorMessage);
@@ -106,9 +100,6 @@ export function openCancelModal(visit) {
     commentInput.classList.remove("input-error");
   }
 
-  // ===============================
-  // VALIDATION
-  // ===============================
   function validateCancelForm() {
 
     const reason = reasonSelect.value;
@@ -140,9 +131,6 @@ export function openCancelModal(visit) {
     validateCancelForm();
   });
 
-  // ===============================
-  // BUTTON PRESS EFFECT
-  // ===============================
   function addPressEffect(btn) {
 
     btn.addEventListener("touchstart", () => {
@@ -169,20 +157,13 @@ export function openCancelModal(visit) {
   addPressEffect(confirmBtn);
   addPressEffect(closeBtn);
 
-  // ===============================
-  // CLOSE
-  // ===============================
   closeBtn.addEventListener("click", () => overlay.remove());
 
-  // ===============================
-  // CONFIRM CANCEL
-  // ===============================
   confirmBtn.addEventListener("click", async () => {
 
     const reason = reasonSelect.value;
     const comment = commentInput.value.trim();
 
-    // ---- ВАЛИДАЦИЯ ПЕРЕД ОТПРАВКОЙ ----
     if (!reason) {
       showCancelError("Выберите причину отмены");
       reasonSelect.classList.add("input-error");
@@ -209,23 +190,30 @@ export function openCancelModal(visit) {
 
       const data = await response.json();
 
-// если HTTP ошибка
-if (!response.ok) {
-  throw new Error("HTTP_ERROR");
-}
+      // HTTP ошибка
+      if (!response.ok) {
+        throw new Error("HTTP_ERROR");
+      }
 
-// если сервер вернул ошибку
-if (data.error && data.error !== 0) {
-  const message = data?.data?.desc || 
-    "Визит не может быть отменён.";
-  showCancelError(message);
-  return;
-}
+      // сервер вернул ошибку
+      if (data.error !== 0) {
+        const message =
+          data?.data?.desc ||
+          "Визит не может быть отменён.";
+        showCancelError(message);
+        return;
+      }
 
-// если всё успешно
-overlay.remove();
-window.location.reload();
+      // успех строго по API-контракту
+      if (data.error === 0 && data.data === true) {
+        overlay.remove();
+        window.location.reload();
+        return;
+      }
 
+      // неожиданный ответ
+      showCancelError("Неожиданный ответ сервера.");
+      return;
 
     } catch {
       showCancelError(
