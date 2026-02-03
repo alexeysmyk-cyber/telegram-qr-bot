@@ -176,50 +176,55 @@ export function openCancelModal(visit) {
       return;
     }
 
-    try {
+ try {
 
-      const response = await fetch("/api/mis/cancel-appointment", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          appointment_id: visit.id,
-          reason,
-          comment
-        })
-      });
+  const response = await fetch("/api/mis/cancel-appointment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      appointment_id: visit.id,
+      reason,
+      comment
+    })
+  });
 
-      const data = await response.json();
+  // 1️⃣ сначала проверяем HTTP
+  if (!response.ok) {
+    throw new Error("HTTP_ERROR");
+  }
 
-      // HTTP ошибка
-      if (!response.ok) {
-        throw new Error("HTTP_ERROR");
-      }
+  const data = await response.json();
 
-      // сервер вернул ошибку
-      if (data.error !== 0) {
-        const message =
-          data?.data?.desc ||
-          "Визит не может быть отменён.";
-        showCancelError(message);
-        return;
-      }
+  // 2️⃣ если сервер вернул ошибку
+  if (data.error !== 0) {
+    const message =
+      data?.data?.desc ||
+      "Визит не может быть отменён.";
+    showCancelError(message);
+    return;
+  }
 
-      // успех строго по API-контракту
-      if (data.error === 0 && data.data === true) {
-        overlay.remove();
-        window.location.reload();
-        return;
-      }
+  // 3️⃣ успешная отмена
+if (
+  data.error === 0 &&
+  String(data.data) === "true"
+) {
+  overlay.remove();
+  window.location.reload();
+  return;
+}
 
-      // неожиданный ответ
-      showCancelError("Неожиданный ответ сервера.");
-      return;
+  // 4️⃣ неожиданный формат
+  showCancelError("Неожиданный ответ сервера.");
 
-    } catch {
-      showCancelError(
-        "Визит не может быть отменён. Возможно он завершён или содержит неоплаченные услуги."
-      );
-    }
+} catch (err) {
+
+  showCancelError(
+    "Визит не может быть отменён. Возможно он завершён или содержит неоплаченные услуги."
+  );
+
+}
+
 
   });
 
