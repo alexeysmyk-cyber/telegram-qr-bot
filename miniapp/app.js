@@ -273,7 +273,7 @@ doctorSelect.addEventListener("change", () => {
 
   
 const scheduleContainer = document.getElementById("scheduleContainer");
-const scheduleWrapper = scheduleContainer;
+const scheduleWrapper = scheduleContainer.parentElement;
 
 let touchStartX = 0;
 
@@ -281,7 +281,9 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 
   if (window.isLongPressActive) return;
 
-  // свайп даты работает только когда список в самом верху
+  // если начали на слоте — свайп даты не активируем
+  if (e.target.closest(".slot")) return;
+
   if (scheduleContainer.scrollTop !== 0) return;
 
   touchStartX = e.changedTouches[0].screenX;
@@ -292,7 +294,11 @@ scheduleWrapper.addEventListener("touchstart", (e) => {
 });
 
 
+
 scheduleWrapper.addEventListener("touchmove", (e) => {
+
+  if (e.target.closest(".slot")) return;
+
 
   if (scheduleContainer.scrollTop !== 0) return;
 
