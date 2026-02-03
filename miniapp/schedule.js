@@ -362,52 +362,59 @@ slot.addEventListener("touchmove", (e) => {
   const currentX = e.touches[0].clientX;
   const diff = currentX - startX;
 
-  // если палец сильно сдвинулся ДО long press — отменяем
   if (!isLongPress && Math.abs(diff) > 10) {
     clearTimeout(pressTimer);
     return;
   }
 
-  // если уже long press — двигаем карточку
   if (isLongPress) {
+    e.stopPropagation();
+    e.preventDefault();
     slot.style.transform = `translateX(${diff}px)`;
   }
-
 });
+
 
 
     // ===============================
     // TOUCH END
     // ===============================
-    slot.addEventListener("touchend", (e) => {
+ slot.addEventListener("touchend", (e) => {
 
-      clearTimeout(pressTimer);
+  clearTimeout(pressTimer);
 
-      // обычный клик
-      if (!isLongPress) {
-        openVisitView(appointmentId);
-        return;
-      }
+  // если был long press — блокируем всё наружу
+  if (isLongPress) {
+    e.stopPropagation();
+    e.preventDefault();
+  }
 
-      const endX = e.changedTouches[0].clientX;
-      const diff = endX - startX;
+  // обычный клик
+  if (!isLongPress) {
+    openVisitView(appointmentId);
+    return;
+  }
 
-      deactivateLongPressMode(slot);
+  const endX = e.changedTouches[0].clientX;
+  const diff = endX - startX;
 
-      // свайп вправо — перенос
-      if (diff > 120) {
-        console.log("Перенос визита", appointmentId);
-      }
+  deactivateLongPressMode(slot);
 
-      // свайп влево — удаление
-      else if (diff < -120) {
-        const visit = window.currentVisits?.find(v => v.id == appointmentId);
-        if (visit) openCancelModal(visit);
-      }
+  const threshold = 60;
 
-      slot.style.transform = "";
+  if (diff > threshold) {
+    console.log("Перенос визита", appointmentId);
+  }
 
-    });
+  else if (diff < -threshold) {
+    const visit = window.currentVisits?.find(v => v.id == appointmentId);
+    if (visit) openCancelModal(visit);
+  }
+
+  // 🔥 ВСЕГДА возвращаем слот
+  slot.style.transform = "";
+});
+
 
   });
 
