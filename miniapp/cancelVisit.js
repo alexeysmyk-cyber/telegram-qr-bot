@@ -220,14 +220,16 @@ export function openCancelModal(visit) {
           (data.data === true || data.data === "true")) {
 
 
-const visitDate = visit.time_start.split(" ")[0];
-  localStorage.setItem("schedule_selected_date", visitDate);
-        
+          
         alert("Визит успешно отменён");
+        
+const visitDate = visit.time_start.split(" ")[0];
 
-        overlay.remove();
-        window.location.reload();
-        return;
+overlay.remove();
+
+if (window.reloadSchedule) {
+  window.reloadSchedule(visitDate);
+}
       }
 
       // если структура странная
