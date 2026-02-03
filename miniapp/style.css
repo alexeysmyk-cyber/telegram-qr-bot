@@ -1268,4 +1268,14 @@ body {
   border-color: #d9534f !important;
   box-shadow: 0 0 0 2px rgba(217,83,79,0.1);
 }
+.longpress-active {
+  backdrop-filter: blur(4px);
+}
 
+.slot-lifted {
+  position: relative;
+  z-index: 1000;
+  transform: scale(1.05);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.2);
+  transition: 0.2s;
+}
