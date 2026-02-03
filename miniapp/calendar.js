@@ -184,12 +184,16 @@ export function renderCalendar(container, onSelect, initialDate = null) {
   // SWIPE через touchmove
   // ===============================
   container.addEventListener("touchstart", (e) => {
+ if (window.isLongPressActive) return;
+    
     if (container.parentElement.classList.contains("compact")) return;
     touchStartX = e.changedTouches[0].screenX;
     swipeDone = false;
   });
 
   container.addEventListener("touchmove", (e) => {
+
+    if (window.isLongPressActive) return;
 
     if (container.parentElement.classList.contains("compact")) return;
     if (swipeDone) return;
