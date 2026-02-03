@@ -1294,17 +1294,25 @@ body {
 
 .longpress-hint {
   position: fixed;
-  bottom: 90px;
+  top: 18px;
   left: 0;
   right: 0;
+  z-index: 20;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  animation: fadeHint 0.2s ease;
+.hint-wrapper {
+  width: 90%;
   display: flex;
   justify-content: space-between;
-  padding: 0 30px;
-  font-weight: 600;
-  font-size: 14px;
-  color: #7a8a9a;
-  pointer-events: none;
-  z-index: 9998;
+  font-size: 17px;
+  font-weight: 700;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: rgba(255,255,255,0.9);
+  backdrop-filter: blur(6px);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.08);
 }
 
 .hint-left {
@@ -1313,6 +1321,11 @@ body {
 
 .hint-right {
   color: #00a4c7;
+}
+
+@keyframes fadeHint {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 .longpress-active .tabs,
 .longpress-active .app {
