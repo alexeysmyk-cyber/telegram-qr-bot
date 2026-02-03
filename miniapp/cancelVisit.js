@@ -159,70 +159,48 @@ export function openCancelModal(visit) {
 
   closeBtn.addEventListener("click", () => overlay.remove());
 
-  confirmBtn.addEventListener("click", async () => {
+ confirmBtn.addEventListener("click", async () => {
 
-    const reason = reasonSelect.value;
-    const comment = commentInput.value.trim();
+  const reason = reasonSelect.value;
+  const comment = commentInput.value.trim();
 
-    if (!reason) {
-      showCancelError("Выберите причину отмены");
-      reasonSelect.classList.add("input-error");
-      return;
-    }
-
-    if (reason === "2" && comment.length === 0) {
-      showCancelError("Укажите комментарий для причины 'Другое'");
-      commentInput.classList.add("input-error");
-      return;
-    }
-
- try {
-
-  const response = await fetch("/api/mis/cancel-appointment", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      appointment_id: visit.id,
-      reason,
-      comment
-    })
-  });
-
-  // 1️⃣ сначала проверяем HTTP
-  if (!response.ok) {
-    throw new Error("HTTP_ERROR");
-  }
-
-  const data = await response.json();
-
-  // 2️⃣ если сервер вернул ошибку
-  if (data.error !== 0) {
-    const message =
-      data?.data?.desc ||
-      "Визит не может быть отменён.";
-    showCancelError(message);
+  if (!reason) {
+    showCancelError("Выберите причину отмены");
+    reasonSelect.classList.add("input-error");
     return;
   }
 
-  // 3️⃣ успешная отмена
-if (data.error === 0) {
-  overlay.remove();
-  window.location.reload();
-  return;
-}
+  if (reason === "2" && comment.length === 0) {
+    showCancelError("Укажите комментарий для причины 'Другое'");
+    commentInput.classList.add("input-error");
+    return;
+  }
 
-  // 4️⃣ неожиданный формат
-  showCancelError("Неожиданный ответ сервера.");
+  try {
 
-} catch (err) {
+    const response = await fetch("/api/mis/cancel-appointment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        appointment_id: visit.id,
+        reason,
+        comment
+      })
+    });
 
-  showCancelError(
-    "Визит не может быть отменён. Возможно он завершён или содержит неоплаченные услуги."
-  );
+    const status = response.status;
+    const rawText = await response.text();
 
-}
+    showCancelError(
+      "STATUS: " + status + "\n\nRESPONSE:\n" + rawText
+    );
 
+  } catch (err) {
 
-  });
+    showCancelError(
+      "CATCH ERROR:\n" + err.message
+    );
 
-}
+  }
+
+});
