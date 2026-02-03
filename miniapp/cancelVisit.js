@@ -205,10 +205,7 @@ export function openCancelModal(visit) {
   }
 
   // 3️⃣ успешная отмена
-if (
-  data.error === 0 &&
-  String(data.data) === "true"
-) {
+if (data.error === 0) {
   overlay.remove();
   window.location.reload();
   return;
