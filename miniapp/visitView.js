@@ -136,6 +136,16 @@ function renderVisit(visit, overlay) {
   document.getElementById("closeBottomBtn")
     .addEventListener("click", () => overlay.remove());
 
+
+const cancelBtn = document.getElementById("cancelVisitBtn");
+
+if (cancelBtn) {
+  cancelBtn.addEventListener("click", () => {
+    openCancelModal(visit);
+  });
+}
+
+  
   attachServicesToggle(overlay);
   attachMoveLinks(overlay);
   enableSwipeToClose(overlay);
