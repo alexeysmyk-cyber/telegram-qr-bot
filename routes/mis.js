@@ -171,11 +171,7 @@ router.post("/cancel-appointment", async (req, res) => {
 
   try {
 
-    const {
-      appointment_id,
-      comment,
-      reason
-    } = req.body;
+    const { appointment_id, comment, reason } = req.body;
 
     if (!appointment_id || !reason) {
       return res.status(400).json({ error: "NO_DATA" });
@@ -199,25 +195,26 @@ router.post("/cancel-appointment", async (req, res) => {
       {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
-        }
+        },
+        validateStatus: () => true // ← ВАЖНО
       }
     );
 
-    // MIS возвращает true
-    if (response.data === true) {
-      return res.json({ success: true });
-    }
-
-    return res.status(400).json({ error: "CANNOT_CANCEL" });
+    // Передаём статус и тело ответа как есть
+    return res.status(response.status).json(response.data);
 
   } catch (err) {
 
     console.log("Cancel error:", err.response?.data || err.message);
 
-    return res.status(500).json({ error: "SERVER_ERROR" });
+    return res.status(500).json({
+      error: "SERVER_ERROR",
+      message: err.message
+    });
   }
 
 });
+;
 
 
 
