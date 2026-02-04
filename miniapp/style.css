@@ -154,12 +154,18 @@ body {
 /* КАРТОЧКИ */
 /* ============================= */
 
-.card {
+
+
+  .card {
   background: white;
-  padding: 8px 10px;   /* было 14 */
+  padding: 8px 10px;
   border-radius: 12px;
-  box-shadow: 0 3px 8px rgba(0,0,0,0.04);
-  margin-bottom: 4px;   /* было 12 */
+  margin-bottom: 4px;
+  border: 1px solid #e3edf2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+  
 }
 
 /* ============================= */
