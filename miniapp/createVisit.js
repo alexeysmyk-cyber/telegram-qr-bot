@@ -1,37 +1,36 @@
 import { renderCalendar } from "./calendar.js";
 
-let createOverlay = null;
-let selectedDate = new Date();
+export async function openCreateVisit() {
 
-
-export async function openCreateVisit(onClose = null) {
+  if (document.getElementById("createOverlay")) return;
 
   let selectedDuration = 60;
-let hidePast = false;
-let hideBusy = false;
+  let hidePast = false;
+  let hideBusy = false;
 
-  if (createOverlay) return;
+  const overlay = document.createElement("div");
+  overlay.id = "createOverlay";
+  overlay.className = "visit-overlay";
 
-  createOverlay = document.createElement("div");
-  createOverlay.className = "create-fullscreen";
-
-  createOverlay.innerHTML = `
-    <div class="create-container">
+  overlay.innerHTML = `
+    <div class="visit-container create-container">
 
       <div class="create-header">
         <div class="create-title">Создание визита</div>
-        <button class="close-btn" id="closeCreateBtn">✕</button>
+        <div class="create-close" id="closeCreateBtn">✕</div>
       </div>
 
-      <div class="visit-card doctor-card" id="doctorContainer">
+      <div class="card doctor-card" id="doctorContainer">
         Загрузка врачей...
       </div>
 
-      <div class="visit-card filter-card">
+      <div class="card filter-card">
 
         <div class="filter-header">
           <span class="filter-title">Фильтры</span>
-          <button id="editCreateFiltersBtn" class="link-btn">Изменить</button>
+          <button id="editCreateFiltersBtn" class="link-btn">
+            Изменить
+          </button>
         </div>
 
         <div class="filter-values" id="createFilterSummary">
@@ -45,16 +44,16 @@ let hideBusy = false;
             <span id="createDurationValue">60 минут</span>
           </label>
 
-       <div class="step-slider" id="createDurationSlider">
-  <div class="step-track"></div>
-  <div class="step-active" id="createActiveTrack"></div>
+          <div class="step-slider" id="createDurationSlider">
+            <div class="step-track"></div>
+            <div class="step-active" id="createActiveTrack"></div>
 
-  <div class="step-point" data-value="15">15</div>
-  <div class="step-point" data-value="30">30</div>
-  <div class="step-point active" data-value="60">60</div>
-  <div class="step-point" data-value="90">90</div>
-  <div class="step-point" data-value="120">120</div>
-</div>
+            <div class="step-point" data-value="15">15</div>
+            <div class="step-point" data-value="30">30</div>
+            <div class="step-point active" data-value="60">60</div>
+            <div class="step-point" data-value="90">90</div>
+            <div class="step-point" data-value="120">120</div>
+          </div>
 
           <div class="toggle-line">
             <span>Не показывать прошлые</span>
@@ -67,7 +66,7 @@ let hideBusy = false;
           <div class="toggle-line">
             <span>Не показывать занятые</span>
             <label class="switch">
-              <input type="checkbox" id="toggleFreeOnly">
+              <input type="checkbox" id="toggleHideBusy">
               <span class="slider"></span>
             </label>
           </div>
@@ -76,7 +75,7 @@ let hideBusy = false;
 
       </div>
 
-      <div class="visit-card">
+      <div class="card calendar-wrapper">
         <div id="createCalendar"></div>
       </div>
 
@@ -85,120 +84,78 @@ let hideBusy = false;
     </div>
   `;
 
-  document.body.appendChild(createOverlay);
+  document.body.appendChild(overlay);
 
   document.getElementById("closeCreateBtn")
-    .addEventListener("click", close);
+    .addEventListener("click", () => overlay.remove());
 
-  function close() {
-    createOverlay.remove();
-    createOverlay = null;
-    if (onClose) onClose();
-  }
-
-  initFilterLogic();
   await loadDoctorsForCreate();
 
-  renderCalendar(
-    document.getElementById("createCalendar"),
-    (date) => {
-      selectedDate = new Date(date);
-      refreshCreateSlots();
-    },
-    selectedDate
-  );
+  // ===============================
+  // ФИЛЬТРЫ
+  // ===============================
 
-  refreshCreateSlots();
-}
+  const filterPanel = document.getElementById("createFilterPanel");
+  const editBtn = document.getElementById("editCreateFiltersBtn");
 
-//
-// ===============================
-// ФИЛЬТРЫ (такая же логика как на главном)
-// ===============================
-//
-
-function initFilterLogic() {
-
-  const panel = document.getElementById("createFilterPanel");
-  const btn = document.getElementById("editCreateFiltersBtn");
-  const summary = document.getElementById("createFilterSummary");
-
-  btn.addEventListener("click", () => {
-    panel.classList.toggle("collapsing");
-    btn.innerText = panel.classList.contains("collapsing")
-      ? "Изменить"
-      : "Свернуть";
+  editBtn.addEventListener("click", () => {
+    if (filterPanel.classList.contains("collapsing")) {
+      filterPanel.classList.remove("collapsing");
+      editBtn.innerText = "Свернуть";
+    } else {
+      filterPanel.classList.add("collapsing");
+      editBtn.innerText = "Изменить";
+    }
   });
 
-  initCreateSlider((val) => {
-    selectedDuration = val;
-    updateSummary();
-    refreshCreateSlots();
-  });
+  function updateFilterSummary() {
+    const summary = document.getElementById("createFilterSummary");
+    const parts = [];
+
+    parts.push(selectedDuration + " мин");
+    if (hidePast) parts.push("Без прошлых");
+    if (hideBusy) parts.push("Без занятых");
+
+    summary.innerText = parts.join(" • ");
+  }
 
   document.getElementById("toggleHidePast")
     .addEventListener("change", (e) => {
       hidePast = e.target.checked;
-      updateSummary();
-      refreshCreateSlots();
+      updateFilterSummary();
     });
 
-  document.getElementById("toggleFreeOnly")
+  document.getElementById("toggleHideBusy")
     .addEventListener("change", (e) => {
-      freeOnly = e.target.checked;
-      updateSummary();
-      refreshCreateSlots();
+      hideBusy = e.target.checked;
+      updateFilterSummary();
     });
 
-  function updateSummary() {
-    let parts = [];
-    parts.push(selectedDuration + " мин");
-    if (hidePast) parts.push("без прошлых");
-    if (freeOnly) parts.push("только свободные");
-    summary.innerText = parts.join(" • ");
-  }
-
-  updateSummary();
-}
-
-function initCreateSlider(onChange) {
-
-  const points = document.querySelectorAll("#createDurationSlider .step-point");
-  const activeTrack = document.getElementById("createActiveTrack");
-
-  const values = [15, 30, 60, 90, 120];
-
-  points.forEach((point, index) => {
-
-    point.addEventListener("click", () => {
-
-      points.forEach(p => p.classList.remove("active"));
-      point.classList.add("active");
-
-      const value = Number(point.dataset.value);
-
-      document.getElementById("createDurationValue")
-        .innerText = value + " минут";
-
-      const percent = (index / (values.length - 1)) * 100;
-      activeTrack.style.width = percent + "%";
-
-      if (onChange) onChange(value);
-    });
-
+  initCreateSlider((value) => {
+    selectedDuration = value;
+    updateFilterSummary();
   });
 
-  const defaultIndex = values.indexOf(60);
-  activeTrack.style.width =
-    (defaultIndex / (values.length - 1)) * 100 + "%";
+  updateFilterSummary();
+
+  // ===============================
+  // КАЛЕНДАРЬ
+  // ===============================
+
+  renderCalendar(
+    document.getElementById("createCalendar"),
+    (date) => {
+      console.log("Дата создания:", date);
+      // позже сюда подключим построение слотов
+    },
+    new Date()
+  );
 }
 
 
-//
 // ===============================
-// ВРАЧИ
+// ЗАГРУЗКА ВРАЧЕЙ
 // ===============================
-//
 
 async function loadDoctorsForCreate() {
 
@@ -223,60 +180,60 @@ async function loadDoctorsForCreate() {
 
   const { doctors = [], isDirector, currentDoctorId } = data;
 
-  let allowedDoctors = isDirector
-    ? doctors
-    : doctors.filter(d =>
-        String(d.id) === String(currentDoctorId)
-      );
+  let allowedDoctors = [];
+
+  if (isDirector) {
+    allowedDoctors = doctors;
+  } else {
+    allowedDoctors = doctors.filter(d =>
+      String(d.id) === String(currentDoctorId)
+    );
+  }
 
   container.innerHTML = `
-    <div class="doctor-select-modern">
-      <select id="createDoctorSelect">
-        ${allowedDoctors.map(d => `
-          <option value="${d.id}">
-            ${d.name}
-          </option>
-        `).join("")}
-      </select>
-    </div>
-  `;
-
-  document.getElementById("createDoctorSelect")
-    .addEventListener("change", refreshCreateSlots);
-}
-
-//
-// ===============================
-// СЛОТЫ (пока заглушка)
-// ===============================
-//
-
-function refreshCreateSlots() {
-
-  const container = document.getElementById("createSlotsContainer");
-  if (!container) return;
-
-  container.innerHTML = `
-    <div class="card empty-state">
-      Здесь будут свободные слоты<br/>
-      ${selectedDate.toLocaleDateString("ru-RU")}
-    </div>
+    <select id="createDoctorSelect">
+      ${allowedDoctors.map(d => `
+        <option value="${d.id}">
+          ${d.name}
+        </option>
+      `).join("")}
+    </select>
   `;
 }
 
 
-function updateCreateFilterSummary() {
+// ===============================
+// СЛАЙДЕР 15/30/60/90/120
+// ===============================
 
-  const summary = document.getElementById("createFilterSummary");
+function initCreateSlider(onChange) {
 
-  if (!summary) return;
+  const points = document.querySelectorAll("#createDurationSlider .step-point");
+  const activeTrack = document.getElementById("createActiveTrack");
 
-  const parts = [];
+  const values = [15, 30, 60, 90, 120];
 
-  parts.push(selectedDuration + " мин");
+  points.forEach((point, index) => {
 
-  if (hidePast) parts.push("Без прошлых");
-  if (hideBusy) parts.push("Без занятых");
+    point.addEventListener("click", () => {
 
-  summary.innerText = parts.join(" • ");
+      points.forEach(p => p.classList.remove("active"));
+      point.classList.add("active");
+
+      const value = Number(point.dataset.value);
+
+      const durationLabel = document.getElementById("createDurationValue");
+      durationLabel.innerText = value + " минут";
+
+      const percent = (index / (values.length - 1)) * 100;
+      activeTrack.style.width = percent + "%";
+
+      if (onChange) onChange(value);
+    });
+
+  });
+
+  const defaultIndex = values.indexOf(60);
+  activeTrack.style.width =
+    (defaultIndex / (values.length - 1)) * 100 + "%";
 }
