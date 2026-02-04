@@ -1422,4 +1422,48 @@ body {
   display: block;
   margin: 0 auto 12px;
 }
+.create-fullscreen {
+  position: fixed;
+  inset: 0;
+  background: #f4f7fb;
+  z-index: 4000;
+  overflow-y: auto;
+}
+
+.create-container {
+  padding: 16px;
+  padding-bottom: 40px;
+}
+
+.create-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.create-title {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #00a4c7;
+  cursor: pointer;
+}
+
+.doctor-card select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #e6e6e6;
+  font-weight: 600;
+}
+
+.doctor-select-modern {
+  position: relative;
+}
 
