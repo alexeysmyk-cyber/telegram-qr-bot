@@ -1488,7 +1488,8 @@ body {
 }
 /* Когда фильтр свернут */
 .filter-card:has(.filter-panel.collapsing) {
-  padding: 6px 10px;          /* меньше воздуха */
+  padding: 4px 8px;          /* меньше воздуха */
+  padding-bottom: 4px; 
   border-radius: 10px;
 }
 
@@ -1501,4 +1502,6 @@ body {
   font-size: 12px;
   line-height: 1.2;
 }
-
+.filter-card:has(.filter-panel.collapsing) .filter-panel {
+  display: none;
+}
