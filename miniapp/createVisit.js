@@ -1,12 +1,17 @@
 import { renderCalendar } from "./calendar.js";
 
-export async function openCreateVisit() {
+let createOverlay = null;
 
-  const overlay = document.createElement("div");
-  overlay.className = "visit-overlay";
+export async function openCreateVisit(onClose = null) {
 
-  overlay.innerHTML = `
-    <div class="visit-container">
+  // защита от повторного открытия
+  if (createOverlay) return;
+
+  createOverlay = document.createElement("div");
+  createOverlay.className = "create-overlay";
+
+  createOverlay.innerHTML = `
+    <div class="create-sheet">
 
       <div class="visit-title-center">
         Создание визита
@@ -17,13 +22,23 @@ export async function openCreateVisit() {
       </div>
 
       <div class="visit-card">
+
         <div class="toggle-line">
+          <span>Не показывать прошлые</span>
+          <label class="switch">
+            <input type="checkbox" id="toggleHidePast">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="toggle-line" style="margin-top:12px;">
           <span>Не показывать занятые</span>
           <label class="switch">
             <input type="checkbox" id="toggleFreeOnly">
             <span class="slider"></span>
           </label>
         </div>
+
       </div>
 
       <div class="visit-card">
@@ -41,10 +56,30 @@ export async function openCreateVisit() {
     </div>
   `;
 
-  document.body.appendChild(overlay);
+  document.body.appendChild(createOverlay);
+
+  const sheet = createOverlay.querySelector(".create-sheet");
+
+  // Закрытие по клику вне sheet
+  createOverlay.addEventListener("click", (e) => {
+    if (e.target === createOverlay) close();
+  });
 
   document.getElementById("closeCreateBtn")
-    .addEventListener("click", () => overlay.remove());
+    .addEventListener("click", close);
+
+  function close() {
+
+    sheet.classList.add("closing");
+
+    setTimeout(() => {
+      if (createOverlay) {
+        createOverlay.remove();
+        createOverlay = null;
+      }
+      if (onClose) onClose();
+    }, 250);
+  }
 
   await loadDoctorsForCreate();
 
@@ -57,6 +92,11 @@ export async function openCreateVisit() {
     new Date()
   );
 }
+
+
+// =======================================
+// Загрузка врачей
+// =======================================
 
 async function loadDoctorsForCreate() {
 
@@ -72,7 +112,6 @@ async function loadDoctorsForCreate() {
   });
 
   const data = await response.json();
-
   const container = document.getElementById("doctorContainer");
 
   if (!response.ok || data.error) {
@@ -92,6 +131,11 @@ async function loadDoctorsForCreate() {
     );
   }
 
+  if (!allowedDoctors.length) {
+    container.innerHTML = "Нет доступных врачей";
+    return;
+  }
+
   container.innerHTML = `
     <select id="createDoctorSelect">
       ${allowedDoctors.map(d => `
@@ -103,4 +147,3 @@ async function loadDoctorsForCreate() {
   `;
 }
 
- 
