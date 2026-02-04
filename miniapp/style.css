@@ -1446,7 +1446,7 @@ body {
   display: flex;
   align-items: center;
 
-  margin-bottom: 14px;
+  margin-bottom: 8px;
   position: relative;
   justify-content: center; /* центрируем заголовок */
   padding: 6px 0 10px 0;   /* меньше верхний отступ */
