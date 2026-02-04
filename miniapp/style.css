@@ -160,7 +160,7 @@ body {
   background: white;
   padding: 8px 10px;
   border-radius: 12px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   border: 1px solid #dceef5;
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
@@ -364,7 +364,7 @@ body {
 /* ============================= */
 
 .doctor-block {
-  margin-bottom: 20px;
+  margin-bottom: 12px;
 }
 
 .doctor-header {
