@@ -1,12 +1,14 @@
 import { renderCalendar } from "./calendar.js";
 
 let createOverlay = null;
-let selectedDuration = 60;
 let selectedDate = new Date();
-let hidePast = false;
-let freeOnly = false;
+
 
 export async function openCreateVisit(onClose = null) {
+
+  let selectedDuration = 60;
+let hidePast = false;
+let hideBusy = false;
 
   if (createOverlay) return;
 
@@ -260,4 +262,21 @@ function refreshCreateSlots() {
       ${selectedDate.toLocaleDateString("ru-RU")}
     </div>
   `;
+}
+
+
+function updateCreateFilterSummary() {
+
+  const summary = document.getElementById("createFilterSummary");
+
+  if (!summary) return;
+
+  const parts = [];
+
+  parts.push(selectedDuration + " мин");
+
+  if (hidePast) parts.push("Без прошлых");
+  if (hideBusy) parts.push("Без занятых");
+
+  summary.innerText = parts.join(" • ");
 }
