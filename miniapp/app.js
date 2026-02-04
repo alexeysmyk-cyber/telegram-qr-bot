@@ -572,29 +572,31 @@ function addFloatingButton() {
 
   document.body.appendChild(fab);
 
-  let timer;
+  let timer = null;
 
-  fab.addEventListener("touchstart", () => {
+  function startPress() {
     timer = setTimeout(() => {
+      openCreateVisit();
+    }, 300);
+  }
 
-      if (createSheetOpen) return;
+  function cancelPress() {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+  }
 
-      createSheetOpen = true;
-      fab.style.display = "none";
+  fab.addEventListener("touchstart", startPress);
+  fab.addEventListener("touchend", cancelPress);
+  fab.addEventListener("touchcancel", cancelPress);
 
-      openCreateVisit(() => {
-        createSheetOpen = false;
-        fab.style.display = "flex";
-      });
-
-    }, 250);
-
-  });
-
-  fab.addEventListener("touchend", () => {
-    clearTimeout(timer);
+  // fallback для десктопа
+  fab.addEventListener("click", () => {
+    openCreateVisit();
   });
 }
+
 
 
 
