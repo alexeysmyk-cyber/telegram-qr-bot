@@ -158,7 +158,8 @@ body {
 
   .card {
   background: white;
-  padding: 8px 10px;
+  margin-bottom: 2px;
+  padding: 6px 8px;
   border-radius: 12px;
   margin-bottom: 4px;
   border: 1px solid #dceef5;
