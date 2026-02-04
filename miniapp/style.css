@@ -1413,4 +1413,13 @@ body {
 @keyframes slideDown {
   to { transform: translateY(100%); }
 }
+.create-sheet::before {
+  content: "";
+  width: 40px;
+  height: 4px;
+  background: #d0d7de;
+  border-radius: 4px;
+  display: block;
+  margin: 0 auto 12px;
+}
 
