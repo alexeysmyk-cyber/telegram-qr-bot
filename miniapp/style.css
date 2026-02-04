@@ -1438,16 +1438,31 @@ body {
 
 .create-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
   margin-top: 6px;
   margin-bottom: 14px;
+  position: relative;
+  justify-content: center; /* центрируем заголовок */
+  padding: 6px 0 10px 0;   /* меньше верхний отступ */
 }
 
 .create-title {
+  font-weight: 600;
+  font-size: 17px;
+  text-align: center;
+  margin: 0;  
+}
+
+.create-close {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   font-size: 18px;
   font-weight: 600;
+  color: #00a4c7;   /* ← медицинский цвет */
+  cursor: pointer;
+  padding: 4px 8px;
 }
 
 .close-btn {
@@ -1505,3 +1520,11 @@ body {
 .filter-card:has(.filter-panel.collapsing) .filter-panel {
   display: none;
 }
+#createOverlay {
+  background: #f4f7fb;
+}
+
+#createOverlay .visit-container {
+  background: transparent;
+}
+
