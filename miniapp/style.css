@@ -159,7 +159,7 @@ body {
   padding: 8px 10px;   /* было 14 */
   border-radius: 12px;
   box-shadow: 0 3px 8px rgba(0,0,0,0.04);
-  margin-bottom: 8px;   /* было 12 */
+  margin-bottom: 4px;   /* было 12 */
 }
 
 /* ============================= */
