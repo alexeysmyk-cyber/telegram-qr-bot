@@ -399,9 +399,9 @@ body {
 }
 
 .slot-moved {
- background: #fff8e1;                /* светлый тёплый фон */
-  border-left: 4px solid #f59e0b;     /* яркая жёлтая полоса */
-  border: 1px solid #fde68a;      
+  background: #fff8e1;
+  border: 1px solid #fde68a;     /* сначала общий */
+  border-left: 4px solid #f59e0b; /* потом перезаписываем левую сторону */
 }
 
 .slot-moved .meta-right {
@@ -674,7 +674,7 @@ body {
 /* Цвета статусов */
 
 .slot-active .meta-right {
-  color: #4caf50; /* зелёный как у полоски */
+    color: #00a4c7;
 }
 
 .slot-cancelled .meta-right {
@@ -682,7 +682,7 @@ body {
 }
 
 .slot-default .meta-right {
-  color: #6c757d;
+  color: #4caf50;
 }
 
 /* Завершённый визит */
