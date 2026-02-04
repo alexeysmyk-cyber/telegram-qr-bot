@@ -911,10 +911,7 @@ body {
 /* VISIT CONTAINER */
 /* ============================= */
 
-.visit-container {
-  position: relative;
- padding: 6px 18px 100px 18px; /* было 10px */
-}
+
 #createOverlay .visit-container {
   padding-top: 6px;
 }
@@ -1434,9 +1431,9 @@ body {
 }
 
 .create-container {
-  max-width: 600px;
+ max-width: 600px;
   margin: 0 auto;
-  padding: 4px 16px 40px 16px;
+  padding: 0 16px;
 }
 
 .create-header {
@@ -1479,13 +1476,7 @@ body {
   cursor: pointer;
 }
 
-.doctor-card select {
-  width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #e6e6e6;
-  font-weight: 600;
-}
+
 
 .doctor-select-modern {
   position: relative;
@@ -1496,10 +1487,7 @@ body {
 }
 
 
-.doctor-card select {
-  padding: 8px 10px;
-  font-size: 14px;
-}
+
 /* Когда фильтр свернут */
 .filter-card:has(.filter-panel.collapsing) {
   padding: 4px 8px;          /* меньше воздуха */
@@ -1526,4 +1514,6 @@ body {
 #createOverlay .visit-container {
   background: transparent;
 }
-
+#createOverlay .visit-container {
+  padding: 0;
+}
