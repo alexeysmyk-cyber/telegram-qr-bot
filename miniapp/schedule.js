@@ -237,6 +237,8 @@ function renderScheduleGrid(data, container, showAll, date) {
 // ===============================
 function renderSlot(slot) {
 
+  const status = normalizeStatus(slot);
+
   const timeStart = slot.time_start.split(" ")[1];
   const timeEnd = slot.time_end.split(" ")[1];
 
@@ -251,7 +253,7 @@ function renderSlot(slot) {
   const isPastVisit = isPast(slot.time_start);
 
   return `
-    <div class="slot ${getSlotClass(slot.status)}"
+    <div class="slot ${getSlotClass(status)}"
          data-id="${slot.id}">
 
       <div class="slot-meta">
@@ -259,7 +261,7 @@ function renderSlot(slot) {
           ${isPastVisit ? "Визит в прошлом" : ""}
         </div>
         <div class="meta-right">
-          ${getStatusText(slot.status)}
+          ${getStatusText(status)}
         </div>
       </div>
 
@@ -286,15 +288,18 @@ function getStatusText(status) {
   if (status === "upcoming") return "Визит ожидается";
   if (status === "refused") return "Визит отменён";
   if (status === "completed") return "Визит завершён";
+  if (status === "moved") return "Визит перенесён";
   return "";
 }
 
 function getSlotClass(status) {
   if (status === "upcoming") return "slot-active";
   if (status === "refused") return "slot-cancelled";
+  if (status === "moved") return "slot-cancelled"; // такой же стиль
   if (status === "completed") return "slot-default";
   return "slot-default";
 }
+
 
 
 // ===============================
@@ -491,6 +496,22 @@ if (overlay) overlay.remove();
   const hint = document.querySelector(".longpress-hint");
   if (hint) hint.remove();
 }
+
+function normalizeStatus(slot) {
+
+  // если отменён, но есть перенос — это перенесённый визит
+  if (
+    status === "refused" &&
+    slot.moved_to &&
+    String(slot.moved_to).length > 0
+  ) {
+    return "moved";
+  }
+
+  return status;
+}
+
+
 
 // ===============================
 // RELOAD LAST SCHEDULE
