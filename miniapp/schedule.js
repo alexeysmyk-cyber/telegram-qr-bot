@@ -242,13 +242,18 @@ function renderSlot(slot) {
   const timeStart = slot.time_start.split(" ")[1];
   const timeEnd = slot.time_end.split(" ")[1];
 
-  let star = "";
+ let star = "";
 
-  if (slot.is_first_clinic && slot.is_first_doctor) {
-    star = `<span class="star red">★</span>`;
-  } else if (!slot.is_first_clinic && slot.is_first_doctor) {
-    star = `<span class="star green">★</span>`;
-  }
+if (status === "moved") {
+  star = `<span style="color:#f59e0b">↔</span>`;
+}
+else if (slot.is_first_clinic && slot.is_first_doctor) {
+  star = `<span class="star red">★</span>`;
+}
+else if (!slot.is_first_clinic && slot.is_first_doctor) {
+  star = `<span class="star green">★</span>`;
+}
+
 
   const isPastVisit = isPast(slot.time_start);
 
@@ -295,7 +300,7 @@ function getStatusText(status) {
 function getSlotClass(status) {
   if (status === "upcoming") return "slot-active";
   if (status === "refused") return "slot-cancelled";
-  if (status === "moved") return "slot-cancelled"; // такой же стиль
+  if (status === "moved") return "slot-moved"; // такой же стиль
   if (status === "completed") return "slot-default";
   return "slot-default";
 }
