@@ -559,6 +559,8 @@ renderCalendar(
 
 // ===============================
 
+let createSheetOpen = false;
+
 function addFloatingButton() {
 
   if (document.getElementById("fabCreate")) return;
@@ -570,18 +572,30 @@ function addFloatingButton() {
 
   document.body.appendChild(fab);
 
- let timer;
+  let timer;
 
   fab.addEventListener("touchstart", () => {
     timer = setTimeout(() => {
-      openCreateVisit();
-    }, 300); // короткий long press
+
+      if (createSheetOpen) return;
+
+      createSheetOpen = true;
+      fab.style.display = "none";
+
+      openCreateVisit(() => {
+        createSheetOpen = false;
+        fab.style.display = "flex";
+      });
+
+    }, 250);
+
   });
 
   fab.addEventListener("touchend", () => {
     clearTimeout(timer);
   });
 }
+
 
 
 
