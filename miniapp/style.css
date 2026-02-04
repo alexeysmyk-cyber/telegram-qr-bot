@@ -1352,4 +1352,28 @@ body {
   box-shadow: 0 6px 18px rgba(0, 164, 199, 0.3);
 }
 
+.fab-button {
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: #00a4c7;
+  color: white;
+  font-size: 30px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,0.2);
+  z-index: 3000;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.fab-button:active {
+  transform: scale(0.95);
+}
+
 
