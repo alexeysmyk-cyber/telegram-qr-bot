@@ -25,9 +25,13 @@ if (fab) fab.style.display = "none";
         <div class="create-close" id="closeCreateBtn">✕</div>
       </div>
 
-      <div class="card doctor-card" id="createDoctorSelect">
-        Загрузка врачей...
-      </div>
+     <div class="card" id="doctorContainer">
+  <div class="doctor-row">
+    <div class="doctor-select-wrapper">
+      Загрузка врачей...
+    </div>
+  </div>
+</div>
 
       <div class="card">
 
@@ -201,15 +205,19 @@ async function loadDoctorsForCreate() {
     );
   }
 
-  container.innerHTML = `
-    <select id="createDoctorSelect">
-      ${allowedDoctors.map(d => `
-        <option value="${d.id}">
-          ${d.name}
-        </option>
-      `).join("")}
-    </select>
-  `;
+container.innerHTML = `
+  <div class="doctor-row">
+    <div class="doctor-select-wrapper">
+      <select id="createDoctorSelect">
+        ${allowedDoctors.map(d => `
+          <option value="${d.id}">
+            ${d.name}
+          </option>
+        `).join("")}
+      </select>
+    </div>
+  </div>
+`;
 }
 
 
