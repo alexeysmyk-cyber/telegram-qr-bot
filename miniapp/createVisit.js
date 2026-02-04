@@ -33,7 +33,7 @@ if (fab) fab.style.display = "none";
   </div>
 </div>
 
-      <div class="card">
+      <div class="card filter-card">
 
         <div class="filter-header">
           <span class="filter-title">Фильтры</span>
