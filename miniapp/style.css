@@ -1431,8 +1431,9 @@ body {
 }
 
 .create-container {
-  padding: 16px;
-  padding-bottom: 40px;
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 18px 16px 40px 16px;
 }
 
 .create-header {
@@ -1440,6 +1441,8 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
+  margin-top: 6px;
+  margin-bottom: 14px;
 }
 
 .create-title {
@@ -1465,5 +1468,22 @@ body {
 
 .doctor-select-modern {
   position: relative;
+}
+.filter-card {
+  border: 1px solid #e3edf2;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.filter-card {
+  border: 1px solid #d9eef5;
+}
+.doctor-card {
+  padding: 10px 12px;
+  margin-bottom: 10px;
+}
+
+.doctor-card select {
+  padding: 8px 10px;
+  font-size: 14px;
 }
 
