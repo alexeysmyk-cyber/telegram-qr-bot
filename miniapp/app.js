@@ -551,10 +551,36 @@ renderCalendar(
     showCancelled,
     showCompleted
   });
+
+
+  addFloatingButton();
 }
 
 // ===============================
 
+function addFloatingButton() {
+
+  if (document.getElementById("fabCreate")) return;
+
+  const fab = document.createElement("div");
+  fab.id = "fabCreate";
+  fab.className = "fab-button";
+  fab.innerText = "+";
+
+  document.body.appendChild(fab);
+
+ േഴlet timer;
+
+  fab.addEventListener("touchstart", () => {
+    timer = setTimeout(() => {
+      openCreateVisit();
+    }, 300); // короткий long press
+  });
+
+  fab.addEventListener("touchend", () => {
+    clearTimeout(timer);
+  });
+}
 
 
 
