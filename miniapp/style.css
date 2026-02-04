@@ -398,6 +398,13 @@ body {
   border-left: 4px solid #d9534f;
 }
 
+.slot-moved {
+  background: #fff7e6;
+  border-left: 4px solid #f59e0b;
+  border: 1px solid #fcd9a6;   /* светлая версия оранжевого */
+}
+
+
 .slot:hover {
   transform: translateY(-2px);
 }
