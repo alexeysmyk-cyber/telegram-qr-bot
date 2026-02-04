@@ -57,4 +57,50 @@ export async function openCreateVisit() {
     new Date()
   );
 }
+
+async function loadDoctorsForCreate() {
+
+  const tg = window.Telegram?.WebApp;
+  if (!tg?.initDataUnsafe?.user) return;
+
+  const response = await fetch("/api/mis/doctors", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      telegramUserId: tg.initDataUnsafe.user.id
+    })
+  });
+
+  const data = await response.json();
+
+  const container = document.getElementById("doctorContainer");
+
+  if (!response.ok || data.error) {
+    container.innerHTML = "Ошибка загрузки врачей";
+    return;
+  }
+
+  const { doctors = [], isDirector, currentDoctorId } = data;
+
+  let allowedDoctors = [];
+
+  if (isDirector) {
+    allowedDoctors = doctors;
+  } else {
+    allowedDoctors = doctors.filter(d =>
+      String(d.id) === String(currentDoctorId)
+    );
+  }
+
+  container.innerHTML = `
+    <select id="createDoctorSelect">
+      ${allowedDoctors.map(d => `
+        <option value="${d.id}">
+          ${d.name}
+        </option>
+      `).join("")}
+    </select>
+  `;
+}
+
  
