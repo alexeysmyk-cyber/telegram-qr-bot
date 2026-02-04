@@ -1495,13 +1495,6 @@ body {
   box-shadow: 0 2px 6px rgba(0,0,0,0.03);
 }
 
-.filter-card {
-  border: 1px solid #d9eef5;
-}
-.doctor-card {
-  padding: 10px 12px;
-  margin-bottom: 10px;
-}
 
 .doctor-card select {
   padding: 8px 10px;
