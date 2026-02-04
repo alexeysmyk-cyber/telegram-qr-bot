@@ -43,15 +43,16 @@ export async function openCreateVisit(onClose = null) {
             <span id="createDurationValue">60 минут</span>
           </label>
 
-          <div class="step-slider" id="createDurationSlider">
-            <div class="step-track"></div>
-            <div class="step-active" id="createActiveTrack"></div>
+       <div class="step-slider" id="createDurationSlider">
+  <div class="step-track"></div>
+  <div class="step-active" id="createActiveTrack"></div>
 
-            <div class="step-point active" data-value="60">60</div>
-            <div class="step-point" data-value="30">30</div>
-            <div class="step-point" data-value="90">90</div>
-            <div class="step-point" data-value="120">120</div>
-          </div>
+  <div class="step-point" data-value="15">15</div>
+  <div class="step-point" data-value="30">30</div>
+  <div class="step-point active" data-value="60">60</div>
+  <div class="step-point" data-value="90">90</div>
+  <div class="step-point" data-value="120">120</div>
+</div>
 
           <div class="toggle-line">
             <span>Не показывать прошлые</span>
@@ -163,7 +164,7 @@ function initCreateSlider(onChange) {
   const points = document.querySelectorAll("#createDurationSlider .step-point");
   const activeTrack = document.getElementById("createActiveTrack");
 
-  const values = [60, 30, 90, 120];
+  const values = [15, 30, 60, 90, 120];
 
   points.forEach((point, index) => {
 
@@ -173,6 +174,7 @@ function initCreateSlider(onChange) {
       point.classList.add("active");
 
       const value = Number(point.dataset.value);
+
       document.getElementById("createDurationValue")
         .innerText = value + " минут";
 
@@ -184,8 +186,11 @@ function initCreateSlider(onChange) {
 
   });
 
-  activeTrack.style.width = "0%";
+  const defaultIndex = values.indexOf(60);
+  activeTrack.style.width =
+    (defaultIndex / (values.length - 1)) * 100 + "%";
 }
+
 
 //
 // ===============================
