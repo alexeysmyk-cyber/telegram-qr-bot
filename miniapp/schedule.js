@@ -97,18 +97,20 @@ export async function loadSchedule({
     }
 
     // ===== ФИЛЬТРАЦИЯ ПО СТАТУСАМ =====
-    visits = visits.filter(v => {
+visits = visits.filter(v => {
 
-      if (!showCancelled && !showCompleted) {
-        return v.status === "upcoming";
-      }
+  const status = normalizeStatus(v);
 
-      if (v.status === "upcoming") return true;
-      if (showCancelled && v.status === "refused") return true;
-      if (showCompleted && v.status === "completed") return true;
+  if (!showCancelled && !showCompleted) {
+    return status === "upcoming";
+  }
 
-      return false;
-    });
+  if (status === "upcoming") return true;
+  if (showCancelled && (status === "refused" || status === "moved")) return true;
+  if (showCompleted && status === "completed") return true;
+
+  return false;
+});
 window.currentVisits = visits;
     renderScheduleGrid(visits, container, showAll, date);
 
@@ -504,6 +506,8 @@ if (overlay) overlay.remove();
 
 function normalizeStatus(slot) {
 
+  const status = slot.status;
+
   // если отменён, но есть перенос — это перенесённый визит
   if (
     status === "refused" &&
@@ -515,7 +519,6 @@ function normalizeStatus(slot) {
 
   return status;
 }
-
 
 
 // ===============================
