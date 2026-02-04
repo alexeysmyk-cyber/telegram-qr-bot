@@ -399,11 +399,15 @@ body {
 }
 
 .slot-moved {
-  background: #fff7e6;
-  border-left: 4px solid #f59e0b;
-  border: 1px solid #fcd9a6;   /* светлая версия оранжевого */
+ background: #fff8e1;                /* светлый тёплый фон */
+  border-left: 4px solid #f59e0b;     /* яркая жёлтая полоса */
+  border: 1px solid #fde68a;      
 }
 
+.slot-moved .meta-right {
+  color: #f59e0b;   /* тот же жёлтый, что у полоски */
+  font-weight: 600;
+}
 
 .slot:hover {
   transform: translateY(-2px);
@@ -670,7 +674,7 @@ body {
 /* Цвета статусов */
 
 .slot-active .meta-right {
-  color: #00a4c7;
+  color: #4caf50; /* зелёный как у полоски */
 }
 
 .slot-cancelled .meta-right {
