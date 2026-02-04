@@ -25,7 +25,7 @@ if (fab) fab.style.display = "none";
         <div class="create-close" id="closeCreateBtn">✕</div>
       </div>
 
-      <div class="doctor-select-wrapper" id="createDoctorSelect">
+      <div class="card doctor-card" id="createDoctorSelect">
         Загрузка врачей...
       </div>
 
