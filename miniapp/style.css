@@ -388,11 +388,13 @@ body {
 
 .slot-active {
   background: #e6f8fb;
+  border: 1px solid #bfeaf4;  /* чуть насыщеннее */
   border-left: 4px solid #00a4c7;
 }
 
 .slot-cancelled {
   background: #ffecec;
+  border: 1px solid #f5bcbc;
   border-left: 4px solid #d9534f;
 }
 
@@ -674,7 +676,8 @@ body {
 
 /* Завершённый визит */
 .slot-default {
-  background: #f0faf4;          /* лёгкий медицинский зелёный */
+  background: #f0faf4;
+  border: 1px solid #cfe9da;
   border-left: 4px solid #4caf50;
 }
 
