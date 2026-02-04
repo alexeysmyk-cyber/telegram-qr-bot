@@ -25,11 +25,11 @@ if (fab) fab.style.display = "none";
         <div class="create-close" id="closeCreateBtn">✕</div>
       </div>
 
-      <div class="card doctor-card" id="doctorContainer">
+      <div class="card" id="doctorContainer">
         Загрузка врачей...
       </div>
 
-      <div class="card filter-card">
+      <div class="card">
 
         <div class="filter-header">
           <span class="filter-title">Фильтры</span>
