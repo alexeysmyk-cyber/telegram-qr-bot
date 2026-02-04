@@ -913,7 +913,10 @@ body {
 
 .visit-container {
   position: relative;
-  padding: 10px 18px 100px 18px;
+ padding: 6px 18px 100px 18px; /* было 10px */
+}
+#createOverlay .visit-container {
+  padding-top: 6px;
 }
 
 /* ============================= */
