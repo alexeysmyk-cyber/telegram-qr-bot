@@ -1486,4 +1486,19 @@ body {
   padding: 8px 10px;
   font-size: 14px;
 }
+/* Когда фильтр свернут */
+.filter-card:has(.filter-panel.collapsing) {
+  padding: 6px 10px;          /* меньше воздуха */
+  border-radius: 10px;
+}
+
+/* Уменьшаем внутренние отступы */
+.filter-card:has(.filter-panel.collapsing) .filter-header {
+  margin-bottom: 2px;
+}
+
+.filter-card:has(.filter-panel.collapsing) .filter-values {
+  font-size: 12px;
+  line-height: 1.2;
+}
 
