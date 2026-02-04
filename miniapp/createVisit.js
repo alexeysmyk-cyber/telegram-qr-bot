@@ -2,7 +2,12 @@ import { renderCalendar } from "./calendar.js";
 
 export async function openCreateVisit() {
 
+  
   if (document.getElementById("createOverlay")) return;
+
+  // скрываем FAB
+const fab = document.getElementById("fabCreate");
+if (fab) fab.style.display = "none";
 
   let selectedDuration = 60;
   let hidePast = false;
@@ -87,7 +92,13 @@ export async function openCreateVisit() {
   document.body.appendChild(overlay);
 
   document.getElementById("closeCreateBtn")
-    .addEventListener("click", () => overlay.remove());
+  .addEventListener("click", () => {
+
+    overlay.remove();
+
+    const fab = document.getElementById("fabCreate");
+    if (fab) fab.style.display = "flex";
+});
 
   await loadDoctorsForCreate();
 
