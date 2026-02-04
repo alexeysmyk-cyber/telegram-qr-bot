@@ -570,7 +570,7 @@ function addFloatingButton() {
 
   document.body.appendChild(fab);
 
- േഴlet timer;
+ let timer;
 
   fab.addEventListener("touchstart", () => {
     timer = setTimeout(() => {
