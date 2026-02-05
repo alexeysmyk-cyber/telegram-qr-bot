@@ -361,13 +361,16 @@ function renderSlots() {
 
     let className = "slot";
 
-    if (slot.is_busy) {
-      className += " slot-busy";
-    } else if (slot.is_past) {
-      className += " slot-past";
-    } else {
-      className += " slot-free";
-    }
+ let className = "slot";
+
+if (slot.is_past) {
+  className += " slot-past";
+} else if (slot.is_busy) {
+  className += " slot-busy";
+} else {
+  className += " slot-free";
+}
+
 
     html += `
       <div class="${className}"
