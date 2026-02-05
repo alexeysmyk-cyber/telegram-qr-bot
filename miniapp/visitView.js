@@ -323,9 +323,16 @@ function getPrettyStatus(v) {
 
   return "";
 }
+
+
+
 function getStatusClass(v) {
 
-  if (v.moved_to) return "moved";
+  // если перенесён
+  if (v.moved_to ) {
+    return "moved";
+  }
+
   if (v.status === "refused") return "refused";
   if (v.status === "completed") return "completed";
   if (v.status === "upcoming") return "upcoming";
