@@ -222,18 +222,30 @@ router.post("/cancel-appointment", async (req, res) => {
 // ===============================
 router.post("/get-schedule", async (req, res) => {
   try {
-    const { doctor_id, date, duration } = req.body;
+    const { date } = req.body;
 
-    if (!doctor_id || !date || !duration) {
-      return res.status(400).json({ error: "NO_DATA" });
+    if (!date) {
+      return res.status(400).json({ error: "NO_DATE" });
     }
+
+    const selected = new Date(date);
+
+    const dateFrom = new Date(selected);
+    dateFrom.setDate(dateFrom.getDate() - 1);
+
+    const dateTo = new Date(selected);
+    dateTo.setDate(dateTo.getDate() + 1);
+
+    const formattedFrom = formatDate(dateFrom);
+    const formattedTo = formatDate(dateTo);
 
     const body = {
       api_key: process.env.API_KEY,
-      user_id: doctor_id,
-      clinic_id: 2997,
-      date,
-      duration
+      date_from: formattedFrom,
+      date_to: formattedTo,
+      slot: 15,          // 👈 минимальный слот
+      is_past: true,
+      is_busy: true
     };
 
     const url =
