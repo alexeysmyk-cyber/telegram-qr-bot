@@ -7,8 +7,8 @@ let fullSchedule = [];
 let selectedDate = null;
 let selectedDuration = 60;
 
-let hidePast = false;     // ← добавить
-let hideBusy = false;     // ← добавить
+let hidePast = false;    
+let hideBusy = false;     
 
 
 
@@ -355,7 +355,7 @@ function renderSlots() {
 
   currentSchedule.forEach(slot => {
 
-    // 🔥 ФИЛЬТРАЦИЯ ПО TOGGLES
+    // 🔥 Фильтрация только если включены toggles
     if (hideBusy && slot.is_busy) return;
     if (hidePast && slot.is_past) return;
 
@@ -383,6 +383,7 @@ function renderSlots() {
 
   attachSlotSelection();
 }
+
 
 
 function attachSlotSelection() {
