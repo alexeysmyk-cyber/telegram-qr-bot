@@ -405,21 +405,39 @@ function attachSlotSelection() {
 
       slot.addEventListener("click", () => {
 
-if (slot.classList.contains("slot-past-free")) return;
-
         const id = slot.dataset.id;
 
-        if (slot.classList.contains("selected")) {
-          removeSlot(id);
-        } else {
-          addSlot(id);
+        // ❌ прошлый свободный — вообще не реагируем
+        if (slot.classList.contains("slot-past-free")) {
+          return;
         }
 
-        updateCreateButton();
+        // 🔴 занятый или прошлый с записью → открыть визит
+        if (
+          slot.classList.contains("slot-cancelled") ||
+          slot.classList.contains("slot-past-busy")
+        ) {
+          openVisitFromSlot(id);
+          return;
+        }
+
+        // 🟦 свободный → обычная логика выбора
+        if (slot.classList.contains("slot-active")) {
+
+          if (slot.classList.contains("selected")) {
+            removeSlot(id);
+          } else {
+            addSlot(id);
+          }
+
+          updateCreateButton();
+        }
+
       });
 
     });
 }
+
 function addSlot(id) {
 
 const index = currentSchedule.findIndex(s =>
@@ -510,4 +528,18 @@ function filterScheduleByDoctor() {
 
   selectedSlots = [];
   renderSlots();
+}
+
+function openVisitFromSlot(timeStart) {
+
+  const slot = currentSchedule.find(s =>
+    String(s.time_start) === String(timeStart)
+  );
+
+  if (!slot) return;
+
+  console.log("Открываем визит:", slot);
+
+  // позже сюда:
+  // openVisitView(slot.schedule_id или appointment_id)
 }
