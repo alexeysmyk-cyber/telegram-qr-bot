@@ -280,13 +280,22 @@ router.post("/get-schedule", async (req, res) => {
 // =====================================================
 // 📌 ФОРМАТ dd.mm.yyyy
 // =====================================================
-function formatDate(dateString) {
+function formatDate(dateInput) {
 
-  if (dateString.includes(".")) {
-    return dateString; // уже в формате dd.mm.yyyy
+  if (!dateInput) return null;
+
+  // если уже строка
+  if (typeof dateInput === "string") {
+    if (dateInput.includes(".")) {
+      return dateInput;
+    }
   }
 
-  const d = new Date(dateString);
+  const d = new Date(dateInput);
+
+  if (isNaN(d.getTime())) {
+    return null;
+  }
 
   const dd = String(d.getDate()).padStart(2, "0");
   const mm = String(d.getMonth() + 1).padStart(2, "0");
@@ -294,6 +303,7 @@ function formatDate(dateString) {
 
   return `${dd}.${mm}.${yyyy}`;
 }
+
 
 module.exports = router;
 
