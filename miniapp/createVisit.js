@@ -338,60 +338,35 @@ filterScheduleByDoctor();
 
 }  
 
-function renderSlots() {
-
-  const container = document.getElementById("createSlotsContainer");
-
-  if (!currentSchedule.length) {
-    container.innerHTML = `
-      <div class="card empty-state">
-        Нет доступных слотов
-      </div>
-    `;
-    return;
-  }
-
-  let html = "";
-
-  currentSchedule.forEach(slot => {
-
-    // 🔥 Фильтрация только если включены toggles
-    if (hideBusy && slot.is_busy) return;
-    if (hidePast && slot.is_past) return;
-
-
 let className = "slot";
-let extraLabel = "";
+let statusText = "";
 
 if (slot.is_past && slot.is_busy) {
   className += " slot-past-busy";
-} 
+  statusText = "Была запись";
+}
 else if (slot.is_past && !slot.is_busy) {
   className += " slot-past-free";
-  extraLabel = `<div class="slot-label">Слот в прошлом</div>`;
-} 
+  statusText = "Слот в прошлом";
+}
 else if (!slot.is_past && slot.is_busy) {
   className += " slot-busy";
-  extraLabel = `<div class="slot-label">Время занято</div>`;
-} 
+  statusText = "Время занято";
+}
 else {
   className += " slot-free";
+  statusText = "Время свободно";
 }
-
 
 html += `
   <div class="${className}"
        data-id="${slot.time_start}">
-    <div class="time">${slot.time}</div>
-    ${extraLabel}
+    <div class="slot-top">
+      <div class="time">${slot.time}</div>
+      <div class="slot-status">${statusText}</div>
+    </div>
   </div>
 `;
-  });
-
-  container.innerHTML = html;
-
-  attachSlotSelection();
-}
 
 
 
