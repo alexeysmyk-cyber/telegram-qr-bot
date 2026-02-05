@@ -1540,3 +1540,22 @@ body {
   background: #fff8e1;
   color: #f59e0b;
 }
+
+.slot-free {
+  background: #e6f8fb;
+  border: 1px solid #bfeaf4;
+  border-left: 4px solid #00a4c7;
+}
+
+.slot-past {
+  background: #eee;
+  color: #999;
+  border-left: 4px solid #ccc;
+  pointer-events: none;
+}
+
+.slot.selected {
+  background: #00a4c7;
+  color: white;
+}
+
