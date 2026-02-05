@@ -1,4 +1,5 @@
 import { renderCalendar } from "./calendar.js";
+import { openVisitView } from "./visitView.js";
 
 export async function openCreateVisit() {
 
