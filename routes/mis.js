@@ -243,8 +243,6 @@ router.post("/get-schedule", async (req, res) => {
       return res.json(scheduleCache[date].data);
     }
 
-    const [dd, mm, yyyy] = date.split(".");
-const selected = new Date(`${yyyy}-${mm}-${dd}`);
 
     const dateFrom = new Date(selected);
     dateFrom.setDate(dateFrom.getDate() - 1);
@@ -261,10 +259,6 @@ api_key: process.env.API_KEY,
   step: 15,
   show_past: true,
   show_busy: true
-};
-scheduleCache[date] = {
-  data: response.data,
-  expires: now + 60 * 1000
 };
 
 console.log("💾 SAVE CACHE:", date);
@@ -289,10 +283,13 @@ console.log("💾 SAVE CACHE:", date);
     // ===============================
     // SAVE CACHE (например 60 сек)
     // ===============================
-    scheduleCache[date] = {
-      data: response.data,
-      expires: now + 60 * 1000
-    };
+// ✅ сохраняем кэш ЗДЕСЬ
+scheduleCache[date] = {
+  data: response.data,
+  expires: now + 60 * 1000
+};
+
+console.log("💾 SAVE CACHE:", date);
 
     return res.json(response.data);
 
