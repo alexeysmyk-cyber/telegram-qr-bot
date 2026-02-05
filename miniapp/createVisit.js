@@ -360,26 +360,32 @@ function renderSlots() {
     if (hidePast && slot.is_past) return;
 
 
+let className = "slot";
+let extraLabel = "";
 
- let className = "slot";
-
-if (slot.is_past) {
-  className += " slot-past";
-} else if (slot.is_busy) {
+if (slot.is_past && slot.is_busy) {
+  className += " slot-past-busy";
+} 
+else if (slot.is_past && !slot.is_busy) {
+  className += " slot-past-free";
+  extraLabel = `<div class="slot-label">Слот в прошлом</div>`;
+} 
+else if (!slot.is_past && slot.is_busy) {
   className += " slot-busy";
-} else {
+  extraLabel = `<div class="slot-label">Время занято</div>`;
+} 
+else {
   className += " slot-free";
 }
 
 
-    html += `
-      <div class="${className}"
-           data-id="${slot.time_start}">
-        <div class="time">
-          ${slot.time}
-        </div>
-      </div>
-    `;
+html += `
+  <div class="${className}"
+       data-id="${slot.time_start}">
+    <div class="time">${slot.time}</div>
+    ${extraLabel}
+  </div>
+`;
   });
 
   container.innerHTML = html;
@@ -396,10 +402,7 @@ function attachSlotSelection() {
 
       slot.addEventListener("click", () => {
 
-      if (
-  slot.classList.contains("slot-past") ||
-  slot.classList.contains("slot-busy")
-) return;
+if (slot.classList.contains("slot-past-free")) return;
 
         const id = slot.dataset.id;
 
