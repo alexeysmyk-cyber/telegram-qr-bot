@@ -185,8 +185,8 @@ renderCalendar(
 );
 
 // первая загрузка
+selectedDate = new Date();
 loadCreateSchedule();
-
 
 
 
@@ -246,6 +246,13 @@ container.innerHTML = `
     </div>
   </div>
 `;
+
+document
+  .getElementById("createDoctorSelect")
+  ?.addEventListener("change", () => {
+    loadCreateSchedule();
+  });
+  
 }
 
 
@@ -445,4 +452,14 @@ function updateCreateButton() {
   if (!btn) return;
 
   btn.disabled = selectedSlots.length === 0;
+}
+
+function formatDate(date) {
+  const d = new Date(date);
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+
+  return `${dd}.${mm}.${yyyy}`;
 }
