@@ -243,7 +243,8 @@ router.post("/get-schedule", async (req, res) => {
       return res.json(scheduleCache[date].data);
     }
 
-    const selected = new Date(date);
+    const [dd, mm, yyyy] = date.split(".");
+const selected = new Date(`${yyyy}-${mm}-${dd}`);
 
     const dateFrom = new Date(selected);
     dateFrom.setDate(dateFrom.getDate() - 1);
