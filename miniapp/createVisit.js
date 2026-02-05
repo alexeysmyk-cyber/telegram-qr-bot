@@ -316,19 +316,22 @@ async function loadCreateSchedule() {
     body: JSON.stringify({ date }) // doctor_id можно убрать вообще
   });
 
-  const data = await response.json();
+const data = await response.json();
 
-  if (!response.ok || data.error !== 0) {
-    container.innerHTML = "Ошибка загрузки расписания";
-    return;
-  }
-
-  // 🔥 ВАЖНО: сначала сохраняем всё расписание дня
-  fullSchedule = data.data || [];
-
-  // 🔥 потом фильтруем по врачу
-  filterScheduleByDoctor();
+if (!response.ok || data.error !== 0) {
+  container.innerHTML = "Ошибка загрузки расписания";
+  return;
 }
+
+// ===============================
+// MIS возвращает объект { user_id: [slots] }
+// Преобразуем в один массив
+// ===============================
+const rawData = data.data || {};
+fullSchedule = Object.values(rawData).flat();
+
+// Фильтруем по врачу
+filterScheduleByDoctor();
 
 
 
@@ -360,7 +363,7 @@ function renderSlots() {
 
     html += `
       <div class="${className}"
-           data-id="${slot.schedule_id}"
+           data-id="${slot.time_start}"
            data-start="${slot.time_start}"
            data-end="${slot.time_end}">
         <div class="time">
@@ -399,9 +402,9 @@ function attachSlotSelection() {
 }
 function addSlot(id) {
 
-  const index = currentSchedule.findIndex(s =>
-    String(s.schedule_id) === String(id)
-  );
+const index = currentSchedule.findIndex(s =>
+  String(s.time_start) === String(id)
+);
 
   if (selectedSlots.length === 0) {
     selectedSlots.push(index);
@@ -419,10 +422,9 @@ function addSlot(id) {
 
 function removeSlot(id) {
 
-  const index = currentSchedule.findIndex(s =>
-    String(s.schedule_id) === String(id)
-  );
-
+const index = currentSchedule.findIndex(s =>
+  String(s.time_start) === String(id)
+);
   const min = Math.min(...selectedSlots);
   const max = Math.max(...selectedSlots);
 
@@ -441,7 +443,7 @@ function renderSelection() {
   selectedSlots.forEach(i => {
     const slot = currentSchedule[i];
     const el = document.querySelector(
-      `[data-id="${slot.schedule_id}"]`
+      `[data-id="${slot.time_start}"]`
     );
     if (el) el.classList.add("selected");
   });
@@ -471,9 +473,9 @@ function filterScheduleByDoctor() {
 
   const selectedDoctorId = doctorSelect.value;
 
-  currentSchedule = fullSchedule.filter(
-    s => String(s.doctor_id) === String(selectedDoctorId)
-  );
+ currentSchedule = fullSchedule.filter(
+  s => String(s.user_id) === String(selectedDoctorId)
+);
 
   selectedSlots = [];
   renderSlots();
