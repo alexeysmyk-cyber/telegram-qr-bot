@@ -479,14 +479,22 @@ function formatDate(date) {
 function filterScheduleByDoctor() {
 
   const doctorSelect = document.getElementById("createDoctorSelect");
-  if (!doctorSelect) return;
+  if (!doctorSelect || !selectedDate) return;
 
   const selectedDoctorId = doctorSelect.value;
+  const selectedDateStr = formatDate(selectedDate);
 
- currentSchedule = fullSchedule.filter(
-  s => String(s.user_id) === String(selectedDoctorId)
-);
+  currentSchedule = fullSchedule.filter(s =>
+    String(s.user_id) === String(selectedDoctorId) &&
+    s.date === selectedDateStr
+  );
+
+  // 🔥 сортируем по времени
+  currentSchedule.sort((a, b) =>
+    new Date(a.time_start) - new Date(b.time_start)
+  );
 
   selectedSlots = [];
   renderSlots();
 }
+
