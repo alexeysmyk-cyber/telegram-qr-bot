@@ -333,7 +333,7 @@ fullSchedule = Object.values(rawData).flat();
 // Фильтруем по врачу
 filterScheduleByDoctor();
 
-
+}  
 
 function renderSlots() {
 
