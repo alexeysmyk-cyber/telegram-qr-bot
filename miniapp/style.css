@@ -1558,4 +1558,13 @@ body {
   background: #00a4c7;
   color: white;
 }
-
+.slot-busy {
+  background: #ffecec;
+  border: 1px solid #f5bcbc;
+  border-left: 4px solid #d9534f;
+  color: #b54757;
+  pointer-events: none;
+}
+.slot-busy {
+  background: red !important;
+}
