@@ -1537,8 +1537,9 @@ body {
   padding: 6px 16px 16px 16px;
 }
 .visit-status-absolute.moved {
-  background: #f59e0b;
-  color: #fff;
+ background: #fff8e1;  /* тот же фон что у slot-moved */
+  color: #f59e0b;        /* тот же цвет текста */
+  border: 1px solid #FCD34D;
 }
 
 .slot-free {
