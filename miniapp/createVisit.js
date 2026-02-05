@@ -486,14 +486,18 @@ function filterScheduleByDoctor() {
   if (!doctorSelect || !selectedDate) return;
 
   const selectedDoctorId = doctorSelect.value;
-  const selectedDateStr = formatDate(selectedDate);
+
+  // форматируем в yyyy-mm-dd
+  const yyyy = selectedDate.getFullYear();
+  const mm = String(selectedDate.getMonth() + 1).padStart(2, "0");
+  const dd = String(selectedDate.getDate()).padStart(2, "0");
+  const selectedDateISO = `${yyyy}-${mm}-${dd}`;
 
   currentSchedule = fullSchedule.filter(s =>
     String(s.user_id) === String(selectedDoctorId) &&
-    s.date === selectedDateStr
+    s._date === selectedDateISO
   );
 
-  // 🔥 сортируем по времени
   currentSchedule.sort((a, b) =>
     new Date(a.time_start) - new Date(b.time_start)
   );
@@ -501,4 +505,5 @@ function filterScheduleByDoctor() {
   selectedSlots = [];
   renderSlots();
 }
+
 
