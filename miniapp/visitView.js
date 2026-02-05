@@ -167,9 +167,7 @@ function renderMainInfo(v) {
   return `
     <div class="visit-card main-card">
 
-      <div class="visit-status-absolute ${v.status}">
-        ${getPrettyStatus(v)}
-      </div>
+  
  
       <div class="visit-row right">
         <span>Дата:</span>
