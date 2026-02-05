@@ -10,6 +10,7 @@ const { getSchedule } = require("../controllers/mis/schedule");
 // CACHE FOR APPOINTMENTS
 // =====================================================
 const appointmentsCache = {};
+const scheduleCache = {};
 
 // очистка просроченного кэша
 function cleanExpiredCache() {
@@ -222,10 +223,24 @@ router.post("/cancel-appointment", async (req, res) => {
 // ===============================
 router.post("/get-schedule", async (req, res) => {
   try {
+
     const { date } = req.body;
 
     if (!date) {
       return res.status(400).json({ error: "NO_DATE" });
+    }
+
+    const now = Date.now();
+
+    // ===============================
+    // CACHE CHECK
+    // ===============================
+    if (
+      scheduleCache[date] &&
+      scheduleCache[date].expires > now
+    ) {
+      console.log("📦 SCHEDULE CACHE HIT:", date);
+      return res.json(scheduleCache[date].data);
     }
 
     const selected = new Date(date);
@@ -243,7 +258,7 @@ router.post("/get-schedule", async (req, res) => {
       api_key: process.env.API_KEY,
       date_from: formattedFrom,
       date_to: formattedTo,
-      slot: 15,          // 👈 минимальный слот
+      slot: 15,
       is_past: true,
       is_busy: true
     };
@@ -265,6 +280,14 @@ router.post("/get-schedule", async (req, res) => {
       return res.status(500).json({ error: "MIS_ERROR" });
     }
 
+    // ===============================
+    // SAVE CACHE (например 60 сек)
+    // ===============================
+    scheduleCache[date] = {
+      data: response.data,
+      expires: now + 60 * 1000
+    };
+
     return res.json(response.data);
 
   } catch (err) {
@@ -272,6 +295,7 @@ router.post("/get-schedule", async (req, res) => {
     return res.status(500).json({ error: "SERVER_ERROR" });
   }
 });
+
 
 
 
