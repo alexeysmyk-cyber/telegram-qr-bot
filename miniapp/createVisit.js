@@ -3,8 +3,10 @@ import { openVisitView } from "./visitView.js";
 
 let selectedSlots = [];
 let currentSchedule = [];
+let fullSchedule = [];   // 👈 ВОТ СЮДА
 let selectedDate = null;
 let selectedDuration = 60;
+
 
 export async function openCreateVisit() {
 
@@ -250,8 +252,8 @@ container.innerHTML = `
 document
   .getElementById("createDoctorSelect")
   ?.addEventListener("change", () => {
-    loadCreateSchedule();
-  });
+  filterScheduleByDoctor();
+});
   
 }
 
@@ -293,6 +295,9 @@ function initCreateSlider(onChange) {
 }
 
 async function loadCreateSchedule() {
+
+  fullSchedule = data.data || [];
+filterScheduleByDoctor();
 
   const doctorSelect = document.getElementById("createDoctorSelect");
   const container = document.getElementById("createSlotsContainer");
@@ -461,4 +466,19 @@ function formatDate(date) {
   const yyyy = d.getFullYear();
 
   return `${dd}.${mm}.${yyyy}`;
+}
+
+function filterScheduleByDoctor() {
+
+  const doctorSelect = document.getElementById("createDoctorSelect");
+  if (!doctorSelect) return;
+
+  const selectedDoctorId = doctorSelect.value;
+
+  currentSchedule = fullSchedule.filter(
+    s => String(s.doctor_id) === String(selectedDoctorId)
+  );
+
+  selectedSlots = [];
+  renderSlots();
 }
