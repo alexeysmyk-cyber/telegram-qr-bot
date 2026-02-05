@@ -3,9 +3,13 @@ import { openVisitView } from "./visitView.js";
 
 let selectedSlots = [];
 let currentSchedule = [];
-let fullSchedule = [];   // 👈 ВОТ СЮДА
+let fullSchedule = [];
 let selectedDate = null;
 let selectedDuration = 60;
+
+let hidePast = false;     // ← добавить
+let hideBusy = false;     // ← добавить
+
 
 
 export async function openCreateVisit() {
@@ -17,9 +21,6 @@ export async function openCreateVisit() {
 const fab = document.getElementById("fabCreate");
 if (fab) fab.style.display = "none";
 
-
-  let hidePast = false;
-  let hideBusy = false;
 
   const overlay = document.createElement("div");
   overlay.id = "createOverlay";
@@ -152,17 +153,19 @@ overlay.appendChild(actionBtn);
     summary.innerText = parts.join(" • ");
   }
 
-  document.getElementById("toggleHidePast")
-    .addEventListener("change", (e) => {
-      hidePast = e.target.checked;
-      updateFilterSummary();
-    });
+document.getElementById("toggleHidePast")
+  .addEventListener("change", (e) => {
+    hidePast = e.target.checked;
+    updateFilterSummary();
+    renderSlots(); // ← перерисовка
+  });
 
-  document.getElementById("toggleHideBusy")
-    .addEventListener("change", (e) => {
-      hideBusy = e.target.checked;
-      updateFilterSummary();
-    });
+ document.getElementById("toggleHideBusy")
+  .addEventListener("change", (e) => {
+    hideBusy = e.target.checked;
+    updateFilterSummary();
+    renderSlots(); // ← перерисовка
+  });
 
   initCreateSlider((value) => {
     selectedDuration = value;
@@ -352,20 +355,23 @@ function renderSlots() {
 
   currentSchedule.forEach(slot => {
 
-    // по умолчанию показываем только свободные
-    if (slot.is_busy) return;
+    // 🔥 ФИЛЬТРАЦИЯ ПО TOGGLES
+    if (hideBusy && slot.is_busy) return;
+    if (hidePast && slot.is_past) return;
 
-    let className = "slot slot-free";
+    let className = "slot";
 
-    if (slot.is_past) {
-      className = "slot slot-past";
+    if (slot.is_busy) {
+      className += " slot-busy";
+    } else if (slot.is_past) {
+      className += " slot-past";
+    } else {
+      className += " slot-free";
     }
 
     html += `
       <div class="${className}"
-           data-id="${slot.time_start}"
-           data-start="${slot.time_start}"
-           data-end="${slot.time_end}">
+           data-id="${slot.time_start}">
         <div class="time">
           ${slot.time}
         </div>
@@ -377,6 +383,7 @@ function renderSlots() {
 
   attachSlotSelection();
 }
+
 
 function attachSlotSelection() {
 
