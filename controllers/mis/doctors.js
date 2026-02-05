@@ -141,9 +141,12 @@ doctorsCache = {
 //    console.log("Doctors count:", doctors.length);
 let currentDoctorId = null;
 
+// если пользователь врач (даже если он директор тоже)
 if (isDoctor) {
-  currentDoctorId = tgUser.mis_id;
-} else if (isDirector) {
+  currentDoctorId = currentMisId;
+}
+// если не врач, но директор
+else if (isDirector) {
   currentDoctorId = doctors.length ? doctors[0].id : null;
 }
 
