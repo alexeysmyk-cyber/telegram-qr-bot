@@ -311,11 +311,10 @@ async function loadCreateSchedule() {
   const response = await fetch("/api/mis/get-schedule", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      doctor_id: doctorSelect.value,
-      date,
-      duration: selectedDuration
-    })
+body: JSON.stringify({
+  doctor_id: doctorSelect.value,
+  date
+})
   });
 
   const data = await response.json();
