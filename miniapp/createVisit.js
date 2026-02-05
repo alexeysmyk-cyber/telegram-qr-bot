@@ -392,7 +392,10 @@ function attachSlotSelection() {
 
       slot.addEventListener("click", () => {
 
-        if (slot.classList.contains("slot-past")) return;
+      if (
+  slot.classList.contains("slot-past") ||
+  slot.classList.contains("slot-busy")
+) return;
 
         const id = slot.dataset.id;
 
