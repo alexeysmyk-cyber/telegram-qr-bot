@@ -232,9 +232,7 @@ router.post("/get-schedule", async (req, res) => {
 
     const now = Date.now();
 
-    // ===============================
     // CACHE CHECK
-    // ===============================
     if (
       scheduleCache[date] &&
       scheduleCache[date].expires > now
@@ -243,25 +241,14 @@ router.post("/get-schedule", async (req, res) => {
       return res.json(scheduleCache[date].data);
     }
 
-
-    const dateFrom = new Date(selected);
-    dateFrom.setDate(dateFrom.getDate() - 1);
-
-    const dateTo = new Date(selected);
-    dateTo.setDate(dateTo.getDate() + 1);
-
-    const formattedDate = date;
-
-const body = {
-api_key: process.env.API_KEY,
-  date_from: formattedDate + " 00:01",
-  date_to: formattedDate + " 23:59",
-  step: 15,
-  show_past: true,
-  show_busy: true
-};
-
-console.log("💾 SAVE CACHE:", date);
+    const body = {
+      api_key: process.env.API_KEY,
+      date_from: date + " 00:01",
+      date_to: date + " 23:59",
+      step: 15,
+      show_past: true,
+      show_busy: true
+    };
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getSchedule";
@@ -280,16 +267,13 @@ console.log("💾 SAVE CACHE:", date);
       return res.status(500).json({ error: "MIS_ERROR" });
     }
 
-    // ===============================
-    // SAVE CACHE (например 60 сек)
-    // ===============================
-// ✅ сохраняем кэш ЗДЕСЬ
-scheduleCache[date] = {
-  data: response.data,
-  expires: now + 60 * 1000
-};
+    // SAVE CACHE
+    scheduleCache[date] = {
+      data: response.data,
+      expires: now + 60 * 1000
+    };
 
-console.log("💾 SAVE CACHE:", date);
+    console.log("💾 SAVE CACHE:", date);
 
     return res.json(response.data);
 
@@ -298,6 +282,7 @@ console.log("💾 SAVE CACHE:", date);
     return res.status(500).json({ error: "SERVER_ERROR" });
   }
 });
+
 
 
 
