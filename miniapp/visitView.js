@@ -97,13 +97,14 @@ async function loadVisit(id, overlay) {
 function renderVisit(visit, overlay) {
 
   const isCompleted = visit.status === "completed";
+const isMoved = !!visit.moved_to;
 
   overlay.innerHTML = `
     <div class="visit-container">
 
-      <div class="visit-status-absolute ${visit.status}">
-        ${getPrettyStatus(visit)}
-      </div>
+     <div class="visit-status-absolute ${getStatusClass(visit)}">
+  ${getPrettyStatus(visit)}
+</div>
 
       <div class="visit-title-center">
         Карточка визита
@@ -122,13 +123,13 @@ function renderVisit(visit, overlay) {
 
       </div>
 
-      <div class="visit-actions">
-        ${!isCompleted ? `
-          <button class="primary-btn" id="moveVisitBtn">Перенести</button>
-          <button class="danger-btn" id="cancelVisitBtn">Отменить</button>
-        ` : ``}
-        <button class="secondary-btn" id="closeBottomBtn">Закрыть</button>
-      </div>
+     <div class="visit-actions">
+  ${(!isCompleted && !isMoved) ? `
+    <button class="primary-btn" id="moveVisitBtn">Перенести</button>
+    <button class="danger-btn" id="cancelVisitBtn">Отменить</button>
+  ` : ``}
+  <button class="secondary-btn" id="closeBottomBtn">Закрыть</button>
+</div>
 
     </div>
   `;
@@ -322,6 +323,12 @@ function getPrettyStatus(v) {
 
   return "";
 }
+function getStatusClass(v) {
+
+  if (v.moved_to) return "moved";
+  return v.status;
+}
+
 
 function formatFullDate(dateString) {
 
