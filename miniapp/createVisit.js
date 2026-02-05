@@ -337,38 +337,66 @@ fullSchedule = Object.values(rawData).flat();
 filterScheduleByDoctor();
 
 }  
+function renderSlots() {
 
-let className = "slot";
-let statusText = "";
+  const container = document.getElementById("createSlotsContainer");
 
-if (slot.is_past && slot.is_busy) {
-  className += " slot-past-busy";
-  statusText = "Была запись";
+  if (!currentSchedule.length) {
+    container.innerHTML = `
+      <div class="card empty-state">
+        Нет доступных слотов
+      </div>
+    `;
+    return;
+  }
+
+  let html = "";
+
+  currentSchedule.forEach(slot => {
+
+    // 🔥 фильтрация по toggles
+    if (hideBusy && slot.is_busy) return;
+    if (hidePast && slot.is_past) return;
+
+    let className = "slot";
+    let statusText = "";
+
+    // ===============================
+    // ЛОГИКА СОСТОЯНИЙ
+    // ===============================
+
+    if (slot.is_past && slot.is_busy) {
+      className += " slot-past-busy";
+      statusText = "Была запись";
+    }
+    else if (slot.is_past && !slot.is_busy) {
+      className += " slot-past-free";
+      statusText = "Слот в прошлом";
+    }
+    else if (!slot.is_past && slot.is_busy) {
+      className += " slot-cancelled"; // занято
+      statusText = "Время занято";
+    }
+    else {
+      className += " slot-active"; // свободно
+      statusText = "Время свободно";
+    }
+
+    html += `
+      <div class="${className}"
+           data-id="${slot.time_start}">
+        <div class="slot-top">
+          <div class="time">${slot.time}</div>
+          <div class="slot-status">${statusText}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  attachSlotSelection();
 }
-else if (slot.is_past && !slot.is_busy) {
-  className += " slot-past-free";
-  statusText = "Слот в прошлом";
-}
-else if (!slot.is_past && slot.is_busy) {
-  className += " slot-busy";
-  statusText = "Время занято";
-}
-else {
-  className += " slot-free";
-  statusText = "Время свободно";
-}
-
-html += `
-  <div class="${className}"
-       data-id="${slot.time_start}">
-    <div class="slot-top">
-      <div class="time">${slot.time}</div>
-      <div class="slot-status">${statusText}</div>
-    </div>
-  </div>
-`;
-
-
 
 function attachSlotSelection() {
 
