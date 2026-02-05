@@ -252,18 +252,22 @@ const selected = new Date(`${yyyy}-${mm}-${dd}`);
     const dateTo = new Date(selected);
     dateTo.setDate(dateTo.getDate() + 1);
 
-    const formattedFrom = formatDate(dateFrom);
-    const formattedTo = formatDate(dateTo);
+    const formattedDate = date;
 
 const body = {
-  api_key: process.env.API_KEY,
-  date_from: formattedFrom + " 00:01",
-  date_to: formattedTo + " 23:59",
+api_key: process.env.API_KEY,
+  date_from: formattedDate + " 00:01",
+  date_to: formattedDate + " 23:59",
   step: 15,
   show_past: true,
   show_busy: true
 };
+scheduleCache[date] = {
+  data: response.data,
+  expires: now + 60 * 1000
+};
 
+console.log("💾 SAVE CACHE:", date);
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getSchedule";
