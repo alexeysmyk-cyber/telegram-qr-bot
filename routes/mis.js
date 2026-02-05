@@ -217,6 +217,53 @@ router.post("/cancel-appointment", async (req, res) => {
 ;
 
 
+// ===============================
+// 📌 GET SCHEDULE (для Create Visit)
+// ===============================
+router.post("/get-schedule", async (req, res) => {
+  try {
+    const { doctor_id, date, duration } = req.body;
+
+    if (!doctor_id || !date || !duration) {
+      return res.status(400).json({ error: "NO_DATA" });
+    }
+
+    const body = {
+      api_key: process.env.API_KEY,
+      user_id: doctor_id,
+      clinic_id: 2997,
+      date,
+      duration
+    };
+
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/getSchedule";
+
+    const response = await axios.post(
+      url,
+      qs.stringify(body),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    if (!response.data || response.data.error !== 0) {
+      return res.status(500).json({ error: "MIS_ERROR" });
+    }
+
+    return res.json(response.data);
+
+  } catch (err) {
+    console.log("getSchedule error:", err.message);
+    return res.status(500).json({ error: "SERVER_ERROR" });
+  }
+});
+
+
+
+
 
 // =====================================================
 // 📌 ФОРМАТ dd.mm.yyyy
