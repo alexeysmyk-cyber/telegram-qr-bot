@@ -254,14 +254,15 @@ router.post("/get-schedule", async (req, res) => {
     const formattedFrom = formatDate(dateFrom);
     const formattedTo = formatDate(dateTo);
 
-    const body = {
-      api_key: process.env.API_KEY,
-      date_from: formattedFrom,
-      date_to: formattedTo,
-      slot: 15,
-      is_past: true,
-      is_busy: true
-    };
+const body = {
+  api_key: process.env.API_KEY,
+  date_from: formattedFrom + " 00:01",
+  date_to: formattedTo + " 23:59",
+  slot: 15,
+  is_past: true,
+  is_busy: true
+};
+
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getSchedule";
