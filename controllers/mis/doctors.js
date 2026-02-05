@@ -58,10 +58,12 @@ const now = Date.now();
 if (doctorsCache.data && doctorsCache.expires > now) {
   console.log("📦 getUsers CACHE HIT");
   
-  return buildDoctorsResponse(
+return res.json(
+  buildDoctorsResponse(
     doctorsCache.data,
     tgUser.mis_id
-  );
+  )
+);
 }
 
 
@@ -162,7 +164,7 @@ function buildDoctorsResponse(users, currentMisId) {
   );
 
   if (!currentMisUser) {
-    return res.status(403).send("MIS user not found");
+    throw new Error("MIS user not found");
   }
 
   const roles = (currentMisUser.role || []).map(r => String(r));
@@ -171,7 +173,7 @@ function buildDoctorsResponse(users, currentMisId) {
   const isDirector = roles.includes("16353");
 
   if (!isDoctor && !isDirector) {
-    return res.status(403).send("User is not doctor");
+    throw new Error("User is not doctor");
   }
 
   const doctors = users
@@ -197,3 +199,4 @@ function buildDoctorsResponse(users, currentMisId) {
     doctors
   };
 }
+
