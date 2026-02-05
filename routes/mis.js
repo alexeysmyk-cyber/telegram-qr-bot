@@ -260,8 +260,8 @@ const body = {
   date_from: formattedFrom + " 00:01",
   date_to: formattedTo + " 23:59",
   step: 15,
-  is_past: true,
-  is_busy: true
+  show_past: true,
+  show_busy: true
 };
 
 
