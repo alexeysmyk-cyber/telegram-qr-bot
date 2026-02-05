@@ -21,67 +21,51 @@ let doctorsCache = {
 exports.getDoctors = async (req, res) => {
   try {
 
-//    console.log("----- /api/mis/doctors -----");
- //   console.log("BODY:", req.body);
-
     const telegramUserId = req.body?.telegramUserId;
 
     if (!telegramUserId) {
-      console.log("❌ No telegramUserId in body");
       return res.status(400).send("No telegramUserId");
     }
 
     const db = loadDB();
-
-//    console.log("DB users keys:", Object.keys(db.users || {}));
-
     const tgUser = db.users?.[String(telegramUserId)];
 
     if (!tgUser) {
-      console.log("❌ Telegram user not found in db.json");
       return res.status(403).send("User not found in DB");
     }
 
     if (!tgUser.mis_id) {
-      console.log("❌ User has no mis_id");
       return res.status(403).send("No MIS ID assigned");
     }
 
-//    console.log("Telegram user MIS ID:", tgUser.mis_id);
+    // ===============================
+    // CHECK CACHE
+    // ===============================
+    const now = Date.now();
 
+    if (doctorsCache.data && doctorsCache.expires > now) {
+      console.log("📦 getUsers CACHE HIT");
 
-// ===============================
-// CHECK CACHE
-// ===============================
-const now = Date.now();
+      const responseData = buildDoctorsResponse(
+        doctorsCache.data,
+        tgUser.mis_id
+      );
 
-if (doctorsCache.data && doctorsCache.expires > now) {
-  console.log("📦 getUsers CACHE HIT");
+      if (!responseData) {
+        return res.status(403).send("Access denied");
+      }
 
-  const result = buildDoctorsResponse(
-    doctorsCache.data,
-    tgUser.mis_id
-  );
+      return res.json(responseData);
+    }
 
-  if (!result) {
-    return res.status(403).send("Access denied");
-  }
-
-  return res.json(result);
-}
-
-
-
-    
-
-    // --- Запрос в МИС ---
+    // ===============================
+    // CALL MIS
+    // ===============================
     const body = qs.stringify({
       api_key: process.env.API_KEY
-       });
+    });
 
     const url = process.env.BASE_URL.replace(/\/$/, '') + '/getUsers';
-
-//    console.log("Calling MIS:", url);
 
     const response = await axios.post(
       url,
@@ -89,75 +73,36 @@ if (doctorsCache.data && doctorsCache.expires > now) {
       { headers: { 'Content-Type': 'application/x-www-form-urlencoded' } }
     );
 
-    const result = response.data;
+    const misResponse = response.data;
 
-    console.log("MIS response error:", result.error);
-
-    if (!result || result.error !== 0) {
-      console.log("❌ MIS returned error:", result);
+    if (!misResponse || misResponse.error !== 0) {
       return res.status(500).send("MIS error");
     }
 
-    const users = result.data;
+    const users = misResponse.data;
 
     // ===============================
-// SAVE CACHE (60 sec)
-// ===============================
-doctorsCache = {
-  data: users,
-  expires: Date.now() + 60 * 1000
-};
+    // SAVE CACHE (60 sec)
+    // ===============================
+    doctorsCache = {
+      data: users,
+      expires: Date.now() + 60 * 1000
+    };
 
+    const responseData = buildDoctorsResponse(users, tgUser.mis_id);
 
-//    console.log("Users count from MIS:", users.length);
-
-    // --- Находим текущего пользователя в МИС ---
-  const currentMisUser = users.find(u =>
-  String(u.id).trim() === String(tgUser.mis_id).trim()
-);
-
-    if (!currentMisUser) {
-      console.log("❌ MIS user not found by mis_id");
-      return res.status(403).send("MIS user not found");
+    if (!responseData) {
+      return res.status(403).send("Access denied");
     }
 
-//    console.log("MIS user roles:", currentMisUser.role);
-
-    const roles = (currentMisUser.role || []).map(r => String(r));
-
-    const isDoctor = roles.includes("16354");
-    const isDirector = roles.includes("16353");
-
-    if (!isDoctor && !isDirector) {
-      console.log("❌ User is not doctor or director");
-      return res.status(403).send("User is not doctor");
-    }
-
-    // --- Получаем только врачей ---
-    const doctors = users
-      .filter(u => (u.role || []).includes("16354"))
-      .filter(u => !u.is_deleted)
-      .map(u => ({
-        id: u.id,
-        name: u.name,
-        avatar: u.avatar_small || u.avatar || null
-      }));
-
-//    console.log("Doctors count:", doctors.length);
-const result = buildDoctorsResponse(users, tgUser.mis_id);
-
-if (!result) {
-  return res.status(403).send("Access denied");
-}
-
-return res.json(result);
-
+    return res.json(responseData);
 
   } catch (err) {
     console.error("🔥 getDoctors fatal error:", err);
     return res.status(500).send("Server error");
   }
 };
+
 
 function buildDoctorsResponse(users, currentMisId) {
 
