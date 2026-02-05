@@ -57,14 +57,19 @@ const now = Date.now();
 
 if (doctorsCache.data && doctorsCache.expires > now) {
   console.log("📦 getUsers CACHE HIT");
-  
-return res.json(
-  buildDoctorsResponse(
+
+  const result = buildDoctorsResponse(
     doctorsCache.data,
     tgUser.mis_id
-  )
-);
+  );
+
+  if (!result) {
+    return res.status(403).send("Access denied");
+  }
+
+  return res.json(result);
 }
+
 
 
     
@@ -139,20 +144,14 @@ doctorsCache = {
       }));
 
 //    console.log("Doctors count:", doctors.length);
-let currentDoctorId = null;
+const result = buildDoctorsResponse(users, tgUser.mis_id);
 
-// если пользователь врач (даже если он директор тоже)
-if (isDoctor) {
-  currentDoctorId = currentMisId;
-}
-// если не врач, но директор
-else if (isDirector) {
-  currentDoctorId = doctors.length ? doctors[0].id : null;
+if (!result) {
+  return res.status(403).send("Access denied");
 }
 
-return res.json(
-  buildDoctorsResponse(users, tgUser.mis_id)
-);
+return res.json(result);
+
 
   } catch (err) {
     console.error("🔥 getDoctors fatal error:", err);
@@ -167,7 +166,7 @@ function buildDoctorsResponse(users, currentMisId) {
   );
 
   if (!currentMisUser) {
-    throw new Error("MIS user not found");
+    return null;
   }
 
   const roles = (currentMisUser.role || []).map(r => String(r));
@@ -176,7 +175,7 @@ function buildDoctorsResponse(users, currentMisId) {
   const isDirector = roles.includes("16353");
 
   if (!isDoctor && !isDirector) {
-    throw new Error("User is not doctor");
+    return null;
   }
 
   const doctors = users
