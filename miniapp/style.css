@@ -951,16 +951,19 @@ body {
 .visit-status-absolute.upcoming {
   background: #e6f8fb;
   color: #00a4c7;
+  border: 1px solid #00a4c7;
 }
 
 .visit-status-absolute.refused {
   background: #ffecec;
   color: #d9534f;
+  border: 1px solid #d9534f;
 }
 
 .visit-status-absolute.completed {
   background: #e8f5e9;
   color: #4caf50;
+  border: 1px solid #4caf50;
 }
 
 /* ============================= */
