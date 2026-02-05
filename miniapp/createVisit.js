@@ -296,9 +296,6 @@ function initCreateSlider(onChange) {
 
 async function loadCreateSchedule() {
 
-  fullSchedule = data.data || [];
-filterScheduleByDoctor();
-
   const doctorSelect = document.getElementById("createDoctorSelect");
   const container = document.getElementById("createSlotsContainer");
 
@@ -316,10 +313,7 @@ filterScheduleByDoctor();
   const response = await fetch("/api/mis/get-schedule", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-body: JSON.stringify({
-  doctor_id: doctorSelect.value,
-  date
-})
+    body: JSON.stringify({ date }) // doctor_id можно убрать вообще
   });
 
   const data = await response.json();
@@ -329,11 +323,13 @@ body: JSON.stringify({
     return;
   }
 
-  currentSchedule = data.data || [];
-  selectedSlots = [];
+  // 🔥 ВАЖНО: сначала сохраняем всё расписание дня
+  fullSchedule = data.data || [];
 
-  renderSlots();
+  // 🔥 потом фильтруем по врачу
+  filterScheduleByDoctor();
 }
+
 
 
 function renderSlots() {
