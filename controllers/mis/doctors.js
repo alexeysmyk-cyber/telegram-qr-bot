@@ -9,6 +9,15 @@ function loadDB() {
   return JSON.parse(fs.readFileSync(DB_FILE, 'utf8'));
 }
 
+// ===============================
+// CACHE getUsers (60 sec)
+// ===============================
+let doctorsCache = {
+  data: null,
+  expires: 0
+};
+
+
 exports.getDoctors = async (req, res) => {
   try {
 
@@ -40,6 +49,24 @@ exports.getDoctors = async (req, res) => {
 
 //    console.log("Telegram user MIS ID:", tgUser.mis_id);
 
+
+// ===============================
+// CHECK CACHE
+// ===============================
+const now = Date.now();
+
+if (doctorsCache.data && doctorsCache.expires > now) {
+  console.log("📦 getUsers CACHE HIT");
+  
+  return buildDoctorsResponse(
+    doctorsCache.data,
+    tgUser.mis_id
+  );
+}
+
+
+    
+
     // --- Запрос в МИС ---
     const body = qs.stringify({
       api_key: process.env.API_KEY
@@ -65,6 +92,15 @@ exports.getDoctors = async (req, res) => {
     }
 
     const users = result.data;
+
+    // ===============================
+// SAVE CACHE (60 sec)
+// ===============================
+doctorsCache = {
+  data: users,
+  expires: Date.now() + 60 * 1000
+};
+
 
 //    console.log("Users count from MIS:", users.length);
 
@@ -109,11 +145,9 @@ if (isDoctor) {
   currentDoctorId = doctors.length ? doctors[0].id : null;
 }
 
-return res.json({
-  isDirector,
-  currentDoctorId,
-  doctors
-});
+return res.json(
+  buildDoctorsResponse(users, tgUser.mis_id)
+);
 
   } catch (err) {
     console.error("🔥 getDoctors fatal error:", err);
@@ -121,3 +155,45 @@ return res.json({
   }
 };
 
+function buildDoctorsResponse(users, currentMisId) {
+
+  const currentMisUser = users.find(u =>
+    String(u.id).trim() === String(currentMisId).trim()
+  );
+
+  if (!currentMisUser) {
+    return res.status(403).send("MIS user not found");
+  }
+
+  const roles = (currentMisUser.role || []).map(r => String(r));
+
+  const isDoctor = roles.includes("16354");
+  const isDirector = roles.includes("16353");
+
+  if (!isDoctor && !isDirector) {
+    return res.status(403).send("User is not doctor");
+  }
+
+  const doctors = users
+    .filter(u => (u.role || []).includes("16354"))
+    .filter(u => !u.is_deleted)
+    .map(u => ({
+      id: u.id,
+      name: u.name,
+      avatar: u.avatar_small || u.avatar || null
+    }));
+
+  let currentDoctorId = null;
+
+  if (isDoctor) {
+    currentDoctorId = currentMisId;
+  } else if (isDirector) {
+    currentDoctorId = doctors.length ? doctors[0].id : null;
+  }
+
+  return {
+    isDirector,
+    currentDoctorId,
+    doctors
+  };
+}
