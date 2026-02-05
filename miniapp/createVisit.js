@@ -359,7 +359,7 @@ function renderSlots() {
     if (hideBusy && slot.is_busy) return;
     if (hidePast && slot.is_past) return;
 
-    let className = "slot";
+
 
  let className = "slot";
 
@@ -505,5 +505,3 @@ function filterScheduleByDoctor() {
   selectedSlots = [];
   renderSlots();
 }
-
-
