@@ -1,6 +1,11 @@
 import { renderCalendar } from "./calendar.js";
 import { openVisitView } from "./visitView.js";
 
+let selectedSlots = [];
+let currentSchedule = [];
+let selectedDate = null;
+let selectedDuration = 60;
+
 export async function openCreateVisit() {
 
   
@@ -10,7 +15,7 @@ export async function openCreateVisit() {
 const fab = document.getElementById("fabCreate");
 if (fab) fab.style.display = "none";
 
-  let selectedDuration = 60;
+
   let hidePast = false;
   let hideBusy = false;
 
@@ -168,18 +173,7 @@ overlay.appendChild(actionBtn);
   // КАЛЕНДАРЬ
   // ===============================
 
-  renderCalendar(
-    document.getElementById("createCalendar"),
-    (date) => {
-      console.log("Дата создания:", date);
-      // позже сюда подключим построение слотов
-    },
-    new Date()
-  );
-
-let selectedSlots = [];
-let currentSchedule = [];
-let selectedDate = new Date();
+ 
 
 renderCalendar(
   document.getElementById("createCalendar"),
