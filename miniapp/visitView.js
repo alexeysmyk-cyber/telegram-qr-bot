@@ -104,10 +104,9 @@ const isRefused = visit.status === "refused";
   overlay.innerHTML = `
     <div class="visit-container">
 
-     <div class="visit-status-absolute ${getStatusClass(visit)}">
+<div class="visit-status-absolute ${getStatusClass(visit)}">
   ${getPrettyStatus(visit)}
 </div>
-
       <div class="visit-title-center">
         Карточка визита
       </div>
@@ -327,7 +326,11 @@ function getPrettyStatus(v) {
 function getStatusClass(v) {
 
   if (v.moved_to) return "moved";
-  return v.status;
+  if (v.status === "refused") return "refused";
+  if (v.status === "completed") return "completed";
+  if (v.status === "upcoming") return "upcoming";
+
+  return "";
 }
 
 
