@@ -167,10 +167,11 @@ document.getElementById("toggleHidePast")
     renderSlots(); // ← перерисовка
   });
 
-  initCreateSlider((value) => {
-    selectedDuration = value;
-    updateFilterSummary();
-  });
+initCreateSlider((value) => {
+  selectedDuration = value;
+  updateFilterSummary();
+  filterScheduleByDoctor(); // 🔥 пересчёт слотов
+});
 
   updateFilterSummary();
 
@@ -517,18 +518,61 @@ function filterScheduleByDoctor() {
   const dd = String(selectedDate.getDate()).padStart(2, "0");
   const selectedDateISO = `${yyyy}-${mm}-${dd}`;
 
-  currentSchedule = fullSchedule.filter(s =>
-    String(s.user_id) === String(selectedDoctorId) &&
-    s._date === selectedDateISO
-  );
+currentSchedule = fullSchedule.filter(s =>
+  String(s.user_id) === String(selectedDoctorId) &&
+  s._date === selectedDateISO
+);
 
-  currentSchedule.sort((a, b) =>
-    new Date(a.time_start) - new Date(b.time_start)
-  );
+// сортировка
+currentSchedule.sort((a, b) =>
+  new Date(a.time_start) - new Date(b.time_start)
+);
 
-  selectedSlots = [];
-  renderSlots();
+// 🔥 ГРУППИРОВКА ПО ДЛИТЕЛЬНОСТИ
+currentSchedule = buildGroupedSchedule(currentSchedule);
+
+selectedSlots = [];
+renderSlots();
 }
+
+function buildGroupedSchedule(baseSchedule) {
+
+  if (!baseSchedule.length) return [];
+
+  const step = 15; // шаг от MIS
+  const groupSize = selectedDuration / step; // 2,4,6,8
+
+  const grouped = [];
+
+  for (let i = 0; i < baseSchedule.length; i += groupSize) {
+
+    const chunk = baseSchedule.slice(i, i + groupSize);
+
+    if (chunk.length < groupSize) break;
+
+    const first = chunk[0];
+    const last = chunk[chunk.length - 1];
+
+    // 🔴 если любой шаг занят → весь слот занят
+    const isBusy = chunk.some(s => s.is_busy);
+
+    // ⚫ если начало в прошлом → весь слот прошлый
+    const isPast = first.is_past;
+
+    grouped.push({
+      user_id: first.user_id,
+      time_start: first.time_start,
+      time_end: last.time_end,
+      time: `${first.time_start_short} - ${last.time_end_short}`,
+      is_busy: isBusy,
+      is_past: isPast
+    });
+  }
+
+  return grouped;
+}
+
+
 
 function openVisitFromSlot(timeStart) {
 
