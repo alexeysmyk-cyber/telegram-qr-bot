@@ -96,9 +96,11 @@ async function loadVisit(id, overlay) {
 
 function renderVisit(visit, overlay) {
 
-  const isCompleted = visit.status === "completed";
+const isCompleted = visit.status === "completed";
 const isMoved = !!visit.moved_to;
+const isRefused = visit.status === "refused";
 
+  
   overlay.innerHTML = `
     <div class="visit-container">
 
@@ -123,14 +125,13 @@ const isMoved = !!visit.moved_to;
 
       </div>
 
-     <div class="visit-actions">
-  ${(!isCompleted && !isMoved) ? `
+<div class="visit-actions">
+  ${(!isCompleted && !isMoved && !isRefused) ? `
     <button class="primary-btn" id="moveVisitBtn">Перенести</button>
     <button class="danger-btn" id="cancelVisitBtn">Отменить</button>
   ` : ``}
   <button class="secondary-btn" id="closeBottomBtn">Закрыть</button>
 </div>
-
     </div>
   `;
 
