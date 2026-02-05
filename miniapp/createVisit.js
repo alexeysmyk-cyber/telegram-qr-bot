@@ -210,9 +210,10 @@ container.innerHTML = `
     <div class="doctor-select-wrapper">
       <select id="createDoctorSelect">
         ${allowedDoctors.map(d => `
-          <option value="${d.id}">
-            ${d.name}
-          </option>
+<option value="${d.id}"
+  ${String(d.id) === String(currentDoctorId) ? "selected" : ""}>
+  ${d.name}
+</option>
         `).join("")}
       </select>
     </div>
