@@ -1537,8 +1537,8 @@ body {
   padding: 6px 16px 16px 16px;
 }
 .visit-status-absolute.moved {
-  background: #fff8e1;
-  color: #f59e0b;
+  background: #f59e0b;
+  color: #fff;
 }
 
 .slot-free {
