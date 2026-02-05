@@ -258,7 +258,7 @@ const body = {
   api_key: process.env.API_KEY,
   date_from: formattedFrom + " 00:01",
   date_to: formattedTo + " 23:59",
-  slot: 15,
+  step: 15,
   is_past: true,
   is_busy: true
 };
