@@ -1568,3 +1568,39 @@ body {
 .slot-busy {
   background: red !important;
 }
+/* Свободный */
+.slot-free {
+  background: #e6f8fb;
+  border: 1px solid #bfeaf4;
+  border-left: 4px solid #00a4c7;
+}
+
+/* Занятый (будущее) */
+.slot-busy {
+  background: #ffecec;
+  border: 1px solid #f5bcbc;
+  border-left: 4px solid #d9534f;
+}
+
+/* Прошлый свободный */
+.slot-past-free {
+  background: #f1f1f1;
+  color: #999;
+  border-left: 4px solid #ccc;
+  pointer-events: none;
+}
+
+/* Прошлый занятый */
+.slot-past-busy {
+  background: #f5f5f5;
+  border: 1px solid #e0e0e0;
+  border-left: 4px solid #d9534f;
+}
+
+/* Подпись */
+.slot-label {
+  font-size: 11px;
+  margin-top: 4px;
+  font-weight: 500;
+}
+
