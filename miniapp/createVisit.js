@@ -446,4 +446,9 @@ function renderSelection() {
   });
 }
 
+function updateCreateButton() {
+  const btn = document.getElementById("createNextBtn");
+  if (!btn) return;
 
+  btn.disabled = selectedSlots.length === 0;
+}
