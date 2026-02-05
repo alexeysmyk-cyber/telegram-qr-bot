@@ -95,6 +95,16 @@ if (fab) fab.style.display = "none";
   `;
 
   document.body.appendChild(overlay);
+  
+const actionBtn = document.createElement("div");
+actionBtn.className = "fixed-bottom";
+actionBtn.innerHTML = `
+  <button class="primary-btn" id="createNextBtn" disabled>
+    Выбрать пациента
+  </button>
+`;
+overlay.appendChild(actionBtn);
+  
 
   document.getElementById("closeCreateBtn")
   .addEventListener("click", () => {
@@ -166,6 +176,28 @@ if (fab) fab.style.display = "none";
     },
     new Date()
   );
+
+let selectedSlots = [];
+let currentSchedule = [];
+let selectedDate = new Date();
+
+renderCalendar(
+  document.getElementById("createCalendar"),
+  (date) => {
+    selectedDate = new Date(date);
+    loadCreateSchedule();
+  },
+  new Date()
+);
+
+// первая загрузка
+loadCreateSchedule();
+
+
+
+
+
+  
 }
 
 
@@ -258,3 +290,160 @@ function initCreateSlider(onChange) {
   activeTrack.style.width =
     (defaultIndex / (values.length - 1)) * 100 + "%";
 }
+
+async function loadCreateSchedule() {
+
+  const doctorSelect = document.getElementById("createDoctorSelect");
+  const container = document.getElementById("createSlotsContainer");
+
+  if (!doctorSelect) return;
+
+  container.innerHTML = `
+    <div class="loader">
+      <div class="spinner"></div>
+      <div>Загрузка слотов...</div>
+    </div>
+  `;
+
+  const date = formatDate(selectedDate);
+
+  const response = await fetch("/api/mis/get-schedule", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      doctor_id: doctorSelect.value,
+      date,
+      duration: selectedDuration
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.error !== 0) {
+    container.innerHTML = "Ошибка загрузки расписания";
+    return;
+  }
+
+  currentSchedule = data.data || [];
+  selectedSlots = [];
+
+  renderSlots();
+}
+
+
+function renderSlots() {
+
+  const container = document.getElementById("createSlotsContainer");
+
+  if (!currentSchedule.length) {
+    container.innerHTML = `
+      <div class="card empty-state">
+        Нет доступных слотов
+      </div>
+    `;
+    return;
+  }
+
+  let html = "";
+
+  currentSchedule.forEach(slot => {
+
+    // по умолчанию показываем только свободные
+    if (slot.is_busy) return;
+
+    let className = "slot slot-free";
+
+    if (slot.is_past) {
+      className = "slot slot-past";
+    }
+
+    html += `
+      <div class="${className}"
+           data-id="${slot.schedule_id}"
+           data-start="${slot.time_start}"
+           data-end="${slot.time_end}">
+        <div class="time">
+          ${slot.time}
+        </div>
+      </div>
+    `;
+  });
+
+  container.innerHTML = html;
+
+  attachSlotSelection();
+}
+
+function attachSlotSelection() {
+
+  document.querySelectorAll("#createSlotsContainer .slot")
+    .forEach(slot => {
+
+      slot.addEventListener("click", () => {
+
+        if (slot.classList.contains("slot-past")) return;
+
+        const id = slot.dataset.id;
+
+        if (slot.classList.contains("selected")) {
+          removeSlot(id);
+        } else {
+          addSlot(id);
+        }
+
+        updateCreateButton();
+      });
+
+    });
+}
+function addSlot(id) {
+
+  const index = currentSchedule.findIndex(s =>
+    String(s.schedule_id) === String(id)
+  );
+
+  if (selectedSlots.length === 0) {
+    selectedSlots.push(index);
+  } else {
+    const min = Math.min(...selectedSlots);
+    const max = Math.max(...selectedSlots);
+
+    if (index === min - 1 || index === max + 1) {
+      selectedSlots.push(index);
+    }
+  }
+
+  renderSelection();
+}
+
+function removeSlot(id) {
+
+  const index = currentSchedule.findIndex(s =>
+    String(s.schedule_id) === String(id)
+  );
+
+  const min = Math.min(...selectedSlots);
+  const max = Math.max(...selectedSlots);
+
+  if (index === min || index === max) {
+    selectedSlots = selectedSlots.filter(i => i !== index);
+  }
+
+  renderSelection();
+}
+
+function renderSelection() {
+
+  document.querySelectorAll("#createSlotsContainer .slot")
+    .forEach(slot => slot.classList.remove("selected"));
+
+  selectedSlots.forEach(i => {
+    const slot = currentSchedule[i];
+    const el = document.querySelector(
+      `[data-id="${slot.schedule_id}"]`
+    );
+    if (el) el.classList.add("selected");
+  });
+}
+
+
