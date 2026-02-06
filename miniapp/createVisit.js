@@ -574,16 +574,66 @@ function buildGroupedSchedule(baseSchedule) {
 
 
 
-function openVisitFromSlot(timeStart) {
+async function openVisitFromSlot(timeStart) {
 
   const slot = currentSchedule.find(s =>
     String(s.time_start) === String(timeStart)
   );
 
-  if (!slot) return;
+  if (!slot || !selectedDate) return;
 
-  console.log("Открываем визит:", slot);
+  const date = formatDate(selectedDate);
 
-  // позже сюда:
-  // openVisitView(slot.schedule_id или appointment_id)
+  try {
+
+    const response = await fetch("/api/mis/appointments", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ date })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error !== 0) {
+      alert("Ошибка загрузки визитов");
+      return;
+    }
+
+    const visits = data.data || [];
+
+    const slotStart = toDate(slot.time_start);
+    const slotEnd = toDate(slot.time_end);
+
+    const matched = visits.filter(v => {
+
+      const visitStart = toDate(v.time_start);
+      const visitEnd = toDate(v.time_end);
+
+      return visitStart >= slotStart && visitEnd <= slotEnd;
+    });
+
+    if (matched.length === 0) {
+      alert("Визит не найден");
+      return;
+    }
+
+    if (matched.length === 1) {
+      openVisitViewByData(matched[0]);
+      return;
+    }
+
+    openVisitSelectionOverlay(matched);
+
+  } catch (err) {
+    alert("Ошибка соединения");
+  }
+}
+function toDate(dateString) {
+
+  const [datePart, timePart] = dateString.split(" ");
+  const [dd, mm, yyyy] = datePart.split(".");
+
+  const [hh, min] = timePart.split(":");
+
+  return new Date(yyyy, mm - 1, dd, hh, min);
 }
