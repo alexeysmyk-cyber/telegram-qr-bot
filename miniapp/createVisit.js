@@ -15,6 +15,11 @@ let hideBusy = false;
 
 export async function openCreateVisit() {
 
+   // 🔥 СБРОС СОСТОЯНИЯ
+  selectedSlots = [];
+  selectedDuration = 60;
+  hidePast = false;
+  hideBusy = false;
   
   if (document.getElementById("createOverlay")) return;
 
