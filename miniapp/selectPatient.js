@@ -1,5 +1,6 @@
 import { openConfirmAppointment } from "./confirmAppointment.js";
-import { selectedSlots } from "./createVisit.js";
+
+import { getSelectedSlotObject } from "./createVisit.js";
 
 let searchTimeout = null;
 
@@ -236,14 +237,15 @@ container.querySelectorAll(".patient-card")
         String(p.patient_id) === String(id)
       );
 
-      // закрываем окно выбора пациента
       document.querySelector(".patient-overlay")?.remove();
 
-      // открываем подтверждение записи
-      openConfirmAppointment(patient, selectedSlots[0]);
+      const slot = getSelectedSlotObject();
+
+      openConfirmAppointment(patient, slot);
 
     });
 
   });
+
 
 }
