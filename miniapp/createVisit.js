@@ -607,13 +607,16 @@ async function openVisitFromSlot(timeStart) {
     
 const matched = visits.filter(v => {
 
-  const visitStart = toDate(v.time_start).getTime();
-  const visitEnd = toDate(v.time_end).getTime();
+  if (String(v.doctor_id) !== String(slot.user_id)) {
+    return false;
+  }
 
-  const slotStartTime = slotStart.getTime();
-  const slotEndTime = slotEnd.getTime();
+  const visitStart = toTimestamp(v.time_start);
+  const visitEnd = toTimestamp(v.time_end);
 
-  // Проверка пересечения интервалов
+  const slotStartTime = toTimestamp(slot.time_start);
+  const slotEndTime = toTimestamp(slot.time_end);
+
   return (
     visitStart < slotEndTime &&
     visitEnd > slotStartTime
