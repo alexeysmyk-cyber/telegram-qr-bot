@@ -1694,6 +1694,9 @@ body {
 /* ============================= */
 /* PATIENT SELECT SHEET */
 /* ============================= */
+/* ============================= */
+/* PATIENT SELECT SHEET */
+/* ============================= */
 
 .patient-overlay {
   position: fixed;
@@ -1706,7 +1709,6 @@ body {
   z-index: 4000;
 }
 
-/* Само окно */
 .patient-container {
   background: #f4f7fb;
   width: 100%;
@@ -1715,18 +1717,16 @@ body {
   border-radius: 20px 20px 0 0;
   display: flex;
   flex-direction: column;
-  animation: slideUpSheet 0.25s ease;
-  box-sizing: border-box;
+  animation: patientSlideUp 0.25s ease;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
-/* Анимация */
-@keyframes slideUpSheet {
+@keyframes patientSlideUp {
   from { transform: translateY(100%); }
   to { transform: translateY(0); }
 }
 
-/* HEADER */
 .patient-header {
   padding: 16px;
   display: flex;
@@ -1746,7 +1746,6 @@ body {
   color: #00a4c7;
 }
 
-/* SEARCH */
 .patient-search-block {
   padding: 16px;
 }
@@ -1766,14 +1765,12 @@ body {
   box-shadow: 0 0 0 2px rgba(0,164,199,0.15);
 }
 
-/* RESULTS */
 .patient-results {
   flex: 1;
   overflow-y: auto;
-  padding: 0 16px 90px 16px; /* запас под кнопку */
+  padding: 0 16px 90px 16px;
 }
 
-/* Карточка */
 .patient-card {
   background: white;
   padding: 14px;
@@ -1798,14 +1795,8 @@ body {
   color: #7a8a9a;
 }
 
-/* Нижняя кнопка */
 .patient-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
   padding: 16px;
-  background: #f4f7fb;
   border-top: 1px solid #e6e6e6;
+  background: #f4f7fb;
 }
-
