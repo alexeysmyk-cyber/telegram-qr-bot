@@ -613,6 +613,7 @@ const matched = visits.filter(v => {
   const slotStartTime = slotStart.getTime();
   const slotEndTime = slotEnd.getTime();
 
+  // Проверка пересечения интервалов
   return (
     visitStart < slotEndTime &&
     visitEnd > slotStartTime
