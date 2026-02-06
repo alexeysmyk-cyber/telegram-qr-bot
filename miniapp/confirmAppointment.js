@@ -73,7 +73,10 @@ export function openConfirmAppointment(patient, slot) {
   <span>Кабинет:</span>
   <span>${slot.room || "Не указан"}</span>
 </div>
-
+<div class="visit-row right" id="totalPriceRow" style="display:none;">
+  <span>Стоимость визита:</span>
+  <span id="totalPriceValue">—</span>
+</div>
       </div>
 
       <!-- УСЛУГИ -->
@@ -275,7 +278,7 @@ container.querySelectorAll(".service-item-select")
         });
         el.classList.add("selected");
       }
-
+updateTotalPrice();
     });
 
   });
@@ -318,9 +321,31 @@ function renderSelectedServices() {
         const id = el.dataset.id;
         selectedServices = selectedServices.filter(x => x.id != id);
         renderSelectedServices();
+        updateTotalPrice();
+
 
       });
 
     });
+  updateTotalPrice();   // ← И В САМЫЙ КОНЕЦ ФУНКЦИИ
 }
 
+function updateTotalPrice() {
+
+  const row = document.getElementById("totalPriceRow");
+  const value = document.getElementById("totalPriceValue");
+
+  if (!row || !value) return;
+
+  if (!selectedServices.length) {
+    row.style.display = "none";
+    return;
+  }
+
+  const total = selectedServices.reduce((sum, s) => {
+    return sum + Number(s.price || 0);
+  }, 0);
+
+  value.innerText = total + " ₽";
+  row.style.display = "flex";
+}
