@@ -239,16 +239,42 @@ async function loadServices(doctorId) {
       </div>
     `).join("");
 
-    container.querySelectorAll(".service-item-select")
-      .forEach(el => {
+container.querySelectorAll(".service-item-select")
+  .forEach(el => {
 
- el.addEventListener("click", 
+    el.addEventListener("click", () => {
 
-      });
+      const id = el.dataset.id;
+      const name = el.children[0].innerText;
+      const price = el.children[1].innerText.replace(" ₽", "");
 
-  } catch {
-    container.innerHTML = "Ошибка соединения";
-  }
+      const existing = selectedServices.find(s => s.id == id);
+
+      if (existing) {
+        selectedServices = selectedServices.filter(s => s.id != id);
+        el.classList.remove("selected");
+      } else {
+        selectedServices.push({ id, name, price });
+        el.classList.add("selected");
+      }
+
+    });
+
+  });
+
+  } catch (err) {
+  console.error("loadServices error:", err);
+  container.innerHTML = "Ошибка соединения";
+}
+// подсветка уже выбранных
+selectedServices.forEach(s => {
+  const el = container.querySelector(`[data-id="${s.id}"]`);
+  if (el) el.classList.add("selected");
+});
+
+
+
+
 }
 function renderSelectedServices() {
 
