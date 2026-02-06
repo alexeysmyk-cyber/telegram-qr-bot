@@ -592,7 +592,7 @@ function buildGroupedSchedule(baseSchedule) {
 
     grouped.push({
   user_id: first.user_id,
-  doctor_name: first.name,
+  doctor_name: first.user,
   room: first.room || null,
 
   time_start: first.time_start,
