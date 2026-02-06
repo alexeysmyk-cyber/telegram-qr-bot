@@ -1,6 +1,7 @@
 import { renderCalendar } from "./calendar.js";
 import { openVisitView } from "./visitView.js";
 import { renderVisit } from "./visitView.js";
+import { openSelectPatient } from "./selectPatient.js";
 
 let selectedSlots = [];
 let currentSchedule = [];
@@ -124,7 +125,19 @@ actionBtn.innerHTML = `
 `;
 overlay.appendChild(actionBtn);
   
+document.getElementById("createNextBtn")
+  .addEventListener("click", () => {
 
+    if (selectedSlots.length === 0) return;
+
+    openSelectPatient((patient) => {
+
+      console.log("Выбран пациент:", patient);
+
+      // здесь позже будем сохранять пациента
+    });
+
+  });
   document.getElementById("closeCreateBtn")
   .addEventListener("click", () => {
 
@@ -503,6 +516,7 @@ function renderSelection() {
 
 function updateCreateButton() {
   const btn = document.getElementById("createNextBtn");
+   
   if (!btn) return;
 
   btn.disabled = selectedSlots.length === 0;
