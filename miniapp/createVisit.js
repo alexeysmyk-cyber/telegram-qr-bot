@@ -636,14 +636,15 @@ const matched = visits.filter(v => {
     alert("Ошибка соединения");
   }
 }
+
 function toDate(dateString) {
 
   const [datePart, timePartRaw] = dateString.split(" ");
   const [dd, mm, yyyy] = datePart.split(".");
 
-  const timePart = timePartRaw.split(":");
-  const hh = Number(timePart[0]);
-  const min = Number(timePart[1]);
+  const timeParts = timePartRaw.split(":");
+  const hh = Number(timeParts[0]);
+  const min = Number(timeParts[1]);
 
   return new Date(yyyy, mm - 1, dd, hh, min);
 }
