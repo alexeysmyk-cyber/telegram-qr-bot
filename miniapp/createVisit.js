@@ -109,6 +109,11 @@ if (fab) fab.style.display = "none";
   `;
 
   document.body.appendChild(overlay);
+
+
+   // Сброс чекбоксов в UI
+document.getElementById("toggleHidePast").checked = false;
+document.getElementById("toggleHideBusy").checked = false;
   
 const actionBtn = document.createElement("div");
 actionBtn.className = "fixed-bottom";
@@ -302,6 +307,8 @@ function initCreateSlider(onChange) {
   const defaultIndex = values.indexOf(60);
   activeTrack.style.width =
     (defaultIndex / (values.length - 1)) * 100 + "%";
+
+   if (onChange) onChange(60);
 }
 
 async function loadCreateSchedule() {
