@@ -12,6 +12,10 @@ let selectedDuration = 60;
 let hidePast = false;    
 let hideBusy = false;     
 
+export function getSelectedSlotObject() {
+  if (!selectedSlots.length) return null;
+  return currentSchedule[selectedSlots[0]];
+}
 
 
 export async function openCreateVisit() {
