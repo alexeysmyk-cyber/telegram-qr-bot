@@ -598,7 +598,7 @@ function buildGroupedSchedule(baseSchedule) {
   time_start: first.time_start,
   time_end: last.time_end,
 
-  time: `${getTime(first.time_start)} – ${getTime(last.time_end)}`, // 🔥 вернуть!
+  time: `${extractShort(first.time_start)} – ${extractShort(last.time_end)}`, // 🔥 вернуть!
 
   is_busy: isBusy,
   is_past: isPast
