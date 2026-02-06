@@ -31,6 +31,24 @@ html, body {
   overscroll-behavior: none;
 }
 
+.service-item-select {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px;
+  border-radius: 12px;
+  margin-bottom: 8px;
+  background: white;
+  border: 1px solid #e6f2f6;
+  cursor: pointer;
+  transition: 0.2s ease;
+}
+
+.service-item-select.selected {
+  background: #e6f8fb;
+  border: 1px solid #00a4c7;
+}
+
+
 body {
   display: flex;
   flex-direction: column;
