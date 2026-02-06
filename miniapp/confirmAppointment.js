@@ -59,18 +59,18 @@ export function openConfirmAppointment(patient, slot) {
 
         <div class="visit-row right">
           <span>Время:</span>
-          <span>${getTime(slot.time_start)} – ${getTime(slot.time_end)}</span>
+          <span>${formatTimeRange(slot.time_start, slot.time_end)}</span>
         </div>
 
         <div class="visit-row right">
-          <span>Врач:</span>
-          <span>${slot.doctor}</span>
-        </div>
+  <span>Врач:</span>
+  <span>${slot.doctor || "Не указан"}</span>
+</div>
 
-        <div class="visit-row right">
-          <span>Кабинет:</span>
-          <span>${slot.room || "—"}</span>
-        </div>
+<div class="visit-row right">
+  <span>Кабинет:</span>
+  <span>${slot.room || "Не указан"}</span>
+</div>
 
       </div>
 
@@ -127,13 +127,36 @@ function getTime(str) {
 }
 
 function formatDate(str) {
-  const [d, m, y] = str.split(" ")[0].split(".");
-  const date = new Date(y, m - 1, d);
+  let date;
+
+  if (str.includes(".")) {
+    const [d, m, y] = str.split(" ")[0].split(".");
+    date = new Date(y, m - 1, d);
+  } else {
+    date = new Date(str);
+  }
 
   return date.toLocaleDateString("ru-RU", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric"
+  });
+}
+function formatTimeRange(start, end) {
+  return `${extractTime(start)} – ${extractTime(end)}`;
+}
+
+function extractTime(str) {
+  if (!str) return "--:--";
+
+  if (str.includes(".")) {
+    return str.split(" ")[1];
+  }
+
+  const d = new Date(str);
+  return d.toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit"
   });
 }
