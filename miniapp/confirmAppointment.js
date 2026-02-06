@@ -82,6 +82,7 @@ export function openConfirmAppointment(patient, slot) {
           Добавить услугу
         </button>
       </div>
+      <div id="selectedServicesBlock" style="margin-top:16px;"></div>
 
       <!-- КНОПКА ПОДТВЕРЖДЕНИЯ -->
       <div class="visit-actions" style="margin-top:30px;">
@@ -103,13 +104,21 @@ document.getElementById("addServiceBtn")
     openSelectServices(slot.user_id);
   });
 
-  document.getElementById("confirmCreateBtn")
-    .addEventListener("click", () => {
-      console.log("Создать запись", {
-        patient_id: patient.patient_id,
-        slot
-      });
+document.getElementById("confirmCreateBtn")
+  .addEventListener("click", () => {
+
+    const servicesIds = selectedServices.map(s => s.id);
+
+    console.log("Создать запись", {
+      patient_id: patient.patient_id,
+      doctor_id: slot.user_id,
+      time_start: slot.time_start,
+      time_end: slot.time_end,
+      services: servicesIds
     });
+
+  });
+
 
 }
 
@@ -233,19 +242,7 @@ async function loadServices(doctorId) {
     container.querySelectorAll(".service-item-select")
       .forEach(el => {
 
-        el.addEventListener("click", () => {
-
-          const id = el.dataset.id;
-
-          if (selectedServices.includes(id)) {
-            selectedServices = selectedServices.filter(x => x !== id);
-            el.classList.remove("selected");
-          } else {
-            selectedServices.push(id);
-            el.classList.add("selected");
-          }
-
-        });
+ el.addEventListener("click", 
 
       });
 
@@ -262,9 +259,9 @@ function renderSelectedServices() {
     return;
   }
 
-  container.innerHTML = selectedServices.map(id => `
-    <div class="selected-service" data-id="${id}">
-      Услуга #${id}
+  container.innerHTML = selectedServices.map(s => `
+    <div class="selected-service" data-id="${s.id}">
+      ${s.name} — ${s.price} ₽
     </div>
   `).join("");
 
@@ -272,10 +269,13 @@ function renderSelectedServices() {
     .forEach(el => {
 
       el.addEventListener("click", () => {
+
         const id = el.dataset.id;
-        selectedServices = selectedServices.filter(x => x !== id);
+        selectedServices = selectedServices.filter(x => x.id != id);
         renderSelectedServices();
+
       });
 
     });
 }
+
