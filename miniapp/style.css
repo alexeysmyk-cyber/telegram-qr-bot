@@ -1636,16 +1636,24 @@ body {
 
 /* само окно */
 .patient-container {
-  background: #fff;
-  width: 100%;
-  max-width: 600px;
-  height: 85%;
-  border-radius: 20px 20px 0 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
+  padding: 0 16px; /* общий внутренний отступ */
+  box-sizing: border-box;
+}
 
-  padding: 0 16px;   /* 🔥 ВОТ ЭТО ВАЖНО */
+.patient-search-block {
+  margin-top: 16px;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+#patientSearchInput {
+  width: 100%;
+  max-width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #e5e7eb;
+  font-size: 16px;
   box-sizing: border-box;
 }
 
