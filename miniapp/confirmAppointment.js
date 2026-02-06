@@ -1,3 +1,5 @@
+let selectedServices = [];
+
 export function openConfirmAppointment(patient, slot) {
 
   if (!slot) {
@@ -64,7 +66,7 @@ export function openConfirmAppointment(patient, slot) {
 
         <div class="visit-row right">
   <span>Врач:</span>
-  <span>${slot.doctor || "Не указан"}</span>
+  <span>${slot.doctor_name || "Не указан"}</span>
 </div>
 
 <div class="visit-row right">
@@ -96,10 +98,10 @@ export function openConfirmAppointment(patient, slot) {
   document.getElementById("closeConfirm")
     .addEventListener("click", () => overlay.remove());
 
-  document.getElementById("addServiceBtn")
-    .addEventListener("click", () => {
-      console.log("Открыть выбор услуг");
-    });
+document.getElementById("addServiceBtn")
+  .addEventListener("click", () => {
+    openSelectServices(slot.user_id);
+  });
 
   document.getElementById("confirmCreateBtn")
     .addEventListener("click", () => {
@@ -127,22 +129,21 @@ function getTime(str) {
 }
 
 function formatDate(str) {
-  let date;
+  const [d, m, y] = str.split(" ")[0].split(".");
+  const date = new Date(y, m - 1, d);
 
-  if (str.includes(".")) {
-    const [d, m, y] = str.split(" ")[0].split(".");
-    date = new Date(y, m - 1, d);
-  } else {
-    date = new Date(str);
-  }
-
-  return date.toLocaleDateString("ru-RU", {
+  const formatted = date.toLocaleDateString("ru-RU", {
     weekday: "long",
     day: "numeric",
     month: "long",
     year: "numeric"
   });
+
+  // делаем первую букву заглавной
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
 }
+
+
 function formatTimeRange(start, end) {
   return `${extractTime(start)} – ${extractTime(end)}`;
 }
@@ -159,4 +160,122 @@ function extractTime(str) {
     hour: "2-digit",
     minute: "2-digit"
   });
+}
+async function openSelectServices(doctorId) {
+
+  const overlay = document.createElement("div");
+  overlay.className = "services-overlay";
+
+  overlay.innerHTML = `
+    <div class="services-sheet">
+
+      <div class="services-header">
+        <div class="services-title">Выбор услуг</div>
+        <div class="services-close" id="closeServices">✕</div>
+      </div>
+
+      <div id="servicesList" class="services-list">
+        <div class="loader">
+          <div class="spinner"></div>
+        </div>
+      </div>
+
+      <div class="services-bottom">
+        <button class="primary-btn" id="confirmServicesBtn">
+          Добавить
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  document.getElementById("closeServices")
+    .addEventListener("click", () => overlay.remove());
+
+  await loadServices(doctorId);
+
+  document.getElementById("confirmServicesBtn")
+    .addEventListener("click", () => {
+      renderSelectedServices();
+      overlay.remove();
+    });
+}
+async function loadServices(doctorId) {
+
+  const container = document.getElementById("servicesList");
+
+  try {
+
+    const response = await fetch("/api/mis/get-services", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ user_id: doctorId })
+    });
+
+    const data = await response.json();
+
+    if (!response.ok || data.error !== 0) {
+      container.innerHTML = "Ошибка загрузки услуг";
+      return;
+    }
+
+    const services = data.data || [];
+
+    container.innerHTML = services.map(s => `
+      <div class="service-item-select" data-id="${s.id}">
+        <div>${s.name}</div>
+        <div>${s.price} ₽</div>
+      </div>
+    `).join("");
+
+    container.querySelectorAll(".service-item-select")
+      .forEach(el => {
+
+        el.addEventListener("click", () => {
+
+          const id = el.dataset.id;
+
+          if (selectedServices.includes(id)) {
+            selectedServices = selectedServices.filter(x => x !== id);
+            el.classList.remove("selected");
+          } else {
+            selectedServices.push(id);
+            el.classList.add("selected");
+          }
+
+        });
+
+      });
+
+  } catch {
+    container.innerHTML = "Ошибка соединения";
+  }
+}
+function renderSelectedServices() {
+
+  const container = document.getElementById("selectedServicesBlock");
+
+  if (!selectedServices.length) {
+    container.innerHTML = "";
+    return;
+  }
+
+  container.innerHTML = selectedServices.map(id => `
+    <div class="selected-service" data-id="${id}">
+      Услуга #${id}
+    </div>
+  `).join("");
+
+  container.querySelectorAll(".selected-service")
+    .forEach(el => {
+
+      el.addEventListener("click", () => {
+        const id = el.dataset.id;
+        selectedServices = selectedServices.filter(x => x !== id);
+        renderSelectedServices();
+      });
+
+    });
 }
