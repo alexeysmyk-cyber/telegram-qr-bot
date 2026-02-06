@@ -370,7 +370,7 @@ function normalizePhone(phone) {
   return digits;
 }
 
-
+router.post("/get-services", misController.getServices);
 
 module.exports = router;
 
