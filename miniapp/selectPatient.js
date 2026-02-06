@@ -162,14 +162,20 @@ async function searchPatients(params, onSelect, retry = false) {
       return;
     }
 
-    const data = JSON.parse(text);
+const data = JSON.parse(text);
 
-    if (data.error !== 0) {
-      resultsContainer.innerHTML = "Ошибка поиска";
-      return;
-    }
+if (data.error !== 0) {
+  resultsContainer.innerHTML = "Ошибка поиска";
+  return;
+}
 
-    renderResults(data.data || [], onSelect);
+let patients = data.data || [];
+
+if (!Array.isArray(patients)) {
+  patients = [patients];
+}
+
+renderResults(patients, onSelect);
 
   } catch (err) {
 
