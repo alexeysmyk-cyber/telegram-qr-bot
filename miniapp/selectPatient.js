@@ -3,33 +3,29 @@ let lastQuery = "";
 
 export function openSelectPatient(onSelect) {
 
-  if (document.getElementById("patientOverlay")) return;
-
   const overlay = document.createElement("div");
-  overlay.id = "patientOverlay";
-  overlay.className = "visit-overlay patient-overlay";
+  overlay.className = "patient-overlay";
 
   overlay.innerHTML = `
-    <div class="visit-container patient-container">
+    <div class="patient-container">
 
-      <div class="create-header">
-        <div class="create-title">Выбор пациента</div>
-        <div class="create-close" id="closePatientBtn">←</div>
+      <div class="patient-header">
+        <div class="patient-title">Выбор пациента</div>
+        <div class="patient-close" id="closePatient">✕</div>
       </div>
 
-      <div class="card">
+      <div class="patient-search-block">
         <input 
           type="text"
           id="patientSearchInput"
-          placeholder="Фамилия или телефон"
-          class="patient-search-input"
+          placeholder="Фамилия или номер телефона"
         />
       </div>
 
-      <div class="patient-results" id="patientResults"></div>
+      <div id="patientResults" class="patient-results"></div>
 
-      <div class="fixed-bottom">
-        <button class="secondary-btn" id="newPatientBtn">
+      <div class="patient-bottom">
+        <button class="primary-btn" id="addNewPatientBtn">
           Новый пациент
         </button>
       </div>
@@ -39,22 +35,11 @@ export function openSelectPatient(onSelect) {
 
   document.body.appendChild(overlay);
 
-  document.getElementById("closePatientBtn")
+  document
+    .getElementById("closePatient")
     .addEventListener("click", () => overlay.remove());
-
-  document.getElementById("newPatientBtn")
-    .addEventListener("click", () => {
-      alert("Тут будет создание нового пациента");
-    });
-
-  const input = document.getElementById("patientSearchInput");
-
-  input.addEventListener("input", (e) => {
-    const value = e.target.value.trim();
-
-    handleSearch(value, onSelect);
-  });
 }
+
 
 function handleSearch(value, onSelect) {
 
