@@ -1,8 +1,9 @@
-import { selectedSlots } from "./createVisit.js"; // откуда у тебя хранятся слоты
+export function openConfirmAppointment(patient, slot) {
 
-export function openConfirmAppointment(patient) {
-
-  const slot = selectedSlots[0]; // пока 1 слот
+  if (!slot) {
+    console.error("Slot не передан");
+    return;
+  }
 
   const overlay = document.createElement("div");
   overlay.className = "create-fullscreen";
