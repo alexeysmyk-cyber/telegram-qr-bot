@@ -649,3 +649,60 @@ function openVisitViewByData(visit) {
   renderVisit(visit, overlay); // ← используем уже существующий renderVisit
 }
 
+function openVisitSelectionOverlay(visits) {
+
+  const overlay = document.createElement("div");
+  overlay.className = "visit-overlay";
+
+  overlay.innerHTML = `
+    <div class="visit-container">
+      <div class="visit-title-center">
+        Выберите визит
+      </div>
+
+      <div id="visitSelectionList"></div>
+
+      <div class="visit-actions">
+        <button class="secondary-btn" id="closeSelectBtn">
+          Закрыть
+        </button>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(overlay);
+
+  const list = overlay.querySelector("#visitSelectionList");
+
+  visits.forEach(v => {
+
+    list.innerHTML += `
+      <div class="slot slot-active"
+           data-id="${v.id}">
+        <div class="slot-top">
+          <div class="time">
+            ${v.time_start.split(" ")[1]} – ${v.time_end.split(" ")[1]}
+          </div>
+        </div>
+        <div class="name">
+          ${v.patient_name}
+        </div>
+      </div>
+    `;
+  });
+
+  list.querySelectorAll(".slot").forEach(el => {
+    el.addEventListener("click", () => {
+
+      const id = el.dataset.id;
+      const visit = visits.find(v => v.id == id);
+
+      overlay.remove();
+      openVisitViewByData(visit);
+    });
+  });
+
+  overlay.querySelector("#closeSelectBtn")
+    .addEventListener("click", () => overlay.remove());
+}
+
