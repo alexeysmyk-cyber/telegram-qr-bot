@@ -642,14 +642,18 @@ const matched = visits.filter(v => {
 
 function toDate(dateString) {
 
-  const [datePart, timePartRaw] = dateString.split(" ");
-  const [dd, mm, yyyy] = datePart.split(".");
+  if (!dateString) return null;
 
-  const timeParts = timePartRaw.split(":");
-  const hh = Number(timeParts[0]);
-  const min = Number(timeParts[1]);
+  if (dateString.includes(".")) {
+    const [datePart, timePart] = dateString.split(" ");
+    const [dd, mm, yyyy] = datePart.split(".");
+    const [hh, min] = timePart.split(":");
 
-  return new Date(yyyy, mm - 1, dd, hh, min);
+    return new Date(Number(yyyy), Number(mm) - 1, Number(dd), Number(hh), Number(min));
+  }
+
+  // если ISO формат
+  return new Date(dateString);
 }
 
 function openVisitViewByData(visit) {
