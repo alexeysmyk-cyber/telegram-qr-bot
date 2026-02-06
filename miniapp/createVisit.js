@@ -591,13 +591,17 @@ function buildGroupedSchedule(baseSchedule) {
     const isPast = first.is_past;
 
     grouped.push({
-      user_id: first.user_id,
-  doctor: first.doctor_name || first.doctor || "Неизвестно",
-  room: first.room || "Не указан",
+  user_id: first.user_id,
+  doctor: first.name || first.doctor || "",
+  room: first.room || "",
   time_start: first.time_start,
   time_end: last.time_end,
+
+  // 🔥 красиво формируем диапазон
+  time: `${first.time_start_short} – ${last.time_end_short}`,
+
   is_busy: isBusy,
-  is_past: isPast
+  is_past: isPastisPast
     });
   }
 
@@ -754,4 +758,16 @@ function openVisitSelectionOverlay(visits) {
 
   overlay.querySelector("#closeSelectBtn")
     .addEventListener("click", () => overlay.remove());
+}
+function extractShort(str) {
+  if (!str) return "--:--";
+
+  if (str.includes(".")) {
+    return str.split(" ")[1];
+  }
+
+  return new Date(str).toLocaleTimeString("ru-RU", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 }
