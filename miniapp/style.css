@@ -1627,69 +1627,6 @@ body {
 
 
 
-/* анимация */
-@keyframes slideUp {
-  from { transform: translateY(100%); }
-  to { transform: translateY(0); }
-}
-
-/* header */
-.patient-header {
-  padding: 18px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  border-bottom: 1px solid #eee;
-}
-
-.patient-title {
-  font-size: 18px;
-}
-
-.patient-close {
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* поиск */
-.patient-search-block {
-  padding: 16px;
-}
-
-.patient-search-block input {
-  width: 100%;
-  padding: 12px 14px;
-  border-radius: 12px;
-  border: 1px solid #ddd;
-  font-size: 16px;
-}
-
-
-
-/* карточка пациента */
-.patient-card {
-  background: #f7f7f7;
-  padding: 14px;
-  border-radius: 14px;
-  margin-bottom: 10px;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.patient-card:hover {
-  background: #ececec;
-}
-
-.patient-name {
-  font-weight: 600;
-  margin-bottom: 4px;
-}
-
-.patient-birth {
-  font-size: 14px;
-  color: #777;
-}
 
 /* ============================= */
 /* PATIENT SELECT SHEET */
@@ -1799,4 +1736,7 @@ body {
   padding: 16px;
   border-top: 1px solid #e6e6e6;
   background: #f4f7fb;
+}
+.patient-container {
+  margin: 0 auto;
 }
