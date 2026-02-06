@@ -137,7 +137,26 @@ function getTime(str) {
   return str.split(" ")[1];
 }
 
-function formatDate(str
+function formatDate(str) {
+
+  if (!str) return "—";
+
+  // Приводим к ISO формату
+  const date = new Date(str.replace(" ", "T"));
+
+  if (isNaN(date)) return "—";
+
+  const formatted = date.toLocaleDateString("ru-RU", {
+    weekday: "long",
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  // Первая буква заглавная
+  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+}
+
 
 
 function formatTimeRange(start, end) {
