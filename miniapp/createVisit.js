@@ -604,15 +604,21 @@ async function openVisitFromSlot(timeStart) {
 
     const slotStart = toDate(slot.time_start);
     const slotEnd = toDate(slot.time_end);
+    
+const matched = visits.filter(v => {
 
-    const matched = visits.filter(v => {
+  const visitStart = toDate(v.time_start).getTime();
+  const visitEnd = toDate(v.time_end).getTime();
 
-      const visitStart = toDate(v.time_start);
-      const visitEnd = toDate(v.time_end);
+  const slotStartTime = slotStart.getTime();
+  const slotEndTime = slotEnd.getTime();
 
-      return visitStart >= slotStart && visitEnd <= slotEnd;
-    });
-
+  return (
+    visitStart < slotEndTime &&
+    visitEnd > slotStartTime
+  );
+});
+    
     if (matched.length === 0) {
       alert("Визит не найден");
       return;
@@ -631,10 +637,12 @@ async function openVisitFromSlot(timeStart) {
 }
 function toDate(dateString) {
 
-  const [datePart, timePart] = dateString.split(" ");
+  const [datePart, timePartRaw] = dateString.split(" ");
   const [dd, mm, yyyy] = datePart.split(".");
 
-  const [hh, min] = timePart.split(":");
+  const timePart = timePartRaw.split(":");
+  const hh = Number(timePart[0]);
+  const min = Number(timePart[1]);
 
   return new Date(yyyy, mm - 1, dd, hh, min);
 }
