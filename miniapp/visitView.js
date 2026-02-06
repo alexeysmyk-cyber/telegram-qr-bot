@@ -1,5 +1,5 @@
 import { openCancelModal } from "./cancelVisit.js";
-
+export { renderVisit };
 // ===============================
 // FULLSCREEN VISIT VIEW
 // ===============================
