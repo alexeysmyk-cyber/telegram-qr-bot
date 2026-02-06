@@ -4,41 +4,25 @@ let lastQuery = "";
 export function openSelectPatient(onSelect) {
 
   const overlay = document.createElement("div");
+  overlay.id = "patientOverlay";
   overlay.className = "patient-overlay";
 
-  overlay.innerHTML = `
-    <div class="patient-container">
-
-      <div class="patient-header">
-        <div class="patient-title">Выбор пациента</div>
-        <div class="patient-close" id="closePatient">✕</div>
-      </div>
-
-      <div class="patient-search-block">
-        <input 
-          type="text"
-          id="patientSearchInput"
-          placeholder="Фамилия или номер телефона"
-        />
-      </div>
-
-      <div id="patientResults" class="patient-results"></div>
-
-      <div class="patient-bottom">
-        <button class="primary-btn" id="addNewPatientBtn">
-          Новый пациент
-        </button>
-      </div>
-
-    </div>
-  `;
+  overlay.innerHTML = `...`;
 
   document.body.appendChild(overlay);
 
   document
     .getElementById("closePatient")
     .addEventListener("click", () => overlay.remove());
+
+  const input = document.getElementById("patientSearchInput");
+
+  input.addEventListener("input", (e) => {
+    const value = e.target.value.trim();
+    handleSearch(value, onSelect);
+  });
 }
+
 
 
 function handleSearch(value, onSelect) {
