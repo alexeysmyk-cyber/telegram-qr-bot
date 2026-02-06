@@ -238,12 +238,14 @@ async function loadServices(doctorId) {
 
     const services = data.data || [];
 
-    container.innerHTML = services.map(s => `
-      <div class="service-item-select" data-id="${s.id}">
-        <div>${s.name}</div>
-        <div>${s.price} ₽</div>
-      </div>
-    `).join("");
+container.innerHTML = services.map(s => `
+  <div class="service-item-select" 
+       data-id="${s.service_id}">
+    <div>${s.title}</div>
+    <div>${s.price} ₽</div>
+  </div>
+`).join("");
+
 
 container.querySelectorAll(".service-item-select")
   .forEach(el => {
@@ -251,22 +253,33 @@ container.querySelectorAll(".service-item-select")
     el.addEventListener("click", () => {
 
       const id = el.dataset.id;
-      const name = el.children[0].innerText;
-      const price = el.children[1].innerText.replace(" ₽", "");
 
-      const existing = selectedServices.find(s => s.id == id);
+      const service = services.find(
+        s => String(s.service_id) === String(id)
+      );
+
+      const existing = selectedServices.find(
+        s => String(s.id) === String(id)
+      );
 
       if (existing) {
-        selectedServices = selectedServices.filter(s => s.id != id);
+        selectedServices = selectedServices.filter(
+          s => String(s.id) !== String(id)
+        );
         el.classList.remove("selected");
       } else {
-        selectedServices.push({ id, name, price });
+        selectedServices.push({
+          id: service.service_id,
+          name: service.title,
+          price: service.price
+        });
         el.classList.add("selected");
       }
 
     });
 
   });
+
 
   } catch (err) {
   console.error("loadServices error:", err);
