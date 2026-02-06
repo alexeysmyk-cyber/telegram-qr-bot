@@ -592,16 +592,16 @@ function buildGroupedSchedule(baseSchedule) {
 
     grouped.push({
   user_id: first.user_id,
-  doctor: first.name || first.doctor || "",
-  room: first.room || "",
+  doctor_name: first.name,
+  room: first.room || null,
+
   time_start: first.time_start,
   time_end: last.time_end,
 
-  // 🔥 красиво формируем диапазон
-  time: `${first.time_start_short} – ${last.time_end_short}`,
+  time: `${getTime(first.time_start)} – ${getTime(last.time_end)}`, // 🔥 вернуть!
 
   is_busy: isBusy,
-  is_past: isPastisPast
+  is_past: isPast
     });
   }
 
