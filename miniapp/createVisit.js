@@ -722,4 +722,24 @@ function openVisitSelectionOverlay(visits) {
   overlay.querySelector("#closeSelectBtn")
     .addEventListener("click", () => overlay.remove());
 }
+const selectedDoctorId =
+  document.getElementById("createDoctorSelect")?.value;
+
+const matched = visits.filter(v => {
+
+  if (String(v.doctor_id) !== String(selectedDoctorId)) {
+    return false;
+  }
+
+  const visitStart = toDate(v.time_start).getTime();
+  const visitEnd = toDate(v.time_end).getTime();
+
+  const slotStartTime = slotStart.getTime();
+  const slotEndTime = slotEnd.getTime();
+
+  return (
+    visitStart < slotEndTime &&
+    visitEnd > slotStartTime
+  );
+});
 
