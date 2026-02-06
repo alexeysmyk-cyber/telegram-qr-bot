@@ -5,6 +5,7 @@ const qs = require("querystring");
 
 const { getDoctors } = require("../controllers/mis/doctors");
 const { getSchedule } = require("../controllers/mis/schedule");
+const misController = require("../controllers/misController");
 
 // =====================================================
 // CACHE FOR APPOINTMENTS
