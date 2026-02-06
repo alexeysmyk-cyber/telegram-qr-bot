@@ -1,3 +1,5 @@
+import { openConfirmAppointment } from "./confirmAppointment.js";
+
 let searchTimeout = null;
 
 export function openSelectPatient(onSelect) {
@@ -222,20 +224,25 @@ function renderResults(patients, onSelect) {
   if (input) input.blur();
 
   
-  container.querySelectorAll(".patient-card")
-    .forEach(el => {
+container.querySelectorAll(".patient-card")
+  .forEach(el => {
 
-      el.addEventListener("click", () => {
+    el.addEventListener("click", () => {
 
-        const id = el.dataset.id;
-        const patient = patients.find(p =>
-          String(p.patient_id) === String(id)
-        );
+      const id = el.dataset.id;
 
-        document.getElementById("patientOverlay")?.remove();
+      const patient = patients.find(p =>
+        String(p.patient_id) === String(id)
+      );
 
-        if (onSelect) onSelect(patient);
-      });
+      // закрываем окно выбора пациента
+      document.querySelector(".patient-overlay")?.remove();
+
+      // открываем подтверждение записи
+      openConfirmAppointment(patient);
 
     });
+
+  });
+
 }
