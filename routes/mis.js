@@ -316,6 +316,61 @@ function formatDate(dateInput) {
   return `${dd}.${mm}.${yyyy}`;
 }
 
+// ===============================
+// 📌 ПОИСК ПАЦИЕНТА
+// ===============================
+router.post("/get-patient", async (req, res) => {
+
+  try {
+
+    const { mobile, last_name } = req.body;
+
+    if (!mobile && !last_name) {
+      return res.status(400).json({ error: "NO_DATA" });
+    }
+
+    const body = {
+      api_key: process.env.API_KEY
+    };
+
+    if (mobile) body.mobile = mobile;
+    if (last_name) body.last_name = last_name;
+
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/getPatient";
+
+    const response = await axios.post(
+      url,
+      qs.stringify(body),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        }
+      }
+    );
+
+    return res.status(response.status).json(response.data);
+
+  } catch (err) {
+
+    console.log("getPatient error:", err.response?.data || err.message);
+
+    return res.status(500).json({
+      error: "SERVER_ERROR"
+    });
+  }
+});
+function normalizePhone(phone) {
+  let digits = phone.replace(/\D/g, "");
+
+  if (digits.startsWith("7")) {
+    digits = "8" + digits.slice(1);
+  }
+
+  return digits;
+}
+
+
 
 module.exports = router;
 
