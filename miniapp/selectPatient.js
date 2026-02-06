@@ -1,4 +1,5 @@
 import { openConfirmAppointment } from "./confirmAppointment.js";
+import { selectedSlots } from "./createVisit.js";
 
 let searchTimeout = null;
 
@@ -239,7 +240,7 @@ container.querySelectorAll(".patient-card")
       document.querySelector(".patient-overlay")?.remove();
 
       // открываем подтверждение записи
-      openConfirmAppointment(patient);
+      openConfirmAppointment(patient, selectedSlots[0]);
 
     });
 
