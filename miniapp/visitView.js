@@ -1,5 +1,4 @@
 import { openCancelModal } from "./cancelVisit.js";
-export { renderVisit };
 // ===============================
 // FULLSCREEN VISIT VIEW
 // ===============================
@@ -94,7 +93,7 @@ async function loadVisit(id, overlay) {
 // RENDER VISIT
 // ===============================
 
-function renderVisit(visit, overlay) {
+export function renderVisit(visit, overlay) {
 
 const isCompleted = visit.status === "completed";
 const isMoved = !!visit.moved_to;
