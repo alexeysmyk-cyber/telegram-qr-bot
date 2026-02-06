@@ -1,5 +1,4 @@
 let searchTimeout = null;
-let lastQuery = "";
 
 export function openSelectPatient(onSelect) {
 
@@ -7,14 +6,42 @@ export function openSelectPatient(onSelect) {
   overlay.id = "patientOverlay";
   overlay.className = "patient-overlay";
 
-  overlay.innerHTML = `...`;
+  overlay.innerHTML = `
+    <div class="patient-container">
+
+      <div class="patient-header">
+        <div class="patient-title">Выбор пациента</div>
+        <div class="patient-close" id="closePatient">✕</div>
+      </div>
+
+      <div class="patient-search-block">
+        <input 
+          type="text"
+          id="patientSearchInput"
+          placeholder="Фамилия или номер телефона"
+          autocomplete="off"
+        />
+      </div>
+
+      <div id="patientResults" class="patient-results"></div>
+
+      <div class="patient-bottom">
+        <button class="primary-btn" id="addNewPatientBtn">
+          Новый пациент
+        </button>
+      </div>
+
+    </div>
+  `;
 
   document.body.appendChild(overlay);
 
+  // закрытие
   document
     .getElementById("closePatient")
     .addEventListener("click", () => overlay.remove());
 
+  // поле поиска
   const input = document.getElementById("patientSearchInput");
 
   input.addEventListener("input", (e) => {
@@ -23,22 +50,27 @@ export function openSelectPatient(onSelect) {
   });
 }
 
-
+/* ================================
+   SEARCH LOGIC
+================================ */
 
 function handleSearch(value, onSelect) {
 
   clearTimeout(searchTimeout);
 
+  const resultsContainer = document.getElementById("patientResults");
+
   if (!value) {
-    renderResults([]);
+    resultsContainer.innerHTML = "";
     return;
   }
 
-  // если цифры → телефон
+  // если ввод цифр → телефон
   if (/^[\d+\s()-]+$/.test(value)) {
 
     const normalized = normalizePhone(value);
 
+    // поиск только когда номер полностью введён
     if (normalized.length === 11) {
       searchPatients({ mobile: normalized }, onSelect);
     }
@@ -56,15 +88,30 @@ function handleSearch(value, onSelect) {
     }, 400);
   }
 }
+
+/* ================================
+   NORMALIZE PHONE
+================================ */
+
 function normalizePhone(phone) {
 
   let digits = phone.replace(/\D/g, "");
 
-  if (digits.startsWith("7")) return digits;
-  if (digits.startsWith("8")) return "7" + digits.slice(1);
+  if (digits.startsWith("8")) {
+    return "7" + digits.slice(1);
+  }
+
+  if (digits.startsWith("7")) {
+    return digits;
+  }
 
   return digits;
 }
+
+/* ================================
+   API REQUEST
+================================ */
+
 async function searchPatients(params, onSelect) {
 
   const resultsContainer = document.getElementById("patientResults");
@@ -96,6 +143,11 @@ async function searchPatients(params, onSelect) {
     resultsContainer.innerHTML = "Ошибка соединения";
   }
 }
+
+/* ================================
+   RENDER RESULTS
+================================ */
+
 function renderResults(patients, onSelect) {
 
   const container = document.getElementById("patientResults");
@@ -103,8 +155,7 @@ function renderResults(patients, onSelect) {
   if (!patients.length) {
     container.innerHTML = `
       <div class="empty-state">
-        Пациент не найден<br/>
-        <span class="link-text">Добавить нового</span>
+        Пациент не найден
       </div>
     `;
     return;
