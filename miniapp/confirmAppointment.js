@@ -1,7 +1,7 @@
 let selectedServices = [];
 
 export function openConfirmAppointment(patient, slot) {
-
+selectedServices = []; // 🔥 сброс при каждом открытии
   if (!slot) {
     console.error("Slot не передан");
     return;
@@ -99,8 +99,11 @@ export function openConfirmAppointment(patient, slot) {
 
   document.body.appendChild(overlay);
 
-  document.getElementById("closeConfirm")
-    .addEventListener("click", () => overlay.remove());
+document.getElementById("closeConfirm")
+  .addEventListener("click", () => {
+    selectedServices = [];  // 🔥 очистка
+    overlay.remove();
+  });
 
 document.getElementById("addServiceBtn")
   .addEventListener("click", () => {
