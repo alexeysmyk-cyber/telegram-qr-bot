@@ -1,3 +1,6 @@
+const axios = require("axios");
+const qs = require("querystring");
+
 exports.getServices = async (req, res) => {
   try {
     const { user_id } = req.body;
@@ -9,34 +12,47 @@ exports.getServices = async (req, res) => {
       });
     }
 
-    // вызов MIS
-    const response = await fetch("https://app.rnova.org/api/public/getServices", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${process.env.MIS_TOKEN}`
-      },
-      body: JSON.stringify({ user_id })
+    const body = qs.stringify({
+      api_key: process.env.API_KEY,
+      user_id
     });
 
-    const text = await response.text();
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/getServices";
 
-    if (!response.ok || text.startsWith("<!DOCTYPE")) {
+    const response = await axios.post(
+      url,
+      body,
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        timeout: 8000
+      }
+    );
+
+    const data = response.data;
+
+    if (!data || data.error !== 0) {
+      console.log("MIS getServices error:", data);
       return res.status(502).json({
         error: 1,
         message: "Ошибка MIS"
       });
     }
 
-    const data = JSON.parse(text);
-
-    res.json(data);
+    return res.json(data);
 
   } catch (err) {
-    console.error("getServices error:", err);
-    res.status(500).json({
+    console.error(
+      "getServices error:",
+      err.response?.data || err.message
+    );
+
+    return res.status(500).json({
       error: 1,
       message: "Server error"
     });
   }
 };
+
