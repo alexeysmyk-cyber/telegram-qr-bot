@@ -1,5 +1,6 @@
 import { renderCalendar } from "./calendar.js";
 import { openVisitView } from "./visitView.js";
+import { renderVisit } from "./visitView.js";
 
 let selectedSlots = [];
 let currentSchedule = [];
@@ -637,3 +638,14 @@ function toDate(dateString) {
 
   return new Date(yyyy, mm - 1, dd, hh, min);
 }
+
+function openVisitViewByData(visit) {
+
+  const overlay = document.createElement("div");
+  overlay.className = "visit-overlay";
+
+  document.body.appendChild(overlay);
+
+  renderVisit(visit, overlay); // ← используем уже существующий renderVisit
+}
+
