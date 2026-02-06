@@ -1644,7 +1644,9 @@ body {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  animation: slideUp 0.25s ease;
+
+  padding: 0 16px;   /* 🔥 ВОТ ЭТО ВАЖНО */
+  box-sizing: border-box;
 }
 
 /* анимация */
@@ -1718,12 +1720,7 @@ body {
 
 /* нижняя зона */
 .patient-bottom {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  padding: 16px;
+  padding: 16px 0;
   background: #fff;
   border-top: 1px solid #eee;
 }
-
