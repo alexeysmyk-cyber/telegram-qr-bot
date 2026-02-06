@@ -112,9 +112,20 @@ function normalizePhone(phone) {
    API REQUEST
 ================================ */
 
-async function searchPatients(params, onSelect) {
+let lastSearchTime = 0;
+
+async function searchPatients(params, onSelect, retry = false) {
 
   const resultsContainer = document.getElementById("patientResults");
+
+  const now = Date.now();
+
+  // защита от частых запросов (1 запрос в секунду)
+  if (now - lastSearchTime < 1000) {
+    return;
+  }
+
+  lastSearchTime = now;
 
   resultsContainer.innerHTML = `
     <div class="loader">
@@ -130,19 +141,46 @@ async function searchPatients(params, onSelect) {
       body: JSON.stringify(params)
     });
 
-    const data = await response.json();
+    // если сервер вернул HTML (502)
+    const text = await response.text();
 
-    if (!response.ok || data.error !== 0) {
+    if (!response.ok || text.startsWith("<!DOCTYPE")) {
+
+      if (!retry) {
+        console.log("🔁 Retry searchPatients...");
+        setTimeout(() => {
+          searchPatients(params, onSelect, true);
+        }, 1100);
+        return;
+      }
+
+      resultsContainer.innerHTML = "Ошибка поиска";
+      return;
+    }
+
+    const data = JSON.parse(text);
+
+    if (data.error !== 0) {
       resultsContainer.innerHTML = "Ошибка поиска";
       return;
     }
 
     renderResults(data.data || [], onSelect);
 
-  } catch {
+  } catch (err) {
+
+    if (!retry) {
+      console.log("🔁 Retry after network error...");
+      setTimeout(() => {
+        searchPatients(params, onSelect, true);
+      }, 1100);
+      return;
+    }
+
     resultsContainer.innerHTML = "Ошибка соединения";
   }
 }
+
 
 /* ================================
    RENDER RESULTS
@@ -180,6 +218,10 @@ function renderResults(patients, onSelect) {
 
   }).join("");
 
+  const input = document.getElementById("patientSearchInput");
+  if (input) input.blur();
+
+  
   container.querySelectorAll(".patient-card")
     .forEach(el => {
 
