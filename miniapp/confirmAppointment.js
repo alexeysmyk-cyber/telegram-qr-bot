@@ -137,20 +137,7 @@ function getTime(str) {
   return str.split(" ")[1];
 }
 
-function formatDate(str) {
-  const [d, m, y] = str.split(" ")[0].split(".");
-  const date = new Date(y, m - 1, d);
-
-  const formatted = date.toLocaleDateString("ru-RU", {
-    weekday: "long",
-    day: "numeric",
-    month: "long",
-    year: "numeric"
-  });
-
-  // делаем первую букву заглавной
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
-}
+function formatDate(str
 
 
 function formatTimeRange(start, end) {
