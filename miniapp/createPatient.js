@@ -125,45 +125,46 @@ export function openCreatePatient() {
   // ===============================
   // МАСКА ТЕЛЕФОНА
   // ===============================
+phone.addEventListener("input", (e) => {
 
-  phone.addEventListener("input", (e) => {
+  let digits = e.target.value.replace(/\D/g, "");
 
-    let digits = e.target.value.replace(/\D/g, "");
-
-    if (digits.startsWith("8")) {
-      digits = "7" + digits.slice(1);
-    }
-
-    if (!digits.startsWith("7")) {
-      digits = "7" + digits;
-    }
-
-    digits = digits.substring(0, 11);
-
-    if (digits.length >= 1) {
-      let formatted = "+" + digits[0];
-
-      if (digits.length >= 4) {
-        formatted += " (" + digits.slice(1, 4) + ")";
-      }
-
-      if (digits.length >= 7) {
-        formatted += " " + digits.slice(4, 7);
-      }
-
-      if (digits.length >= 9) {
-        formatted += " " + digits.slice(7, 9);
-      }
-
-      if (digits.length >= 11) {
-        formatted += "-" + digits.slice(9, 11);
-      }
-
-      e.target.value = formatted;
-    }
-
+  if (!digits) {
+    e.target.value = "";
     validateForm();
-  });
+    return;
+  }
+
+  // Всегда начинаем с 7
+  if (digits[0] !== "7") {
+    digits = "7" + digits.slice(1);
+  }
+
+  digits = digits.substring(0, 11);
+
+  let formatted = "+7";
+
+  if (digits.length > 1) {
+    formatted += " (" + digits.substring(1, 4);
+  }
+
+  if (digits.length >= 4) {
+    formatted += ") " + digits.substring(4, 7);
+  }
+
+  if (digits.length >= 7) {
+    formatted += " " + digits.substring(7, 9);
+  }
+
+  if (digits.length >= 9) {
+    formatted += "-" + digits.substring(9, 11);
+  }
+
+  e.target.value = formatted;
+
+  validateForm();
+});
+
 
   // ===============================
   // ПРОВЕРКА ВОЗРАСТА
@@ -258,7 +259,7 @@ thirdName.addEventListener("input", (e) => {
     if (gender === "female") return "Ж";
     return "—";
   }
-const gender = document.getElementById("newGender");
+
 
 gender.addEventListener("change", () => {
   if (gender.value) {
@@ -290,6 +291,7 @@ gender.addEventListener("change", () => {
 
     const birthValue = document.getElementById("newBirthDate").value;
     const genderValue = document.getElementById("newGender").value;
+    const gender = document.getElementById("newGender");
 
     if (birthValue && isUnder18(birthValue)) {
       alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
