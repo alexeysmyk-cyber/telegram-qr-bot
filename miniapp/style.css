@@ -1840,3 +1840,39 @@ body {
   border-color: #00a4c7;
   box-shadow: 0 0 0 2px rgba(0,164,199,0.15);
 }
+.form-input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #dceef5;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  background: white;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+.form-input:focus {
+  border-color: #00a4c7;
+  box-shadow: 0 0 0 2px rgba(0,164,199,0.15);
+}
+
+/* Красивый select */
+select.form-input {
+  background-image: url("data:image/svg+xml;utf8,<svg fill='%2300a4c7' height='20' viewBox='0 0 20 20' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M5.516 7.548l4.484 4.484 4.484-4.484 1.032 1.032-5.516 5.516-5.516-5.516z'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+  padding-right: 40px;
+}
+
+/* Убираем системные стрелки */
+select.form-input::-ms-expand {
+  display: none;
+}
+
+/* Чтобы date выглядел так же */
+input[type="date"].form-input {
+  appearance: none;
+}
