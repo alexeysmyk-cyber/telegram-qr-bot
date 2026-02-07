@@ -420,23 +420,34 @@ function showExistingPatients(foundData) {
     .addEventListener("click", () => modal.remove());
 
   // выбор существующего
-  modal.querySelectorAll(".duplicate-card")
-    .forEach(card => {
+modal.querySelectorAll(".duplicate-card")
+  .forEach((card, index) => {
 
-      card.addEventListener("click", () => {
+    card.addEventListener("click", () => {
 
-        const id = card.dataset.id;
+      const selectedPatient = patients[index];
+      const slot = getSelectedSlotObject();
+      if (!slot) return;
 
-        modal.remove();
+      modal.remove();
 
-        openConfirmAppointment({
-          patient_id: id,
-          isNew: false
-        }, getSelectedSlotObject());
-
-      });
+      openConfirmAppointment({
+        isNew: false,
+        patient_id: selectedPatient.patient_id,
+        last_name: selectedPatient.last_name,
+        first_name: selectedPatient.first_name,
+        third_name: selectedPatient.third_name || "",
+        gender: selectedPatient.gender === "male" ? "М" :
+                selectedPatient.gender === "female" ? "Ж" : "—",
+        birth_date: selectedPatient.birth_date || "—",
+        mobile: selectedPatient.mobile || "—",
+        email: selectedPatient.email || ""
+      }, slot);
 
     });
+
+  });
+
 
 document
   .getElementById("createAnyway")
