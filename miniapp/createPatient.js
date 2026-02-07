@@ -126,33 +126,38 @@ export function openCreatePatient() {
   // ОБЩАЯ ВАЛИДАЦИЯ
   // ===============================
 
-  function validateForm() {
+function validateForm() {
 
-    const isLastValid =
-      lastName.value.trim().length > 0 &&
-      validateFio(lastName);
+  const isLastValid =
+    lastName.value.trim().length > 0 &&
+    validateFio(lastName);
 
-    const isFirstValid =
-      firstName.value.trim().length > 0 &&
-      validateFio(firstName);
+  const isFirstValid =
+    firstName.value.trim().length > 0 &&
+    validateFio(firstName);
 
-    const isPhoneValid =
-      phone.value.replace(/\D/g, "").length === 11;
+  const isPhoneValid =
+    phone.value.replace(/\D/g, "").length === 11;
 
-    const isEmailValid = validateEmail(email.value.trim());
+  const emailValue = email.value.trim();
 
-    toggleError(lastName, !validateFio(lastName));
-    toggleError(firstName, !validateFio(firstName));
-    toggleError(email, !isEmailValid);
+  // ✅ email НЕ обязательный
+  const isEmailValid =
+    emailValue === "" || validateEmail(emailValue);
 
-    const formValid =
-      isLastValid &&
-      isFirstValid &&
-      isPhoneValid &&
-      isEmailValid;
+  toggleError(lastName, !validateFio(lastName));
+  toggleError(firstName, !validateFio(firstName));
+  toggleError(email, emailValue !== "" && !validateEmail(emailValue));
 
-    nextBtn.disabled = !formValid;
-  }
+  const formValid =
+    isLastValid &&
+    isFirstValid &&
+    isPhoneValid &&
+    isEmailValid;
+
+  nextBtn.disabled = !formValid;
+}
+
 
   function toggleError(input, hasError) {
     input.classList.toggle("input-error", hasError);
