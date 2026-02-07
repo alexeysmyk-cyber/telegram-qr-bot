@@ -1928,3 +1928,15 @@ input[type="date"].form-input {
 #newBirthDate:not(:placeholder-shown) {
   color: #1f2d3d;
 }
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.field-label {
+  font-size: 12px;
+  color: #7a8a9a;
+  font-weight: 500;
+  margin-left: 4px;
+}
