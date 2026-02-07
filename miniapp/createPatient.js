@@ -16,24 +16,20 @@ export function openCreatePatient() {
 
       <div class="patient-search-block">
 
-        <label>Фамилия *</label>
+     
        <input 
   type="text" 
   id="newLastName" 
   class="form-input compact" 
   placeholder="Фамилия *" 
 />
-
-        <label>Имя *</label>
        <input 
   type="text" 
   id="newFirstName" 
   class="form-input compact" 
   placeholder="Имя *" 
 />
-
-        <label>Отчество</label>
-    <input 
+     <input 
   type="text" 
   id="newThirdName" 
   class="form-input compact" 
@@ -41,36 +37,34 @@ export function openCreatePatient() {
 />
 
 <div class="row-2">
-  <div class="col">
-    <label>Пол</label>
-    <select id="newGender" class="form-input">
-      <option value="">Не указан</option>
-      <option value="male">Мужской</option>
-      <option value="female">Женский</option>
-    </select>
-  </div>
 
-  <div class="col">
-    <label>Дата рождения</label>
-    <input type="date" id="newBirthDate" class="form-input" />
-  </div>
+  <select id="newGender" class="form-input compact">
+    <option value="">Пол</option>
+    <option value="male">Мужской</option>
+    <option value="female">Женский</option>
+  </select>
+
+  <input 
+    type="date" 
+    id="newBirthDate" 
+    class="form-input compact"
+  />
+
 </div>
 
 
-        <label>Телефон *</label>
-   <input 
+<input 
   type="tel" 
   id="newPhone" 
   class="form-input compact" 
-  placeholder="+7 (___) ___ __-__ *" 
+  placeholder="+7 (___) ___ __-__ *"
 />
 
-        <label>Email</label>
-      <input 
+<input 
   type="email" 
   id="newEmail" 
   class="form-input compact" 
-  placeholder="E-mail" 
+  placeholder="E-mail"
 />
 
       </div>
