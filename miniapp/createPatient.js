@@ -132,6 +132,13 @@ export function openCreatePatient() {
   // ПРОВЕРКА ВОЗРАСТА
   // ===============================
 
+  function capitalizeFio(value) {
+  if (!value) return "";
+  const trimmed = value.trim();
+  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+}
+
+
   function isUnder18(dateString) {
 
     if (!dateString) return false;
@@ -188,9 +195,21 @@ export function openCreatePatient() {
     nextBtn.disabled = !formValid;
   }
 
-  lastName.addEventListener("input", validateForm);
-  firstName.addEventListener("input", validateForm);
-  thirdName.addEventListener("input", validateForm);
+lastName.addEventListener("input", (e) => {
+  e.target.value = capitalizeFio(e.target.value);
+  validateForm();
+});
+
+firstName.addEventListener("input", (e) => {
+  e.target.value = capitalizeFio(e.target.value);
+  validateForm();
+});
+
+thirdName.addEventListener("input", (e) => {
+  e.target.value = capitalizeFio(e.target.value);
+  validateForm();
+});
+
   email.addEventListener("input", validateForm);
 
   // ===============================
