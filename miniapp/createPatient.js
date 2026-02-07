@@ -150,7 +150,46 @@ function validateForm() {
   nextBtn.disabled = !formValid;
 }
 
+  function formatGender(gender) {
+  if (gender === "male") return "М";
+  if (gender === "female") return "Ж";
+  return "—";
+}
 
+  function formatBirthDate(dateString) {
+
+  if (!dateString) return "—";
+
+  const d = new Date(dateString);
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+
+  return `${dd}-${mm}-${yyyy}`;
+}
+
+
+function isUnder18(dateString) {
+
+  if (!dateString) return false;
+
+  const birth = new Date(dateString);
+  const today = new Date();
+
+  let age = today.getFullYear() - birth.getFullYear();
+
+  const m = today.getMonth() - birth.getMonth();
+
+  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+    age--;
+  }
+
+  return age < 18;
+}
+
+
+  
   function toggleError(input, hasError) {
     input.classList.toggle("input-error", hasError);
   }
@@ -167,6 +206,12 @@ function validateForm() {
   // ===============================
 
   nextBtn.addEventListener("click", () => {
+const birthDate = document.getElementById("newBirthDate").value;
+
+if (birthDate && isUnder18(birthDate)) {
+  alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
+}
+    
 
     const slot = getSelectedSlotObject();
     if (!slot) return;
