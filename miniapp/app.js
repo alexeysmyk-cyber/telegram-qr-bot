@@ -320,9 +320,13 @@ doctorSelect.addEventListener("change", () => {
 
   
 const scheduleContainer = document.getElementById("scheduleContainer");
-const scheduleWrapper = scheduleContainer.parentElement;
+const scheduleContainer = document.getElementById("scheduleContainer");
+if (!scheduleContainer) return;
 
-let touchStartX = 0;
+const scheduleWrapper = scheduleContainer.parentElement;
+if (!scheduleWrapper) return;
+
+
 
 scheduleWrapper.addEventListener("touchstart", (e) => {
 
@@ -465,7 +469,6 @@ scheduleContainer.addEventListener("scroll", () => {
 
 editFiltersBtn.addEventListener("click", () => {
 
-  const isHidden = filterPanel.classList.contains("hidden");
 
 if (filterPanel.classList.contains("collapsing")) {
   filterPanel.classList.remove("collapsing");
