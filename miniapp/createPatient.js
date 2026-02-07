@@ -267,11 +267,7 @@ thirdName.addEventListener("input", (e) => {
   // FORMAT HELPERS
   // ===============================
 
-  function formatGender(gender) {
-    if (gender === "male") return "М";
-    if (gender === "female") return "Ж";
-    return "—";
-  }
+
 
 
 if (gender) {
@@ -286,17 +282,7 @@ if (gender) {
 
 
   
-  function formatBirthDate(dateString) {
-    if (!dateString) return "—";
 
-    const d = new Date(dateString);
-
-    const dd = String(d.getDate()).padStart(2, "0");
-    const mm = String(d.getMonth() + 1).padStart(2, "0");
-    const yyyy = d.getFullYear();
-
-    return `${dd}-${mm}-${yyyy}`;
-  }
 
   // ===============================
   // КНОПКА ДАЛЕЕ
@@ -348,6 +334,9 @@ nextBtn.addEventListener("click", async () => {
     proceedCreate();
   }
 
+
+
+  
   function proceedCreate() {
 
     const patient = {
@@ -365,6 +354,13 @@ nextBtn.addEventListener("click", async () => {
     openConfirmAppointment(patient, slot);
   }
   
+ 
+});
+
+
+
+}
+
 function formatGender(value) {
   if (!value) return "—";
 
@@ -379,13 +375,19 @@ function formatGender(value) {
   return "—";
 }
 
+  function formatBirthDate(dateString) {
+    if (!dateString) return "—";
 
-  
-});
+    const d = new Date(dateString);
+
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+
+    return `${dd}-${mm}-${yyyy}`;
+  }
 
 
-
-}
 
 function showExistingPatients(foundData, createOverlay) {
 
@@ -445,9 +447,11 @@ modal.querySelectorAll(".duplicate-card")
       const slot = getSelectedSlotObject();
       if (!slot) return;
 
-      modal.remove();
+modal.remove();
 
-      openConfirmAppointment({
+if (createOverlay) createOverlay.remove();
+
+openConfirmAppointment({
         isNew: false,
         patient_id: selectedPatient.patient_id,
         last_name: selectedPatient.last_name,
@@ -485,8 +489,7 @@ document
       last_name: document.getElementById("newLastName").value.trim(),
       first_name: document.getElementById("newFirstName").value.trim(),
       third_name: document.getElementById("newThirdName").value.trim(),
-      gender: genderValue === "male" ? "М" :
-              genderValue === "female" ? "Ж" : "—",
+      gender: formatGender(genderValue),
       birth_date: birthValue
         ? formatBirthDate(birthValue)
         : "—",
