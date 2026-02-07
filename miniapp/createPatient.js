@@ -78,9 +78,9 @@ export function openCreatePatient() {
       </div>
 
       <div class="patient-bottom">
-        <button class="primary-btn" id="createPatientNext" disabled>
-          Далее
-        </button>
+       <button class="primary-btn" id="createPatientNext">
+  Далее
+</button>
       </div>
 
     </div>
@@ -202,36 +202,38 @@ phone.addEventListener("input", (e) => {
     input.classList.toggle("input-error", hasError);
   }
 
-  function validateForm() {
+function validateForm(showErrors = false) {
 
-    const isLastValid =
-      lastName.value.trim().length > 0 &&
-      validateFio(lastName);
+  const isLastValid =
+    lastName.value.trim().length > 0 &&
+    validateFio(lastName);
 
-    const isFirstValid =
-      firstName.value.trim().length > 0 &&
-      validateFio(firstName);
+  const isFirstValid =
+    firstName.value.trim().length > 0 &&
+    validateFio(firstName);
 
-    const isPhoneValid =
-      phone.value.replace(/\D/g, "").length === 11;
+  const isPhoneValid =
+    phone.value.replace(/\D/g, "").length === 11;
 
-    const emailValue = email.value.trim();
-    const isEmailValid =
-      emailValue === "" || validateEmail(emailValue);
+  const emailValue = email.value.trim();
+  const isEmailValid =
+    emailValue === "" || validateEmail(emailValue);
 
-    toggleError(lastName, !validateFio(lastName));
-    toggleError(firstName, !validateFio(firstName));
-    toggleError(thirdName, thirdName.value && !validateFio(thirdName));
-    toggleError(email, emailValue !== "" && !validateEmail(emailValue));
-
-    const formValid =
-      isLastValid &&
-      isFirstValid &&
-      isPhoneValid &&
-      isEmailValid;
-
-    nextBtn.disabled = !formValid;
+  if (showErrors) {
+    toggleError(lastName, !isLastValid);
+    toggleError(firstName, !isFirstValid);
+    toggleError(phone, !isPhoneValid);
+    toggleError(email, emailValue !== "" && !isEmailValid);
   }
+
+  return (
+    isLastValid &&
+    isFirstValid &&
+    isPhoneValid &&
+    isEmailValid
+  );
+}
+
 
 lastName.addEventListener("input", (e) => {
   e.target.value = capitalizeFio(e.target.value);
@@ -289,6 +291,11 @@ gender.addEventListener("change", () => {
 
   nextBtn.addEventListener("click", () => {
 
+ const isValid = validateForm(true);
+
+  if (!isValid) {
+    return; // просто подсветили ошибки и не идём дальше
+    
     const birthValue = document.getElementById("newBirthDate").value;
     const genderValue = document.getElementById("newGender").value;
     const gender = document.getElementById("newGender");
