@@ -442,14 +442,11 @@ document
   .getElementById("createAnyway")
   .addEventListener("click", () => {
 
-    modal.remove();
-
     const slot = getSelectedSlotObject();
     if (!slot) return;
 
-    const phoneDigits = document
-      .getElementById("newPhone")
-      .value.replace(/\D/g, "");
+    const phoneDigits =
+      document.getElementById("newPhone").value.replace(/\D/g, "");
 
     const birthValue =
       document.getElementById("newBirthDate").value;
@@ -457,7 +454,7 @@ document
     const genderValue =
       document.getElementById("newGender").value;
 
-    openConfirmAppointment({
+    const patient = {
       isNew: true,
       last_name: document.getElementById("newLastName").value.trim(),
       first_name: document.getElementById("newFirstName").value.trim(),
@@ -469,10 +466,19 @@ document
         : "—",
       mobile: "+" + phoneDigits,
       email: document.getElementById("newEmail").value.trim()
-    }, slot);
+    };
 
-    document.querySelector(".patient-overlay")?.remove();
+    // закрываем сначала модалку дубликатов
+    modal.remove();
+
+    // закрываем форму создания пациента
+    const createOverlay = document.querySelector(".patient-overlay");
+    if (createOverlay) createOverlay.remove();
+
+    // открываем confirm
+    openConfirmAppointment(patient, slot);
   });
+
 
 }
 
