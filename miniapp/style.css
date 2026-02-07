@@ -1917,4 +1917,11 @@ input[type="date"].form-input {
   bottom: 0;
   background: #f4f7fb;
 }
+.placeholder-select {
+  color: #9aa6b2;
+}
+
+.placeholder-select.valid {
+  color: #1f2d3d;
+}
 
