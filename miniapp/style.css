@@ -1925,3 +1925,11 @@ input[type="date"].form-input {
   color: #1f2d3d;
 }
 
+/* Плейсхолдер для даты */
+.placeholder-date {
+  color: #9aa6b2;
+}
+
+#newBirthDate:not(:placeholder-shown) {
+  color: #1f2d3d;
+}
