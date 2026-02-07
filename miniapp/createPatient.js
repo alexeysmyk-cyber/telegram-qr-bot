@@ -107,12 +107,14 @@ export function openCreatePatient() {
   // ВАЛИДАЦИЯ ФИО (только русские)
   // ===============================
 
-  const fioRegex = /^[А-Яа-яЁё\-]+$/;
+  const fioRegex = /^[А-ЯЁ][а-яё]+(?:[- ][А-ЯЁ][а-яё]+)*$/;
 
-  function validateFio(input) {
-    if (!input.value) return true;
-    return fioRegex.test(input.value.trim());
-  }
+ function validateFio(input) {
+  const value = input.value.trim();
+  if (!value) return false; // теперь пустое поле не считается валидным
+  return fioRegex.test(value);
+}
+
 
   // ===============================
   // ВАЛИДАЦИЯ EMAIL
@@ -171,11 +173,15 @@ phone.addEventListener("input", (e) => {
   // ПРОВЕРКА ВОЗРАСТА
   // ===============================
 
-  function capitalizeFio(value) {
+function capitalizeFio(value) {
   if (!value) return "";
-  const trimmed = value.trim();
-  return trimmed.charAt(0).toUpperCase() + trimmed.slice(1).toLowerCase();
+
+  return value
+    .toLowerCase()
+    .replace(/(^|\s|-)[а-яё]/g, char => char.toUpperCase());
 }
+
+
 
 
   function isUnder18(dateString) {
@@ -221,18 +227,19 @@ function validateForm(showErrors = false) {
     emailValue === "" || validateEmail(emailValue);
 
   if (showErrors) {
-    toggleError(lastName, !isLastValid);
-    toggleError(firstName, !isFirstValid);
-    toggleError(phone, !isPhoneValid);
+toggleError(lastName, !isLastValid);
+toggleError(firstName, !isFirstValid);
+toggleError(thirdName, !isThirdValid);
     toggleError(email, emailValue !== "" && !isEmailValid);
   }
 
-  return (
-    isLastValid &&
-    isFirstValid &&
-    isPhoneValid &&
-    isEmailValid
-  );
+ return (
+  isLastValid &&
+  isFirstValid &&
+  isThirdValid &&
+  isPhoneValid &&
+  isEmailValid
+);
 }
 
 
