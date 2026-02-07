@@ -14,44 +14,36 @@ export function openCreatePatient() {
         <div class="patient-close" id="closeCreatePatient">✕</div>
       </div>
 
-      <div class="patient-search-block">
+  <div class="patient-search-block">
 
-        <input type="text" id="lastName"
-          placeholder="Фамилия *"
-          autocomplete="off" />
+  <label>Фамилия *</label>
+  <input type="text" id="newLastName" class="form-input" />
 
-        <input type="text" id="firstName"
-          placeholder="Имя *"
-          autocomplete="off"
-          style="margin-top:12px;" />
+  <label>Имя *</label>
+  <input type="text" id="newFirstName" class="form-input" />
 
-        <input type="text" id="thirdName"
-          placeholder="Отчество"
-          autocomplete="off"
-          style="margin-top:12px;" />
+  <label>Отчество</label>
+  <input type="text" id="newThirdName" class="form-input" />
 
-        <select id="gender"
-          style="margin-top:12px;">
-          <option value="">Пол</option>
-          <option value="male">Мужской</option>
-          <option value="female">Женский</option>
-        </select>
+  <label>Пол</label>
+  <select id="newGender" class="form-input">
+    <option value="">Не указан</option>
+    <option value="male">Мужской</option>
+    <option value="female">Женский</option>
+  </select>
 
-        <input type="date"
-          id="birthDate"
-          style="margin-top:12px;" />
+  <label>Дата рождения</label>
+  <input type="date" id="newBirthDate" class="form-input" />
+  <label>Телефон *</label>
+  <input type="tel" id="newPhone" class="form-input" placeholder="+7 (___) ___ __-__" />
+  
+  <label>Email</label>
+  <input type="email" id="newEmail" class="form-input" />
 
-        <input type="tel"
-          id="phone"
-          placeholder="+7 (___) ___ __-__ *"
-          style="margin-top:12px;" />
 
-        <input type="email"
-          id="email"
-          placeholder="E-mail"
-          style="margin-top:12px;" />
 
-      </div>
+</div>
+
 
       <div class="patient-bottom">
         <button class="primary-btn" id="createPatientNext" disabled>
