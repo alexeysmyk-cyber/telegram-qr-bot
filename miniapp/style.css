@@ -1872,7 +1872,13 @@ input[type="date"].form-input {
   padding: 10px 14px;
   font-size: 15px;
   border-radius: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
+  height: 44px;
+}
+
+select.form-input,
+input[type="date"].form-input {
+  height: 44px;
 }
 
 /* placeholder мягче */
@@ -1880,20 +1886,35 @@ input[type="date"].form-input {
   color: #9aa6b2;
   font-size: 14px;
 }
-
 /* два поля в строку */
 .row-2 {
   display: flex;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
-.row-2 .col {
-  flex: 1;
+.row-2 .form-input {
+  margin-bottom: 0;
 }
 
-/* уменьшаем отступы внутри формы */
+/* уменьшаем отступы формы */
 .patient-search-block {
-  padding: 14px;
+  padding: 12px 14px;
+}
+
+.patient-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.patient-search-block {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.patient-bottom {
+  position: sticky;
+  bottom: 0;
+  background: #f4f7fb;
 }
 
