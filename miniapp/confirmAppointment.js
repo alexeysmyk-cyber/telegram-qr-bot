@@ -115,13 +115,24 @@ document.getElementById("confirmCreateBtn")
 
     const servicesIds = selectedServices.map(s => s.id);
 
-    console.log("Создать запись", {
-      patient_id: patient.patient_id,
-      doctor_id: slot.user_id,
-      time_start: slot.time_start,
-      time_end: slot.time_end,
-      services: servicesIds
-    });
+console.log("Создать запись", {
+
+  patient_id: patient.isNew ? null : patient.patient_id,
+
+  new_patient: patient.isNew ? {
+    last_name: patient.last_name,
+    first_name: patient.first_name,
+    third_name: patient.third_name,
+    birth_date: patient.birth_date,
+    mobile: patient.mobile
+  } : null,
+
+  doctor_id: slot.user_id,
+  time_start: slot.time_start,
+  time_end: slot.time_end,
+  services: servicesIds
+});
+
 
   });
 
