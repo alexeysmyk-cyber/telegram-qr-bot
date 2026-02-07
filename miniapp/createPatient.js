@@ -40,11 +40,12 @@ export function openCreatePatient() {
 
   <div class="field-group">
     <label class="field-label center">Пол</label>
-    <select id="newGender" class="form-input compact">
-      <option value="">Не указан</option>
-      <option value="male">Мужской</option>
-      <option value="female">Женский</option>
-    </select>
+<select id="newGender" class="form-input compact" required>
+  <option value="" selected disabled hidden></option>
+  <option value="male">Мужской</option>
+  <option value="female">Женский</option>
+</select>
+
   </div>
 
   <div class="field-group">
