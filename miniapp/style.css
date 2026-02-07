@@ -1940,3 +1940,29 @@ input[type="date"].form-input {
   font-weight: 500;
   margin-left: 4px;
 }
+/* Две колонки */
+.row-two {
+  display: flex;
+  gap: 10px;
+}
+
+/* Каждый блок занимает 50% */
+.row-two .field-group {
+  flex: 1;
+}
+
+/* Центрируем подпись */
+.field-label.center {
+  text-align: center;
+  font-size: 12px;
+  color: #7a8a9a;
+  font-weight: 500;
+  margin-bottom: 4px;
+}
+
+/* Компактные поля */
+.form-input.compact {
+  height: 44px;
+  padding: 10px 14px;
+  font-size: 15px;
+}
