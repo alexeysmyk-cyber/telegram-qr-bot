@@ -620,62 +620,78 @@ async function openVisitFromSlot(timeStart) {
 
   const date = formatDate(selectedDate);
 
-  try {
+  // 🔥 ПОКАЗЫВАЕМ ЛОАДЕР
+  const loader = document.createElement("div");
+  loader.className = "visit-overlay";
+  loader.id = "slotLoaderOverlay";
 
-    const response = await fetch("/api/mis/appointments", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ date })
-    });
+  loader.innerHTML = `
+    <div class="visit-loading">
+      <div class="visit-spinner"></div>
+      <div class="visit-loading-text">
+        Загрузка визита...
+      </div>
+    </div>
+  `;
 
-    const data = await response.json();
+  document.body.appendChild(loader);
 
-    if (!response.ok || data.error !== 0) {
-      alert("Ошибка загрузки визитов");
-      return;
-    }
+try {
 
-    const visits = data.data || [];
+  const response = await fetch("/api/mis/appointments", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ date })
+  });
 
-    const slotStart = toDate(slot.time_start);
-    const slotEnd = toDate(slot.time_end);
-    
-const matched = visits.filter(v => {
+  const data = await response.json();
 
-  // проверяем врача
-  if (String(v.doctor_id) !== String(slot.user_id)) {
-    return false;
+  if (!response.ok || data.error !== 0) {
+    loader.remove();
+    alert("Ошибка загрузки визитов");
+    return;
   }
 
-  const visitStart = toDate(v.time_start).getTime();
-  const visitEnd = toDate(v.time_end).getTime();
+  const visits = data.data || [];
 
-  const slotStartTime = toDate(slot.time_start).getTime();
-  const slotEndTime = toDate(slot.time_end).getTime();
+  const matched = visits.filter(v => {
 
-  // проверка пересечения интервалов
-  return (
-    visitStart < slotEndTime &&
-    visitEnd > slotStartTime
-  );
-});
-    
-    if (matched.length === 0) {
-      alert("Визит не найден");
-      return;
+    if (String(v.doctor_id) !== String(slot.user_id)) {
+      return false;
     }
 
-    if (matched.length === 1) {
-      openVisitViewByData(matched[0]);
-      return;
-    }
+    const visitStart = toDate(v.time_start).getTime();
+    const visitEnd = toDate(v.time_end).getTime();
 
-    openVisitSelectionOverlay(matched);
+    const slotStartTime = toDate(slot.time_start).getTime();
+    const slotEndTime = toDate(slot.time_end).getTime();
 
-  } catch (err) {
-    alert("Ошибка соединения");
+    return (
+      visitStart < slotEndTime &&
+      visitEnd > slotStartTime
+    );
+  });
+
+  if (matched.length === 0) {
+    loader.remove();
+    alert("Визит не найден");
+    return;
   }
+
+  if (matched.length === 1) {
+    loader.remove();
+    openVisitViewByData(matched[0]);
+    return;
+  }
+
+  loader.remove();
+  openVisitSelectionOverlay(matched);
+
+} catch (err) {
+  loader.remove();
+  alert("Ошибка соединения");
 }
+
 
 function toDate(dateString) {
 
