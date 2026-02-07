@@ -38,17 +38,19 @@ export function openCreatePatient() {
 
 <div class="row-2">
 
-  <select id="newGender" class="form-input compact">
-    <option value="">Пол</option>
-    <option value="male">Мужской</option>
-    <option value="female">Женский</option>
-  </select>
+<select id="newGender" class="form-input compact placeholder-select">
+  <option value="" disabled selected hidden>Пол</option>
+  <option value="male">Мужской</option>
+  <option value="female">Женский</option>
+</select>
 
-  <input 
-    type="date" 
-    id="newBirthDate" 
-    class="form-input compact"
-  />
+<input 
+  type="text"
+  id="newBirthDate"
+  class="form-input compact"
+  placeholder="Дата рождения"
+  readonly
+/>
 
 </div>
 
