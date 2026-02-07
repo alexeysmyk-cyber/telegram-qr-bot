@@ -129,17 +129,17 @@ phone.addEventListener("input", (e) => {
 
   let digits = e.target.value.replace(/\D/g, "");
 
-  if (!digits) {
-    e.target.value = "";
-    validateForm();
-    return;
-  }
-
-  // Всегда начинаем с 7
-  if (digits[0] !== "7") {
+  // если пользователь начал с 8 → заменяем на 7
+  if (digits.startsWith("8")) {
     digits = "7" + digits.slice(1);
   }
 
+  // если пользователь не ввёл 7 в начале → добавляем её
+  if (!digits.startsWith("7")) {
+    digits = "7" + digits;
+  }
+
+  // максимум 11 цифр
   digits = digits.substring(0, 11);
 
   let formatted = "+7";
