@@ -44,13 +44,14 @@ export function openCreatePatient() {
   <option value="female">Женский</option>
 </select>
 
-<input 
-  type="text"
-  id="newBirthDate"
-  class="form-input compact"
-  placeholder="Дата рождения"
-  readonly
-/>
+<div class="field-group half">
+  <label class="field-label">Дата рождения</label>
+  <input
+    type="date"
+    id="newBirthDate"
+    class="form-input compact"
+  />
+</div>
 
 </div>
 
@@ -89,18 +90,7 @@ export function openCreatePatient() {
   const email = document.getElementById("newEmail");
   const nextBtn = document.getElementById("createPatientNext");
 
-  const birthInput = document.getElementById("newBirthDate");
-
-// делаем серый текст пока пусто
-birthInput.classList.add("placeholder-date");
-
-birthInput.addEventListener("change", () => {
-  if (birthInput.value) {
-    birthInput.classList.remove("placeholder-date");
-  } else {
-    birthInput.classList.add("placeholder-date");
-  }
-});
+;
 
 
   document
