@@ -292,39 +292,152 @@ if (gender) {
   // КНОПКА ДАЛЕЕ
   // ===============================
 
-nextBtn.addEventListener("click", () => {
+nextBtn.addEventListener("click", async () => {
 
   const isValid = validateForm(true);
-
-  if (!isValid) {
-    return; // подсветили ошибки и не идём дальше
-  }
+  if (!isValid) return;
 
   const birthValue = document.getElementById("newBirthDate").value;
   const genderValue = document.getElementById("newGender").value;
 
-  if (birthValue && isUnder18(birthValue)) {
-    alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
-  }
-
   const slot = getSelectedSlotObject();
   if (!slot) return;
 
-  const patient = {
-    isNew: true,
-    last_name: lastName.value.trim(),
-    first_name: firstName.value.trim(),
-    third_name: thirdName.value.trim(),
-    gender: formatGender(genderValue),
-    birth_date: formatBirthDate(birthValue),
-    mobile: phone.value,
-    email: email.value.trim()
-  };
+  const phoneDigits = phone.value.replace(/\D/g, "");
+  const formattedPhone = "+" + phoneDigits;
 
-  overlay.remove();
-  openConfirmAppointment(patient, slot);
+  try {
+
+    const response = await fetch("/api/mis/get-patient", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        last_name: lastName.value.trim(),
+        first_name: firstName.value.trim(),
+        mobile: phoneDigits
+      })
+    });
+
+    const data = await response.json();
+
+    if (data.error !== 0) {
+      proceedCreate();
+      return;
+    }
+
+    if (!data.data) {
+      // пациента нет
+      proceedCreate();
+      return;
+    }
+
+    // Если найден пациент или массив пациентов
+    showExistingPatients(data.data);
+
+  } catch (err) {
+    proceedCreate();
+  }
+
+  function proceedCreate() {
+
+    const patient = {
+      isNew: true,
+      last_name: lastName.value.trim(),
+      first_name: firstName.value.trim(),
+      third_name: thirdName.value.trim(),
+      gender: formatGender(genderValue),
+      birth_date: formatBirthDate(birthValue),
+      mobile: formattedPhone,
+      email: email.value.trim()
+    };
+
+    overlay.remove();
+    openConfirmAppointment(patient, slot);
+  }
 
 });
 
 
+
 }
+
+function showExistingPatients(foundData) {
+
+  let patients = Array.isArray(foundData)
+    ? foundData
+    : [foundData];
+
+  const modal = document.createElement("div");
+  modal.className = "patient-overlay";
+
+  modal.innerHTML = `
+    <div class="patient-container">
+
+      <div class="patient-header">
+        <div class="patient-title">Найден существующий пациент</div>
+        <div class="patient-close" id="closeDuplicate">✕</div>
+      </div>
+
+      <div class="patient-results">
+        ${patients.map(p => `
+          <div class="patient-card duplicate-card" data-id="${p.patient_id}">
+            <div class="patient-name">
+              ${p.last_name} ${p.first_name} ${p.third_name || ""}
+            </div>
+            <div class="patient-birth">
+              Телефон: ${p.mobile || "—"}
+            </div>
+            <div class="patient-birth">
+              Дата рождения: ${p.birth_date || "—"}
+            </div>
+          </div>
+        `).join("")}
+      </div>
+
+      <div class="patient-bottom">
+        <button class="secondary-btn" id="createAnyway">
+          Создать нового
+        </button>
+      </div>
+
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  document
+    .getElementById("closeDuplicate")
+    .addEventListener("click", () => modal.remove());
+
+  // выбор существующего
+  modal.querySelectorAll(".duplicate-card")
+    .forEach(card => {
+
+      card.addEventListener("click", () => {
+
+        const id = card.dataset.id;
+
+        modal.remove();
+
+        openConfirmAppointment({
+          patient_id: id,
+          isNew: false
+        }, getSelectedSlotObject());
+
+      });
+
+    });
+
+  document
+    .getElementById("createAnyway")
+    .addEventListener("click", () => {
+
+      modal.remove();
+
+      // Просто продолжим создание нового
+      document.getElementById("createPatientNext").click();
+
+    });
+
+}
+
