@@ -94,6 +94,7 @@ export function openCreatePatient() {
   const phone = document.getElementById("newPhone");
   const email = document.getElementById("newEmail");
   const nextBtn = document.getElementById("createPatientNext");
+  const gender = document.getElementById("newGender");
 
 ;
 
@@ -291,38 +292,39 @@ if (gender) {
   // КНОПКА ДАЛЕЕ
   // ===============================
 
-  nextBtn.addEventListener("click", () => {
+nextBtn.addEventListener("click", () => {
 
- const isValid = validateForm(true);
+  const isValid = validateForm(true);
 
   if (!isValid) {
-    return; // просто подсветили ошибки и не идём дальше
-    
-    const birthValue = document.getElementById("newBirthDate").value;
-    const genderValue = document.getElementById("newGender").value;
-    const gender = document.getElementById("newGender");
+    return; // подсветили ошибки и не идём дальше
+  }
 
-    if (birthValue && isUnder18(birthValue)) {
-      alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
-    }
+  const birthValue = document.getElementById("newBirthDate").value;
+  const genderValue = document.getElementById("newGender").value;
 
-    const slot = getSelectedSlotObject();
-    if (!slot) return;
+  if (birthValue && isUnder18(birthValue)) {
+    alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
+  }
 
-    const patient = {
-      isNew: true,
-      last_name: lastName.value.trim(),
-      first_name: firstName.value.trim(),
-      third_name: thirdName.value.trim(),
-      gender: formatGender(genderValue),
-      birth_date: formatBirthDate(birthValue),
-      mobile: phone.value,
-      email: email.value.trim()
-    };
+  const slot = getSelectedSlotObject();
+  if (!slot) return;
 
-    overlay.remove();
-    openConfirmAppointment(patient, slot);
+  const patient = {
+    isNew: true,
+    last_name: lastName.value.trim(),
+    first_name: firstName.value.trim(),
+    third_name: thirdName.value.trim(),
+    gender: formatGender(genderValue),
+    birth_date: formatBirthDate(birthValue),
+    mobile: phone.value,
+    email: email.value.trim()
+  };
 
-  });
+  overlay.remove();
+  openConfirmAppointment(patient, slot);
+
+});
+
 
 }
