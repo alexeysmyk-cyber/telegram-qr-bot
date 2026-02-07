@@ -319,7 +319,7 @@ doctorSelect.addEventListener("change", () => {
 
 
   
-const scheduleContainer = document.getElementById("scheduleContainer");
+
 const scheduleContainer = document.getElementById("scheduleContainer");
 if (!scheduleContainer) return;
 
