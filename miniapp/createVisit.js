@@ -691,7 +691,7 @@ try {
   loader.remove();
   alert("Ошибка соединения");
 }
-
+}
 
 function toDate(dateString) {
 
