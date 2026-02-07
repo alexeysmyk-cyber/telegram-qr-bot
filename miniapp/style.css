@@ -1855,9 +1855,7 @@ select.form-input::-ms-expand {
 }
 
 /* Чтобы date выглядел так же */
-input[type="date"].form-input {
-  appearance: none;
-}
+
 .patient-search-block label {
   display: block;
   font-weight: 600;
@@ -1926,9 +1924,6 @@ input[type="date"].form-input {
 }
 
 /* Плейсхолдер для даты */
-.placeholder-date {
-  color: #9aa6b2;
-}
 
 #newBirthDate:not(:placeholder-shown) {
   color: #1f2d3d;
