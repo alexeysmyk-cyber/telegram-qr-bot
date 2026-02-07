@@ -36,24 +36,28 @@ export function openCreatePatient() {
   placeholder="Отчество" 
 />
 
-<div class="row-2">
+<div class="row-two">
 
-<select id="newGender" class="form-input compact placeholder-select">
-  <option value="" disabled selected hidden>Пол</option>
-  <option value="male">Мужской</option>
-  <option value="female">Женский</option>
-</select>
+  <div class="field-group">
+    <label class="field-label center">Пол</label>
+    <select id="newGender" class="form-input compact">
+      <option value="">Не указан</option>
+      <option value="male">Мужской</option>
+      <option value="female">Женский</option>
+    </select>
+  </div>
 
-<div class="field-group half">
-  <label class="field-label">Дата рождения</label>
-  <input
-    type="date"
-    id="newBirthDate"
-    class="form-input compact"
-  />
+  <div class="field-group">
+    <label class="field-label center">Дата рождения</label>
+    <input
+      type="date"
+      id="newBirthDate"
+      class="form-input compact"
+    />
+  </div>
+
 </div>
 
-</div>
 
 
 <input 
