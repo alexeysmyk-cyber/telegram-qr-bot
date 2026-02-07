@@ -2,6 +2,8 @@ import { openConfirmAppointment } from "./confirmAppointment.js";
 
 import { getSelectedSlotObject } from "./createVisit.js";
 
+import { openCreatePatient } from "./createPatient.js";
+
 let searchTimeout = null;
 
 export function openSelectPatient(onSelect) {
@@ -44,6 +46,13 @@ export function openSelectPatient(onSelect) {
   document
     .getElementById("closePatient")
     .addEventListener("click", () => overlay.remove());
+
+  document
+  .getElementById("addNewPatientBtn")
+  .addEventListener("click", () => {
+    overlay.remove();
+    openCreatePatient();
+  });
 
   // поле поиска
   const input = document.getElementById("patientSearchInput");
