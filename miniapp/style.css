@@ -1966,3 +1966,11 @@ input[type="date"].form-input {
   padding: 10px 14px;
   font-size: 15px;
 }
+.duplicate-card {
+  border: 2px solid #ffe082;
+  background: #fffdf5;
+}
+
+.duplicate-card:hover {
+  background: #fff3cd;
+}
