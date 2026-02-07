@@ -14,36 +14,34 @@ export function openCreatePatient() {
         <div class="patient-close" id="closeCreatePatient">✕</div>
       </div>
 
-  <div class="patient-search-block">
+      <div class="patient-search-block">
 
-  <label>Фамилия *</label>
-  <input type="text" id="newLastName" class="form-input" />
+        <label>Фамилия *</label>
+        <input type="text" id="newLastName" class="form-input" />
 
-  <label>Имя *</label>
-  <input type="text" id="newFirstName" class="form-input" />
+        <label>Имя *</label>
+        <input type="text" id="newFirstName" class="form-input" />
 
-  <label>Отчество</label>
-  <input type="text" id="newThirdName" class="form-input" />
+        <label>Отчество</label>
+        <input type="text" id="newThirdName" class="form-input" />
 
-  <label>Пол</label>
-  <select id="newGender" class="form-input">
-    <option value="">Не указан</option>
-    <option value="male">Мужской</option>
-    <option value="female">Женский</option>
-  </select>
+        <label>Пол</label>
+        <select id="newGender" class="form-input">
+          <option value="">Не указан</option>
+          <option value="male">Мужской</option>
+          <option value="female">Женский</option>
+        </select>
 
-  <label>Дата рождения</label>
-  <input type="date" id="newBirthDate" class="form-input" />
-  <label>Телефон *</label>
-  <input type="tel" id="newPhone" class="form-input" placeholder="+7 (___) ___ __-__" />
-  
-  <label>Email</label>
-  <input type="email" id="newEmail" class="form-input" />
+        <label>Дата рождения</label>
+        <input type="date" id="newBirthDate" class="form-input" />
 
+        <label>Телефон *</label>
+        <input type="tel" id="newPhone" class="form-input" placeholder="+7 (___) ___ __-__" />
 
+        <label>Email</label>
+        <input type="email" id="newEmail" class="form-input" />
 
-</div>
-
+      </div>
 
       <div class="patient-bottom">
         <button class="primary-btn" id="createPatientNext" disabled>
@@ -56,11 +54,11 @@ export function openCreatePatient() {
 
   document.body.appendChild(overlay);
 
-  const lastName = document.getElementById("lastName");
-  const firstName = document.getElementById("firstName");
-  const thirdName = document.getElementById("thirdName");
-  const phone = document.getElementById("phone");
-  const email = document.getElementById("email");
+  const lastName = document.getElementById("newLastName");
+  const firstName = document.getElementById("newFirstName");
+  const thirdName = document.getElementById("newThirdName");
+  const phone = document.getElementById("newPhone");
+  const email = document.getElementById("newEmail");
   const nextBtn = document.getElementById("createPatientNext");
 
   document
@@ -105,113 +103,130 @@ export function openCreatePatient() {
 
     digits = digits.substring(0, 11);
 
-    const formatted = digits.replace(
-      /(\d)(\d{3})(\d{3})(\d{2})(\d{0,2})/,
-      "+$1 ($2) $3 $4-$5"
-    );
+    if (digits.length >= 1) {
+      let formatted = "+" + digits[0];
 
-    e.target.value = formatted;
+      if (digits.length >= 4) {
+        formatted += " (" + digits.slice(1, 4) + ")";
+      }
+
+      if (digits.length >= 7) {
+        formatted += " " + digits.slice(4, 7);
+      }
+
+      if (digits.length >= 9) {
+        formatted += " " + digits.slice(7, 9);
+      }
+
+      if (digits.length >= 11) {
+        formatted += "-" + digits.slice(9, 11);
+      }
+
+      e.target.value = formatted;
+    }
+
     validateForm();
   });
+
+  // ===============================
+  // ПРОВЕРКА ВОЗРАСТА
+  // ===============================
+
+  function isUnder18(dateString) {
+
+    if (!dateString) return false;
+
+    const birth = new Date(dateString);
+    const today = new Date();
+
+    let age = today.getFullYear() - birth.getFullYear();
+    const m = today.getMonth() - birth.getMonth();
+
+    if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
+      age--;
+    }
+
+    return age < 18;
+  }
 
   // ===============================
   // ОБЩАЯ ВАЛИДАЦИЯ
   // ===============================
 
-function validateForm() {
-
-  const isLastValid =
-    lastName.value.trim().length > 0 &&
-    validateFio(lastName);
-
-  const isFirstValid =
-    firstName.value.trim().length > 0 &&
-    validateFio(firstName);
-
-  const isPhoneValid =
-    phone.value.replace(/\D/g, "").length === 11;
-
-  const emailValue = email.value.trim();
-
-  // ✅ email НЕ обязательный
-  const isEmailValid =
-    emailValue === "" || validateEmail(emailValue);
-
-  toggleError(lastName, !validateFio(lastName));
-  toggleError(firstName, !validateFio(firstName));
-  toggleError(email, emailValue !== "" && !validateEmail(emailValue));
-
-  const formValid =
-    isLastValid &&
-    isFirstValid &&
-    isPhoneValid &&
-    isEmailValid;
-
-  nextBtn.disabled = !formValid;
-}
-
-  function formatGender(gender) {
-  if (gender === "male") return "М";
-  if (gender === "female") return "Ж";
-  return "—";
-}
-
-  function formatBirthDate(dateString) {
-
-  if (!dateString) return "—";
-
-  const d = new Date(dateString);
-
-  const dd = String(d.getDate()).padStart(2, "0");
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const yyyy = d.getFullYear();
-
-  return `${dd}-${mm}-${yyyy}`;
-}
-
-
-function isUnder18(dateString) {
-
-  if (!dateString) return false;
-
-  const birth = new Date(dateString);
-  const today = new Date();
-
-  let age = today.getFullYear() - birth.getFullYear();
-
-  const m = today.getMonth() - birth.getMonth();
-
-  if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) {
-    age--;
-  }
-
-  return age < 18;
-}
-
-
-  
   function toggleError(input, hasError) {
     input.classList.toggle("input-error", hasError);
   }
 
+  function validateForm() {
+
+    const isLastValid =
+      lastName.value.trim().length > 0 &&
+      validateFio(lastName);
+
+    const isFirstValid =
+      firstName.value.trim().length > 0 &&
+      validateFio(firstName);
+
+    const isPhoneValid =
+      phone.value.replace(/\D/g, "").length === 11;
+
+    const emailValue = email.value.trim();
+    const isEmailValid =
+      emailValue === "" || validateEmail(emailValue);
+
+    toggleError(lastName, !validateFio(lastName));
+    toggleError(firstName, !validateFio(firstName));
+    toggleError(thirdName, thirdName.value && !validateFio(thirdName));
+    toggleError(email, emailValue !== "" && !validateEmail(emailValue));
+
+    const formValid =
+      isLastValid &&
+      isFirstValid &&
+      isPhoneValid &&
+      isEmailValid;
+
+    nextBtn.disabled = !formValid;
+  }
+
   lastName.addEventListener("input", validateForm);
   firstName.addEventListener("input", validateForm);
-  thirdName.addEventListener("input", () => {
-    toggleError(thirdName, !validateFio(thirdName));
-  });
+  thirdName.addEventListener("input", validateForm);
   email.addEventListener("input", validateForm);
+
+  // ===============================
+  // FORMAT HELPERS
+  // ===============================
+
+  function formatGender(gender) {
+    if (gender === "male") return "М";
+    if (gender === "female") return "Ж";
+    return "—";
+  }
+
+  function formatBirthDate(dateString) {
+    if (!dateString) return "—";
+
+    const d = new Date(dateString);
+
+    const dd = String(d.getDate()).padStart(2, "0");
+    const mm = String(d.getMonth() + 1).padStart(2, "0");
+    const yyyy = d.getFullYear();
+
+    return `${dd}-${mm}-${yyyy}`;
+  }
 
   // ===============================
   // КНОПКА ДАЛЕЕ
   // ===============================
 
   nextBtn.addEventListener("click", () => {
-const birthDate = document.getElementById("newBirthDate").value;
 
-if (birthDate && isUnder18(birthDate)) {
-  alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
-}
-    
+    const birthValue = document.getElementById("newBirthDate").value;
+    const genderValue = document.getElementById("newGender").value;
+
+    if (birthValue && isUnder18(birthValue)) {
+      alert("Пациенту меньше 18 лет. Проверьте корректность данных.");
+    }
 
     const slot = getSelectedSlotObject();
     if (!slot) return;
@@ -221,8 +236,8 @@ if (birthDate && isUnder18(birthDate)) {
       last_name: lastName.value.trim(),
       first_name: firstName.value.trim(),
       third_name: thirdName.value.trim(),
-      gender: document.getElementById("gender").value,
-      birth_date: document.getElementById("birthDate").value,
+      gender: formatGender(genderValue),
+      birth_date: formatBirthDate(birthValue),
       mobile: phone.value,
       email: email.value.trim()
     };
