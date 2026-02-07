@@ -342,7 +342,7 @@ nextBtn.addEventListener("click", async () => {
     }
 
     // Если найден пациент или массив пациентов
-    showExistingPatients(data.data);
+    showExistingPatients(data.data, overlay);
 
   } catch (err) {
     proceedCreate();
@@ -355,7 +355,7 @@ nextBtn.addEventListener("click", async () => {
       last_name: lastName.value.trim(),
       first_name: firstName.value.trim(),
       third_name: thirdName.value.trim(),
-      gender: formatGender(selectedPatient.gender),
+      gender: formatGender(genderValue),
       birth_date: formatBirthDate(birthValue),
       mobile: formattedPhone,
       email: email.value.trim()
@@ -364,8 +364,8 @@ nextBtn.addEventListener("click", async () => {
     overlay.remove();
     openConfirmAppointment(patient, slot);
   }
+  
 function formatGender(value) {
-
   if (!value) return "—";
 
   const v = String(value).toLowerCase();
@@ -387,7 +387,7 @@ function formatGender(value) {
 
 }
 
-function showExistingPatients(foundData) {
+function showExistingPatients(foundData, createOverlay) {
 
   let patients = Array.isArray(foundData)
     ? foundData
@@ -453,8 +453,7 @@ modal.querySelectorAll(".duplicate-card")
         last_name: selectedPatient.last_name,
         first_name: selectedPatient.first_name,
         third_name: selectedPatient.third_name || "",
-        gender: selectedPatient.gender === "male" ? "М" :
-                selectedPatient.gender === "female" ? "Ж" : "—",
+        gender: formatGender(selectedPatient.gender),
         birth_date: selectedPatient.birth_date || "—",
         mobile: selectedPatient.mobile || "—",
         email: selectedPatient.email || ""
@@ -496,14 +495,11 @@ document
     };
 
     // закрываем сначала модалку дубликатов
-    modal.remove();
+ modal.remove();
 
-    // закрываем форму создания пациента
-    const createOverlay = document.querySelector(".patient-overlay");
-    if (createOverlay) createOverlay.remove();
+if (createOverlay) createOverlay.remove();
 
-    // открываем confirm
-    openConfirmAppointment(patient, slot);
+openConfirmAppointment(patient, slot);
   });
 
 
