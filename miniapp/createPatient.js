@@ -212,12 +212,14 @@ function capitalizeFio(value) {
 function validateForm(showErrors = false) {
 
   const isLastValid =
-    lastName.value.trim().length > 0 &&
     validateFio(lastName);
 
   const isFirstValid =
-    firstName.value.trim().length > 0 &&
     validateFio(firstName);
+
+  const isThirdValid =
+    thirdName.value.trim() === "" ||
+    validateFio(thirdName);
 
   const isPhoneValid =
     phone.value.replace(/\D/g, "").length === 11;
@@ -227,19 +229,20 @@ function validateForm(showErrors = false) {
     emailValue === "" || validateEmail(emailValue);
 
   if (showErrors) {
-toggleError(lastName, !isLastValid);
-toggleError(firstName, !isFirstValid);
-toggleError(thirdName, !isThirdValid);
+    toggleError(lastName, !isLastValid);
+    toggleError(firstName, !isFirstValid);
+    toggleError(thirdName, !isThirdValid);
+    toggleError(phone, !isPhoneValid);
     toggleError(email, emailValue !== "" && !isEmailValid);
   }
 
- return (
-  isLastValid &&
-  isFirstValid &&
-  isThirdValid &&
-  isPhoneValid &&
-  isEmailValid
-);
+  return (
+    isLastValid &&
+    isFirstValid &&
+    isThirdValid &&
+    isPhoneValid &&
+    isEmailValid
+  );
 }
 
 
@@ -435,16 +438,41 @@ function showExistingPatients(foundData) {
 
     });
 
-  document
-    .getElementById("createAnyway")
-    .addEventListener("click", () => {
+document
+  .getElementById("createAnyway")
+  .addEventListener("click", () => {
 
-      modal.remove();
+    modal.remove();
 
-      // Просто продолжим создание нового
-      document.getElementById("createPatientNext").click();
+    const slot = getSelectedSlotObject();
+    if (!slot) return;
 
-    });
+    const phoneDigits = document
+      .getElementById("newPhone")
+      .value.replace(/\D/g, "");
+
+    const birthValue =
+      document.getElementById("newBirthDate").value;
+
+    const genderValue =
+      document.getElementById("newGender").value;
+
+    openConfirmAppointment({
+      isNew: true,
+      last_name: document.getElementById("newLastName").value.trim(),
+      first_name: document.getElementById("newFirstName").value.trim(),
+      third_name: document.getElementById("newThirdName").value.trim(),
+      gender: genderValue === "male" ? "М" :
+              genderValue === "female" ? "Ж" : "—",
+      birth_date: birthValue
+        ? formatBirthDate(birthValue)
+        : "—",
+      mobile: "+" + phoneDigits,
+      email: document.getElementById("newEmail").value.trim()
+    }, slot);
+
+    document.querySelector(".patient-overlay")?.remove();
+  });
 
 }
 
