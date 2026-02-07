@@ -104,6 +104,28 @@ function renderFatal(text) {
   `;
 }
 // ===============================
+// FETCH WITH TIMEOUT (2 сек)
+// ===============================
+async function fetchWithTimeout(url, options, timeout = 2000) {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal
+    });
+    clearTimeout(id);
+    return response;
+  } catch (err) {
+    clearTimeout(id);
+    throw err;
+  }
+}
+
+
+
+// ===============================
 // UI helpers
 // ===============================
 function getShortName(fullName) {
@@ -130,13 +152,36 @@ async function renderVisits() {
     return;
   }
 
-  const response = await fetch('/api/mis/doctors', {
+ let response;
+
+try {
+
+  response = await fetchWithTimeout('/api/mis/doctors', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       telegramUserId: tg.initDataUnsafe.user.id
     })
-  });
+  }, 2000);
+
+} catch (err) {
+
+  console.warn("Doctors request timeout, retrying...");
+
+  try {
+    response = await fetch('/api/mis/doctors', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        telegramUserId: tg.initDataUnsafe.user.id
+      })
+    });
+  } catch (err2) {
+    content.innerHTML = `<div class="card">Ошибка загрузки врачей</div>`;
+    return;
+  }
+}
+
 
   const data = await response.json();
 
