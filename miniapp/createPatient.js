@@ -17,29 +17,61 @@ export function openCreatePatient() {
       <div class="patient-search-block">
 
         <label>Фамилия *</label>
-        <input type="text" id="newLastName" class="form-input" />
+       <input 
+  type="text" 
+  id="newLastName" 
+  class="form-input compact" 
+  placeholder="Фамилия *" 
+/>
 
         <label>Имя *</label>
-        <input type="text" id="newFirstName" class="form-input" />
+       <input 
+  type="text" 
+  id="newFirstName" 
+  class="form-input compact" 
+  placeholder="Имя *" 
+/>
 
         <label>Отчество</label>
-        <input type="text" id="newThirdName" class="form-input" />
+    <input 
+  type="text" 
+  id="newThirdName" 
+  class="form-input compact" 
+  placeholder="Отчество" 
+/>
 
-        <label>Пол</label>
-        <select id="newGender" class="form-input">
-          <option value="">Не указан</option>
-          <option value="male">Мужской</option>
-          <option value="female">Женский</option>
-        </select>
+<div class="row-2">
+  <div class="col">
+    <label>Пол</label>
+    <select id="newGender" class="form-input">
+      <option value="">Не указан</option>
+      <option value="male">Мужской</option>
+      <option value="female">Женский</option>
+    </select>
+  </div>
 
-        <label>Дата рождения</label>
-        <input type="date" id="newBirthDate" class="form-input" />
+  <div class="col">
+    <label>Дата рождения</label>
+    <input type="date" id="newBirthDate" class="form-input" />
+  </div>
+</div>
+
 
         <label>Телефон *</label>
-        <input type="tel" id="newPhone" class="form-input" placeholder="+7 (___) ___ __-__" />
+   <input 
+  type="tel" 
+  id="newPhone" 
+  class="form-input compact" 
+  placeholder="+7 (___) ___ __-__ *" 
+/>
 
         <label>Email</label>
-        <input type="email" id="newEmail" class="form-input" />
+      <input 
+  type="email" 
+  id="newEmail" 
+  class="form-input compact" 
+  placeholder="E-mail" 
+/>
 
       </div>
 
