@@ -355,7 +355,7 @@ nextBtn.addEventListener("click", async () => {
       last_name: lastName.value.trim(),
       first_name: firstName.value.trim(),
       third_name: thirdName.value.trim(),
-      gender: formatGender(genderValue),
+      gender: formatGender(selectedPatient.gender),
       birth_date: formatBirthDate(birthValue),
       mobile: formattedPhone,
       email: email.value.trim()
@@ -364,7 +364,23 @@ nextBtn.addEventListener("click", async () => {
     overlay.remove();
     openConfirmAppointment(patient, slot);
   }
+function formatGender(value) {
 
+  if (!value) return "—";
+
+  const v = String(value).toLowerCase();
+
+  if (v === "male" || v === "m" || v === "1" || v === "м")
+    return "М";
+
+  if (v === "female" || v === "f" || v === "2" || v === "ж")
+    return "Ж";
+
+  return "—";
+}
+
+
+  
 });
 
 
