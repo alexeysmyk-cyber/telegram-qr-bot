@@ -1825,3 +1825,18 @@ body {
   cursor: pointer;
 }
 
+.patient-search-block select {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid #dceef5;
+  font-size: 16px;
+  box-sizing: border-box;
+  outline: none;
+  background: white;
+}
+
+.patient-search-block select:focus {
+  border-color: #00a4c7;
+  box-shadow: 0 0 0 2px rgba(0,164,199,0.15);
+}
