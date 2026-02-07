@@ -263,13 +263,15 @@ thirdName.addEventListener("input", (e) => {
   }
 
 
-gender.addEventListener("change", () => {
-  if (gender.value) {
-    gender.classList.add("valid");
-  } else {
-    gender.classList.remove("valid");
-  }
-});
+if (gender) {
+  gender.addEventListener("change", () => {
+    if (gender.value) {
+      gender.classList.add("valid");
+    } else {
+      gender.classList.remove("valid");
+    }
+  });
+}
 
 
   
