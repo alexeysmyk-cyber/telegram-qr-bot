@@ -1864,4 +1864,36 @@ input[type="date"].form-input {
   margin: 14px 0 6px 0;
   font-size: 14px;
 }
+/* ============================= */
+/* CREATE PATIENT COMPACT STYLE */
+/* ============================= */
+
+.form-input.compact {
+  padding: 10px 14px;
+  font-size: 15px;
+  border-radius: 12px;
+  margin-bottom: 10px;
+}
+
+/* placeholder мягче */
+.form-input::placeholder {
+  color: #9aa6b2;
+  font-size: 14px;
+}
+
+/* два поля в строку */
+.row-2 {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.row-2 .col {
+  flex: 1;
+}
+
+/* уменьшаем отступы внутри формы */
+.patient-search-block {
+  padding: 14px;
+}
 
