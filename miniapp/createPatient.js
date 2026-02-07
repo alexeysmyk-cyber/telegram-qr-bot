@@ -89,6 +89,20 @@ export function openCreatePatient() {
   const email = document.getElementById("newEmail");
   const nextBtn = document.getElementById("createPatientNext");
 
+  const birthInput = document.getElementById("newBirthDate");
+
+// делаем серый текст пока пусто
+birthInput.classList.add("placeholder-date");
+
+birthInput.addEventListener("change", () => {
+  if (birthInput.value) {
+    birthInput.classList.remove("placeholder-date");
+  } else {
+    birthInput.classList.add("placeholder-date");
+  }
+});
+
+
   document
     .getElementById("closeCreatePatient")
     .addEventListener("click", () => overlay.remove());
@@ -249,7 +263,18 @@ thirdName.addEventListener("input", (e) => {
     if (gender === "female") return "Ж";
     return "—";
   }
+const gender = document.getElementById("newGender");
 
+gender.addEventListener("change", () => {
+  if (gender.value) {
+    gender.classList.add("valid");
+  } else {
+    gender.classList.remove("valid");
+  }
+});
+
+
+  
   function formatBirthDate(dateString) {
     if (!dateString) return "—";
 
