@@ -9,12 +9,15 @@ export function openConfirmAppointment(patient, slot, options = {}) {
   
 selectedServices = [];
 
+let doctorChanged = false;
+
 if (isMove && oldVisit) {
 
   const oldDoctorId = oldVisit.doctor_id || oldVisit.user_id;
   const newDoctorId = slot.user_id;
 
-  const doctorChanged = String(oldDoctorId) !== String(newDoctorId);
+  doctorChanged = String(oldDoctorId) !== String(newDoctorId);
+//  const doctorChanged = String(oldDoctorId) !== String(newDoctorId);
 
   if (!doctorChanged && defaultServices.length) {
     // Врач тот же — переносим услуги
@@ -145,6 +148,20 @@ if (isMove && oldVisit) {
       </div>
 
       <!-- УСЛУГИ -->
+
+${isMove && doctorChanged ? `
+  <div class="visit-warning" style="
+      background:#fff3cd;
+      padding:10px;
+      border-radius:8px;
+      margin-bottom:12px;
+      font-size:14px;
+  ">
+    Услуги были очищены, так как выбран другой врач
+  </div>
+` : ""}
+
+      
       <div class="visit-card" style="margin-top:20px; text-align:center;">
         <button class="secondary-btn" id="addServiceBtn">
           Добавить услугу
