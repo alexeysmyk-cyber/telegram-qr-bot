@@ -557,11 +557,10 @@ function getVisitType(v) {
   return "Повторный визит";
 }
 
-) {
+function hideVisitLoader() {
   const loader = document.getElementById("visitLoaderOverlay");
   if (loader) loader.remove();
 }
-
 
 function showVisitLoader() {
 
