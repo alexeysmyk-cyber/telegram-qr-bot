@@ -194,7 +194,15 @@ document.getElementById("createNextBtn")
     // обычное создание
 const slot = getSelectedSlotObject();
 
-openSelectPatient(slot);
+openSelectPatient((patient) => {
+
+  overlay.remove();
+
+  import("./confirmAppointment.js").then(module => {
+    module.openConfirmAppointment(patient, slot);
+  });
+
+});
     
 });
 
