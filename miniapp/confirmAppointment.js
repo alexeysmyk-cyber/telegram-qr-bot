@@ -82,7 +82,7 @@ if (isMove && defaultServices.length) {
 
     <div class="visit-row right">
       <span>Врач:</span>
-      <span>${oldVisit.doctor}</span>
+      <span>${oldVisit.doctor || oldVisit.doctor_name || "—"}</span>
     </div>
 
     <div class="visit-row right">
@@ -292,10 +292,11 @@ async function openSelectServices(doctorId) {
 
   document.body.appendChild(overlay);
 
-  if (isMove && selectedServices.length) {
+// если перенос — сразу отрисовываем услуги
+if (isMove && selectedServices.length) {
   renderSelectedServices();
 }
-
+  
   document.getElementById("closeServices")
     .addEventListener("click", () => overlay.remove());
 
