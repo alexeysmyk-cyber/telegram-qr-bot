@@ -1,4 +1,4 @@
-import { openConfirmAppointment } from "./confirmAppointment.js";
+//import { openConfirmAppointment } from "./confirmAppointment.js";
 
 //import { getSelectedSlotObject } from "./createVisit.js";
 
@@ -254,11 +254,14 @@ container.querySelectorAll(".patient-card")
 
       document.querySelector(".patient-overlay")?.remove();
 
-     openConfirmAppointment(patient, slot);
+      if (onSelect) {
+        onSelect(patient);
+      }
 
     });
 
   });
+
 
 
 }
