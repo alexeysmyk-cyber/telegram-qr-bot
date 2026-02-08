@@ -203,9 +203,7 @@ cancelBtn.addEventListener("click", () => {
   selectedServices = [];
   overlay.remove();
 
-  if (previousOverlay) {
-    previousOverlay.classList.remove("hidden");
-  }
+
 
   const fab = document.getElementById("fabCreate");
   if (fab) fab.style.display = "flex";
