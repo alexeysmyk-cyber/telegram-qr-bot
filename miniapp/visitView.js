@@ -87,6 +87,13 @@ async function loadVisit(id, overlay) {
     document
       .getElementById("closeVisitBtn")
       .addEventListener("click", () => overlay.remove());
+
+
+
+
+
+
+    
   }
 }
 
@@ -136,6 +143,41 @@ const isRefused = visit.status === "refused";
 
   document.getElementById("closeBottomBtn")
     .addEventListener("click", () => overlay.remove());
+
+
+// ===== ПЕРЕНОС ВИЗИТА =====
+const moveBtn = document.getElementById("moveVisitBtn");
+
+if (moveBtn) {
+  moveBtn.addEventListener("click", () => {
+
+      // показываем loader
+    showVisitLoader();
+    
+    // закрываем карточку
+    overlay.remove();
+
+setTimeout(() => {
+
+      openCreateVisit({
+        mode: "move",
+        visit: visit
+      });
+
+      // через короткое время скрываем loader
+      setTimeout(() => {
+        hideVisitLoader();
+      }, 400);
+
+    }, 100);
+
+    });
+
+  });
+}
+
+
+  
 
 
 const cancelBtn = document.getElementById("cancelVisitBtn");
