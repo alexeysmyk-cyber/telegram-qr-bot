@@ -160,6 +160,7 @@ ${isMove ? `
 // 🔥 если перенос — сразу показать услуги
 if (isMove && selectedServices.length) {
   renderSelectedServices();
+  updateTotalPrice();
 }
   
 document.getElementById("closeConfirm")
@@ -178,7 +179,7 @@ document.getElementById("confirmCreateBtn")
 
     if (isMove) {
   console.log("Перенос визита", {
-    old_visit_id: oldVisit.id,
+    old_visit_id: oldVisit?.id,
     new_time_start: slot.time_start,
     new_time_end: slot.time_end,
     services: selectedServices.map(s => s.id)
@@ -335,7 +336,7 @@ async function loadServices(doctorId) {
 container.innerHTML = services.map(s => `
   <div class="service-item-select" 
        data-id="${s.service_id}">
-    <div><span>${s.title || s.name || "Услуга"}</span>}</div>
+    <div><span>${s.title || s.name || "Услуга"}</span></div>
     <div><span>${s.value || s.price || 0} ₽</span></div>
   </div>
 `).join("");
@@ -452,10 +453,11 @@ function renderOldServices(visit) {
 
       ${visit.services.map(s => `
         <div class="visit-row right">
-          <span>${s.title}</span>
-          <span>${s.value} ₽</span>
+          <span>${s.title || s.name || "Услуга"}</span>
+          <span>${s.value || s.price || 0} ₽</span>
         </div>
       `).join("")}
     </div>
   `;
 }
+
