@@ -191,6 +191,12 @@ document.getElementById("confirmCreateBtn")
   .addEventListener("click", () => {
 
     if (isMove) {
+      
+  if (!oldVisit) {
+    console.error("Old visit not found");
+    return;
+
+      
   console.log("Перенос визита", {
     old_visit_id: oldVisit?.id,
     new_time_start: slot.time_start,
@@ -384,8 +390,8 @@ container.querySelectorAll(".service-item-select")
       const id = el.dataset.id;
 
       const service = services.find(
-        s => String(s.service_id) === String(id)
-      );
+  s => String(s.service_id || s.id) === String(id)
+);
 
       const existing = selectedServices.find(
         s => String(s.id) === String(id)
@@ -397,11 +403,11 @@ container.querySelectorAll(".service-item-select")
         );
         el.classList.remove("selected");
       } else {
-        selectedServices.push({
-          id: service.service_id,
-          name: service.title,
-          price: service.price
-        });
+       selectedServices.push({
+  id: service.service_id || service.id,
+  name: service.title || service.name,
+  price: service.value || service.price || 0
+});
         el.classList.add("selected");
       }
 updateTotalPrice();
