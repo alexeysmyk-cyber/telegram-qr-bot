@@ -1949,3 +1949,12 @@ input[type="date"].form-input {
 .duplicate-card:hover {
   background: #fff3cd;
 }
+.visit-warning {
+  background: #fff3cd;
+  color: #856404;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  font-size: 14px;
+  text-align: center;
+}
