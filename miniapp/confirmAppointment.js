@@ -157,6 +157,11 @@ ${isMove ? `
 
   document.body.appendChild(overlay);
 
+// 🔥 если перенос — сразу показать услуги
+if (isMove && selectedServices.length) {
+  renderSelectedServices();
+}
+  
 document.getElementById("closeConfirm")
   .addEventListener("click", () => {
     selectedServices = [];  // 🔥 очистка
@@ -293,9 +298,7 @@ async function openSelectServices(doctorId) {
   document.body.appendChild(overlay);
 
 // если перенос — сразу отрисовываем услуги
-if (isMove && selectedServices.length) {
-  renderSelectedServices();
-}
+
   
   document.getElementById("closeServices")
     .addEventListener("click", () => overlay.remove());
@@ -332,8 +335,8 @@ async function loadServices(doctorId) {
 container.innerHTML = services.map(s => `
   <div class="service-item-select" 
        data-id="${s.service_id}">
-    <div>${s.title}</div>
-    <div>${s.price} ₽</div>
+    <div><span>${s.title || s.name || "Услуга"}</span>}</div>
+    <div><span>${s.value || s.price || 0} ₽</span></div>
   </div>
 `).join("");
 
