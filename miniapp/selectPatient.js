@@ -254,9 +254,7 @@ container.querySelectorAll(".patient-card")
 
       document.querySelector(".patient-overlay")?.remove();
 
-      const slot = getSelectedSlotObject();
-
-      openConfirmAppointment(patient, slot);
+     openConfirmAppointment(patient, slot);
 
     });
 
