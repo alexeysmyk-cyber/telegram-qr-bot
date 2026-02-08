@@ -199,16 +199,22 @@ if (isMove) {
 
   if (cancelBtn) {
     cancelBtn.addEventListener("click", () => {
+
       selectedServices = [];
       overlay.remove();
-if (options.previousOverlay) {
-    options.previousOverlay.classList.remove("hidden");
-  }
 
-      
+      // 🔥 ВОССТАНАВЛИВАЕМ старую карточку
+      if (previousOverlay) {
+        previousOverlay.classList.remove("hidden");
+      }
+
+      // 🔥 Возвращаем FAB
+      const fab = document.getElementById("fabCreate");
+      if (fab) fab.style.display = "flex";
     });
   }
 }
+
 
 
   
