@@ -1,5 +1,5 @@
 import { openCancelModal } from "./cancelVisit.js";
-import { openCreateVisit } from "./confirmVisit.js";
+import { openCreateVisit } from "./createVisit.js";
 // ===============================
 // FULLSCREEN VISIT VIEW
 // ===============================
@@ -557,7 +557,7 @@ function getVisitType(v) {
   return "Повторный визит";
 }
 
-function hideVisitLoader() {
+) {
   const loader = document.getElementById("visitLoaderOverlay");
   if (loader) loader.remove();
 }
