@@ -1959,3 +1959,6 @@ input[type="date"].form-input {
   font-size: 14px;
   text-align: center;
 }
+.hidden {
+  display: none !important;
+}
