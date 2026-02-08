@@ -209,7 +209,7 @@ document.getElementById("confirmCreateBtn")
   if (!oldVisit) {
     console.error("Old visit not found");
     return;
-
+  }
       
   console.log("Перенос визита", {
     old_visit_id: oldVisit?.id,
@@ -354,24 +354,6 @@ async function openSelectServices(doctorId) {
 
 // если перенос — сразу отрисовываем услуги
 
-  if (isMove && oldVisit) {
-
-  const oldDoctorId = oldVisit.doctor_id || oldVisit.user_id;
-  const newDoctorId = slot.user_id;
-
-  if (String(oldDoctorId) !== String(newDoctorId)) {
-
-    const info = document.createElement("div");
-    info.className = "visit-warning";
-    info.innerHTML = `
-      Услуги были очищены,
-      так как выбран другой врач
-    `;
-
-    const container = overlay.querySelector(".create-container");
-    container.prepend(info);
-  }
-}
 
 
   
