@@ -12,13 +12,33 @@ let selectedDuration = 60;
 let hidePast = false;    
 let hideBusy = false;     
 
+let selectedPatient = null;
+
+if (isMove && movingVisit) {
+
+  selectedPatient = {
+    patient_id: movingVisit.patient_id,
+    patient_name: movingVisit.patient_name,
+    patient_birth_date: movingVisit.patient_birth_date,
+    patient_gender: movingVisit.patient_gender,
+    patient_phone: movingVisit.patient_phone,
+    patient_email: movingVisit.patient_email
+  };
+
+}
+
+
+
 export function getSelectedSlotObject() {
   if (!selectedSlots.length) return null;
   return currentSchedule[selectedSlots[0]];
 }
 
 
-export async function openCreateVisit() {
+export async function openCreateVisit(options = {}) {
+
+  const isMove = options.mode === "move";
+const movingVisit = options.visit || null;
 
    // 🔥 СБРОС СОСТОЯНИЯ
   selectedSlots = [];
@@ -134,13 +154,14 @@ document.getElementById("createNextBtn")
 
     if (selectedSlots.length === 0) return;
 
+    if (!isMove) {
     openSelectPatient((patient) => {
 
       console.log("Выбран пациент:", patient);
 
       // здесь позже будем сохранять пациента
     });
-
+    }
   });
   document.getElementById("closeCreateBtn")
   .addEventListener("click", () => {
