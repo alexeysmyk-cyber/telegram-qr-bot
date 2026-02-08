@@ -1,6 +1,6 @@
 import { renderCalendar } from "./calendar.js";
 import { openVisitView } from "./visitView.js";
-//import { renderVisit } from "./visitView.js";
+import { renderVisit } from "./visitView.js";
 import { openSelectPatient } from "./selectPatient.js";
 
 let selectedSlots = [];
@@ -192,18 +192,9 @@ document.getElementById("createNextBtn")
     }
 
     // обычное создание
-const slot = getSelectedSlotObject();
-
-openSelectPatient((patient) => {
-
-  overlay.remove();
-
-  import("./confirmAppointment.js").then(module => {
-    module.openConfirmAppointment(patient, slot);
-  });
-
-});
-    
+    openSelectPatient((patient) => {
+      selectedPatient = patient;
+    });
 });
 
   document.getElementById("closeCreateBtn")
@@ -780,9 +771,7 @@ function openVisitViewByData(visit) {
 
   document.body.appendChild(overlay);
 
- import("./visitView.js").then(module => {
-  module.renderVisit(visit, overlay);
-}); // ← используем уже существующий renderVisit
+  renderVisit(visit, overlay); // ← используем уже существующий renderVisit
 }
 
 function openVisitSelectionOverlay(visits) {
