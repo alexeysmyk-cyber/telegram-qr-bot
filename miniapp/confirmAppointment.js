@@ -6,10 +6,6 @@ export function openConfirmAppointment(patient, slot, options = {}) {
   const oldVisit = options.oldVisit || null;
   const defaultServices = options.defaultServices || [];
 
-  if (isMove && !oldVisit) {
-  console.error("oldVisit обязателен при переносе");
-  return;
-}
   
 selectedServices = [];
 
@@ -436,9 +432,6 @@ container.querySelectorAll(".service-item-select")
         );
         el.classList.remove("selected");
       } else {
-
-        if (!service) return;
-        
        selectedServices.push({
   id: service.service_id || service.id,
   name: service.title || service.name,
