@@ -134,7 +134,7 @@ const isRefused = visit.status === "refused";
 </div>
     </div>
   `;
-  
+const moveBtn = document.getElementById("moveVisitBtn");  
 moveBtn.addEventListener("click", () => {
   overlay.remove(); // закрываем карточку визита
   startMoveVisit(visit);
