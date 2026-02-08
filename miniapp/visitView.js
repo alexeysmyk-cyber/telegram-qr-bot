@@ -1,3 +1,5 @@
+import { startMoveVisit } from "./visitActions.js";
+
 import { openCancelModal } from "./cancelVisit.js";
 // ===============================
 // FULLSCREEN VISIT VIEW
