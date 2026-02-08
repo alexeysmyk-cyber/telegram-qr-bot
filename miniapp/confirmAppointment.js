@@ -1,11 +1,11 @@
 let selectedServices = [];
 
 export function openConfirmAppointment(patient, slot, options = {}) {
-  
+  const previousOverlay = options.previousOverlay || null;
  const isMove = options.mode === "move";
   const oldVisit = options.oldVisit || null;
   const defaultServices = options.defaultServices || [];
-const previousOverlay = options.previousOverlay || null;
+
   
 selectedServices = [];
 
