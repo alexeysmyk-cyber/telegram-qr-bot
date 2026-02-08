@@ -136,8 +136,8 @@ const isRefused = visit.status === "refused";
   `;
 const moveBtn = document.getElementById("moveVisitBtn");  
 moveBtn.addEventListener("click", () => {
-overlay.classList.add("hidden");
-startMoveVisit(visit, overlay);
+  overlay.classList.add("hidden");
+  startMoveVisit(visit, overlay);
 });
 
   document.getElementById("closeBottomBtn")
