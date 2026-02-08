@@ -3,30 +3,6 @@ import { openCancelModal } from "./cancelVisit.js"; // если нужно
 import { openMoveVisitFlow } from "./moveVisit.js";
 import { openCreateVisit } from "./createVisit.js";
 
-function hideVisitLoader() {
-  const loader = document.getElementById("visitLoaderOverlay");
-  if (loader) loader.remove();
-}
-
-
-function showVisitLoader() {
-
-  const overlay = document.createElement("div");
-  overlay.className = "visit-overlay";
-  overlay.id = "visitLoaderOverlay";
-
-overlay.innerHTML = `
-  <div class="visit-loading">
-    <div class="visit-spinner"></div>
-    <div class="visit-loading-text">
-      Загрузка визита...
-    </div>
-  </div>
-`;
-
-
-  document.body.appendChild(overlay);
-}
 // ===============================
 // REQUEST GUARD (защита от гонок)
 // ===============================
@@ -267,8 +243,8 @@ function renderSlot(slot) {
 
   const status = normalizeStatus(slot);
 
- const timeStart = slot.time_start?.split(" ")[1] || "";
-const timeEnd = slot.time_end?.split(" ")[1] || "";
+  const timeStart = slot.time_start.split(" ")[1];
+  const timeEnd = slot.time_end.split(" ")[1];
 
  let star = "";
 
@@ -340,31 +316,18 @@ function getSlotClass(status) {
 // ===============================
 function isPast(dateString) {
 
-  if (!dateString || typeof dateString !== "string") return false;
-
-  const parts = dateString.split(" ");
-  if (parts.length < 2) return false;
-
-  const [datePart, timePart] = parts;
-
-  if (!datePart.includes(".") || !timePart.includes(":")) {
-    return false;
-  }
-
+  const [datePart, timePart] = dateString.split(" ");
   const [dd, mm, yyyy] = datePart.split(".");
-  const [hh, min] = timePart.split(":");
-
-  if (!dd || !mm || !yyyy || !hh || !min) return false;
 
   const visitUTC = Date.UTC(
-    Number(yyyy),
-    Number(mm) - 1,
-    Number(dd),
-    Number(hh),
-    Number(min)
+    yyyy,
+    mm - 1,
+    dd,
+    ...timePart.split(":")
   );
 
   const now = new Date();
+
   const nowMoscow = new Date(
     now.toLocaleString("en-US", { timeZone: "Europe/Moscow" })
   );
@@ -380,7 +343,6 @@ function isPast(dateString) {
 
   return visitUTC < nowUTC;
 }
-
 
 
 // ===============================
@@ -477,8 +439,6 @@ slot.addEventListener("touchend", (e) => {
 
 if (diff > threshold) {
 
-  showVisitLoader(); // 🔥 показываем лоадер сразу
-
   fetch("/api/mis/appointment-by-id", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -488,35 +448,19 @@ if (diff > threshold) {
   .then(data => {
 
     if (data.error !== 0 || !data.data?.length) {
-      hideVisitLoader();
       alert("Ошибка загрузки визита");
       return;
     }
 
     const fullVisit = data.data[0];
 
-    // небольшая пауза чтобы loader точно отрисовался
-    setTimeout(() => {
+    openCreateVisit({
+      mode: "move",
+      visit: fullVisit
+    });
 
-      openCreateVisit({
-        mode: "move",
-        visit: fullVisit
-      });
-
-      // скрываем loader после открытия
-      setTimeout(() => {
-        hideVisitLoader();
-      }, 400);
-
-    }, 100);
-
-  })
-  .catch(() => {
-    hideVisitLoader();
-    alert("Ошибка соединения");
   });
 }
-
 
 
 
@@ -620,4 +564,3 @@ window.reloadSchedule = function(dateOverride = null) {
 
   loadSchedule(params);
 };
-
