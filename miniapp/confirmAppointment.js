@@ -163,6 +163,19 @@ if (isMove && selectedServices.length) {
   updateTotalPrice();
 }
   
+if (isMove) {
+  const cancelBtn = document.getElementById("cancelMoveBtn");
+
+  if (cancelBtn) {
+    cancelBtn.addEventListener("click", () => {
+      selectedServices = [];
+      overlay.remove();
+    });
+  }
+}
+
+
+  
 document.getElementById("closeConfirm")
   .addEventListener("click", () => {
     selectedServices = [];  // 🔥 очистка
@@ -233,21 +246,42 @@ function formatDate(str) {
 
   if (!str) return "—";
 
-  // Приводим к ISO формату
-  const date = new Date(str.replace(" ", "T"));
+  let date;
+
+  // Если формат MIS: 10.02.2026 14:30
+  if (str.includes(".")) {
+
+    const [datePart] = str.split(" ");
+    const [dd, mm, yyyy] = datePart.split(".");
+
+    date = new Date(
+      Number(yyyy),
+      Number(mm) - 1,
+      Number(dd)
+    );
+
+  } else {
+    // если ISO
+    date = new Date(str);
+  }
 
   if (isNaN(date)) return "—";
 
   const formatted = date.toLocaleDateString("ru-RU", {
     weekday: "long",
-    day: "numeric",
+    day: "2-digit",
     month: "long",
     year: "numeric"
   });
 
-  // Первая буква заглавная
-  return formatted.charAt(0).toUpperCase() + formatted.slice(1);
+  // Делаем первую букву заглавной
+  const capitalized =
+    formatted.charAt(0).toUpperCase() +
+    formatted.slice(1);
+
+  return capitalized + " г";
 }
+
 
 
 
