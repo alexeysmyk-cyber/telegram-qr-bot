@@ -439,23 +439,29 @@ slot.addEventListener("touchend", (e) => {
 
 if (diff > threshold) {
 
-  const visit = window.currentVisits?.find(
-    v => v.id == appointmentId
-  );
+  fetch("/api/mis/appointment-by-id", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ appointment_id: appointmentId })
+  })
+  .then(res => res.json())
+  .then(data => {
 
-  if (visit) {
+    if (data.error !== 0 || !data.data?.length) {
+      alert("Ошибка загрузки визита");
+      return;
+    }
 
-    deactivateLongPressMode(slot);
-    slot.style.transform = "";
+    const fullVisit = data.data[0];
 
     openCreateVisit({
       mode: "move",
-      visit: visit
+      visit: fullVisit
     });
-  }
 
-  return;
+  });
 }
+
 
 
 
