@@ -340,23 +340,31 @@ function getSlotClass(status) {
 // ===============================
 function isPast(dateString) {
 
-    if (!dateString) return false;
+  if (!dateString || typeof dateString !== "string") return false;
 
   const parts = dateString.split(" ");
   if (parts.length < 2) return false;
 
   const [datePart, timePart] = parts;
+
+  if (!datePart.includes(".") || !timePart.includes(":")) {
+    return false;
+  }
+
   const [dd, mm, yyyy] = datePart.split(".");
+  const [hh, min] = timePart.split(":");
+
+  if (!dd || !mm || !yyyy || !hh || !min) return false;
 
   const visitUTC = Date.UTC(
-    yyyy,
-    mm - 1,
-    dd,
-    ...timePart.split(":")
+    Number(yyyy),
+    Number(mm) - 1,
+    Number(dd),
+    Number(hh),
+    Number(min)
   );
 
   const now = new Date();
-
   const nowMoscow = new Date(
     now.toLocaleString("en-US", { timeZone: "Europe/Moscow" })
   );
@@ -372,6 +380,7 @@ function isPast(dateString) {
 
   return visitUTC < nowUTC;
 }
+
 
 
 // ===============================
