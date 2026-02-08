@@ -7,14 +7,28 @@ export function openConfirmAppointment(patient, slot, options = {}) {
   const defaultServices = options.defaultServices || [];
 
   
-selectedServices = []; // 🔥 сброс при каждом открытии
-if (isMove && defaultServices.length) {
-  selectedServices = defaultServices.map(s => ({
-    id: s.service_id || s.id,
-    name: s.title || s.name,
-    price: s.value || s.price
-  }));
+selectedServices = [];
+
+if (isMove && oldVisit) {
+
+  const oldDoctorId = oldVisit.doctor_id || oldVisit.user_id;
+  const newDoctorId = slot.user_id;
+
+  const doctorChanged = String(oldDoctorId) !== String(newDoctorId);
+
+  if (!doctorChanged && defaultServices.length) {
+    // Врач тот же — переносим услуги
+    selectedServices = defaultServices.map(s => ({
+      id: s.service_id || s.id,
+      name: s.title || s.name,
+      price: s.value || s.price
+    }));
+  } else {
+    // Врач изменён — очищаем услуги
+    selectedServices = [];
+  }
 }
+
   
   if (!slot) {
     console.error("Slot не передан");
@@ -339,6 +353,26 @@ async function openSelectServices(doctorId) {
   document.body.appendChild(overlay);
 
 // если перенос — сразу отрисовываем услуги
+
+  if (isMove && oldVisit) {
+
+  const oldDoctorId = oldVisit.doctor_id || oldVisit.user_id;
+  const newDoctorId = slot.user_id;
+
+  if (String(oldDoctorId) !== String(newDoctorId)) {
+
+    const info = document.createElement("div");
+    info.className = "visit-warning";
+    info.innerHTML = `
+      Услуги были очищены,
+      так как выбран другой врач
+    `;
+
+    const container = overlay.querySelector(".create-container");
+    container.prepend(info);
+  }
+}
+
 
   
   document.getElementById("closeServices")
