@@ -134,11 +134,15 @@ const isRefused = visit.status === "refused";
 </div>
     </div>
   `;
-const moveBtn = document.getElementById("moveVisitBtn");  
-moveBtn.addEventListener("click", () => {
-  overlay.classList.add("hidden");
-  startMoveVisit(visit, overlay);
-});
+const moveBtn = document.getElementById("moveVisitBtn");
+
+if (moveBtn) {
+  moveBtn.addEventListener("click", () => {
+    overlay.classList.add("hidden");
+    startMoveVisit(visit, overlay);
+  });
+}
+
 
   document.getElementById("closeBottomBtn")
     .addEventListener("click", () => overlay.remove());
@@ -607,7 +611,12 @@ function enableSwipeToClose(overlay) {
         container.classList.add("closing-left");
       }
 
-      setTimeout(() => overlay.remove(), 300);
+     setTimeout(() => {
+  if (!overlay.classList.contains("hidden")) {
+    overlay.remove();
+  }
+}, 300);
+
 
     } else {
       // вернуть на место
