@@ -60,10 +60,13 @@ if (fab) fab.style.display = "none";
   overlay.innerHTML = `
     <div class="visit-container create-container">
 
-      <div class="create-header">
-        <div class="create-title">Создание визита</div>
-        <div class="create-close" id="closeCreateBtn">✕</div>
-      </div>
+<div class="create-header">
+  <div class="create-title">
+    ${isMove ? "Перенос визита" : "Создание визита"}
+  </div>
+  <div class="create-close" id="closeCreateBtn">✕</div>
+</div>
+
 
      <div class="card" id="doctorContainer">
   <div class="doctor-row">
@@ -143,9 +146,9 @@ document.getElementById("toggleHideBusy").checked = false;
 const actionBtn = document.createElement("div");
 actionBtn.className = "fixed-bottom";
 actionBtn.innerHTML = `
-<button class="primary-btn" id="createNextBtn" disabled>
-  ${isMoveMode ? "Выбрать новый слот" : "Выбрать пациента"}
-</button>
+  <button class="primary-btn" id="createNextBtn" disabled>
+    ${isMove ? "Продолжить перенос" : "Выбрать пациента"}
+  </button>
 `;
 overlay.appendChild(actionBtn);
   
