@@ -2,7 +2,7 @@ import { openVisitView } from "./visitView.js";
 import { openCancelModal } from "./cancelVisit.js"; // если нужно
 import { openMoveVisitFlow } from "./moveVisit.js";
 import { openCreateVisit } from "./createVisit.js";
-import { showVisitLoader, hideVisitLoader } from "./visitView.js";
+
 
 // ===============================
 // REQUEST GUARD (защита от гонок)
