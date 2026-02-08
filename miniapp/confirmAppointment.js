@@ -1,7 +1,21 @@
 let selectedServices = [];
 
-export function openConfirmAppointment(patient, slot) {
+export function openConfirmAppointment(patient, slot, options = {}) {
+  
+ const isMove = options.mode === "move";
+  const oldVisit = options.oldVisit || null;
+  const defaultServices = options.defaultServices || [];
+
+  
 selectedServices = []; // 🔥 сброс при каждом открытии
+if (isMove && defaultServices.length) {
+  selectedServices = defaultServices.map(s => ({
+    id: s.service_id || s.id,
+    name: s.title || s.name,
+    price: s.value || s.price
+  }));
+}
+  
   if (!slot) {
     console.error("Slot не передан");
     return;
@@ -14,7 +28,9 @@ selectedServices = []; // 🔥 сброс при каждом открытии
     <div class="create-container">
 
       <div class="create-header">
-        <div class="create-title">Подтверждение записи</div>
+        <div class="create-title">
+  ${isMove ? "Подтвердить перенос" : "Подтверждение записи"}
+</div>
         <div class="create-close" id="closeConfirm">✕</div>
       </div>
 
@@ -48,9 +64,44 @@ selectedServices = []; // 🔥 сброс при каждом открытии
       </div>
 
       <!-- ЗАПИСЬ -->
-      <div class="visit-title-center" style="margin-top:24px;">
-        Запись
-      </div>
+    ${isMove ? `
+  <div class="visit-title-center" style="margin-top:24px;">
+    Старый приём
+  </div>
+
+  <div class="visit-card">
+    <div class="visit-row right">
+      <span>Дата:</span>
+      <span>${formatDate(oldVisit.time_start)}</span>
+    </div>
+
+    <div class="visit-row right">
+      <span>Время:</span>
+      <span>${formatTimeRange(oldVisit.time_start, oldVisit.time_end)}</span>
+    </div>
+
+    <div class="visit-row right">
+      <span>Врач:</span>
+      <span>${oldVisit.doctor}</span>
+    </div>
+
+    <div class="visit-row right">
+      <span>Кабинет:</span>
+      <span>${oldVisit.room || "—"}</span>
+    </div>
+  </div>
+
+  ${renderOldServices(oldVisit)}
+
+  <div class="visit-title-center" style="margin-top:24px;">
+    Новый приём
+  </div>
+` : `
+  <div class="visit-title-center" style="margin-top:24px;">
+    Запись
+  </div>
+`}
+
 
       <div class="visit-card">
 
@@ -89,9 +140,16 @@ selectedServices = []; // 🔥 сброс при каждом открытии
 
       <!-- КНОПКА ПОДТВЕРЖДЕНИЯ -->
       <div class="visit-actions" style="margin-top:30px;">
-        <button class="primary-btn" id="confirmCreateBtn">
-          Подтвердить запись
-        </button>
+       <button class="primary-btn" id="confirmCreateBtn">
+  ${isMove ? "Перенести" : "Подтвердить запись"}
+</button>
+
+${isMove ? `
+  <button class="secondary-btn" id="cancelMoveBtn">
+    Отмена
+  </button>
+` : ""}
+
       </div>
 
     </div>
@@ -112,6 +170,17 @@ document.getElementById("addServiceBtn")
 
 document.getElementById("confirmCreateBtn")
   .addEventListener("click", () => {
+
+    if (isMove) {
+  console.log("Перенос визита", {
+    old_visit_id: oldVisit.id,
+    new_time_start: slot.time_start,
+    new_time_end: slot.time_end,
+    services: selectedServices.map(s => s.id)
+  });
+  return;
+}
+
 
     const servicesIds = selectedServices.map(s => s.id);
 
@@ -222,6 +291,10 @@ async function openSelectServices(doctorId) {
   `;
 
   document.body.appendChild(overlay);
+
+  if (isMove && selectedServices.length) {
+  renderSelectedServices();
+}
 
   document.getElementById("closeServices")
     .addEventListener("click", () => overlay.remove());
@@ -362,4 +435,23 @@ function updateTotalPrice() {
 
   value.innerText = total + " ₽";
   row.style.display = "flex";
+}
+function renderOldServices(visit) {
+
+  if (!visit.services || !visit.services.length) return "";
+
+  return `
+    <div class="visit-card" style="margin-top:12px;">
+      <div style="font-weight:600;margin-bottom:8px;">
+        Услуги старого приёма
+      </div>
+
+      ${visit.services.map(s => `
+        <div class="visit-row right">
+          <span>${s.title}</span>
+          <span>${s.value} ₽</span>
+        </div>
+      `).join("")}
+    </div>
+  `;
 }
