@@ -3,7 +3,30 @@ import { openCancelModal } from "./cancelVisit.js"; // если нужно
 import { openMoveVisitFlow } from "./moveVisit.js";
 import { openCreateVisit } from "./createVisit.js";
 
+function hideVisitLoader() {
+  const loader = document.getElementById("visitLoaderOverlay");
+  if (loader) loader.remove();
+}
 
+
+function showVisitLoader() {
+
+  const overlay = document.createElement("div");
+  overlay.className = "visit-overlay";
+  overlay.id = "visitLoaderOverlay";
+
+overlay.innerHTML = `
+  <div class="visit-loading">
+    <div class="visit-spinner"></div>
+    <div class="visit-loading-text">
+      Загрузка визита...
+    </div>
+  </div>
+`;
+
+
+  document.body.appendChild(overlay);
+}
 // ===============================
 // REQUEST GUARD (защита от гонок)
 // ===============================
