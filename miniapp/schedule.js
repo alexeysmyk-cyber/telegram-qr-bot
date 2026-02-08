@@ -439,6 +439,8 @@ slot.addEventListener("touchend", (e) => {
 
 if (diff > threshold) {
 
+  showVisitLoader(); // 🔥 показываем лоадер сразу
+
   fetch("/api/mis/appointment-by-id", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -448,19 +450,35 @@ if (diff > threshold) {
   .then(data => {
 
     if (data.error !== 0 || !data.data?.length) {
+      hideVisitLoader();
       alert("Ошибка загрузки визита");
       return;
     }
 
     const fullVisit = data.data[0];
 
-    openCreateVisit({
-      mode: "move",
-      visit: fullVisit
-    });
+    // небольшая пауза чтобы loader точно отрисовался
+    setTimeout(() => {
 
+      openCreateVisit({
+        mode: "move",
+        visit: fullVisit
+      });
+
+      // скрываем loader после открытия
+      setTimeout(() => {
+        hideVisitLoader();
+      }, 400);
+
+    }, 100);
+
+  })
+  .catch(() => {
+    hideVisitLoader();
+    alert("Ошибка соединения");
   });
 }
+
 
 
 
