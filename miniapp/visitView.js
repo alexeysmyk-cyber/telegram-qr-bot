@@ -137,8 +137,9 @@ const isRefused = visit.status === "refused";
 const moveBtn = document.getElementById("moveVisitBtn");
 
 if (moveBtn) {
- moveBtn.addEventListener("click", () => {
-  startMoveVisit(visit, overlay);
+moveBtn.addEventListener("click", () => {
+  overlay.remove();
+  startMoveVisit(visit);
 });
 }
 
