@@ -201,6 +201,11 @@ if (isMove) {
     cancelBtn.addEventListener("click", () => {
       selectedServices = [];
       overlay.remove();
+if (options.previousOverlay) {
+    options.previousOverlay.classList.remove("hidden");
+  }
+
+      
     });
   }
 }
