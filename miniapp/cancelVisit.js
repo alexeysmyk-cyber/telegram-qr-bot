@@ -1,13 +1,5 @@
 export function openCancelModal(visit, parentOverlay) {
 
-  if (!visit || !visit.time_start) {
-  console.error("Некорректные данные визита", visit);
-  return;
-}
-
-const [visitDate = "—", visitTime = "—"] =
-  (visit.time_start || "").split(" ");
-
   const overlay = document.createElement("div");
   overlay.className = "visit-overlay";
 
@@ -27,12 +19,12 @@ const [visitDate = "—", visitTime = "—"] =
 
         <div class="visit-row right">
           <span>Дата:</span>
-          <span>${visitDate}</span>
+          <span>${visit.time_start.split(" ")[0]}</span>
         </div>
 
         <div class="visit-row right">
           <span>Время:</span>
-         <span>${visitTime}</span>
+          <span>${visit.time_start.split(" ")[1]}</span>
         </div>
 
         <div class="visit-row right">
@@ -231,7 +223,7 @@ const [visitDate = "—", visitTime = "—"] =
           
         alert("Визит успешно отменён");
         
-
+const visitDate = visit.time_start.split(" ")[0];
 
 // закрываем cancel
   overlay.remove();
