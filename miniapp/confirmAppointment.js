@@ -5,7 +5,7 @@ export function openConfirmAppointment(patient, slot, options = {}) {
  const isMove = options.mode === "move";
   const oldVisit = options.oldVisit || null;
   const defaultServices = options.defaultServices || [];
-
+const previousOverlay = options.previousOverlay || null;
   
 selectedServices = [];
 
@@ -199,6 +199,7 @@ if (isMove) {
 
   if (cancelBtn) {
 cancelBtn.addEventListener("click", () => {
+
   selectedServices = [];
   overlay.remove();
 
@@ -206,14 +207,10 @@ cancelBtn.addEventListener("click", () => {
     previousOverlay.classList.remove("hidden");
   }
 
-  const createOverlay = document.getElementById("createOverlay");
-  if (createOverlay) {
-    createOverlay.classList.remove("hidden");
-  }
-
   const fab = document.getElementById("fabCreate");
   if (fab) fab.style.display = "flex";
 });
+
   }
 }
 
@@ -222,9 +219,18 @@ cancelBtn.addEventListener("click", () => {
   
 document.getElementById("closeConfirm")
   .addEventListener("click", () => {
-    selectedServices = [];  // 🔥 очистка
+
+    selectedServices = [];
     overlay.remove();
+
+    if (previousOverlay) {
+      previousOverlay.classList.remove("hidden");
+    }
+
+    const fab = document.getElementById("fabCreate");
+    if (fab) fab.style.display = "flex";
   });
+
 
 document.getElementById("addServiceBtn")
   .addEventListener("click", () => {
