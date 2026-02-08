@@ -1,6 +1,6 @@
 import { renderCalendar } from "./calendar.js";
 import { openVisitView } from "./visitView.js";
-import { renderVisit } from "./visitView.js";
+//import { renderVisit } from "./visitView.js";
 import { openSelectPatient } from "./selectPatient.js";
 
 let selectedSlots = [];
@@ -771,7 +771,9 @@ function openVisitViewByData(visit) {
 
   document.body.appendChild(overlay);
 
-  renderVisit(visit, overlay); // ← используем уже существующий renderVisit
+ import("./visitView.js").then(module => {
+  module.renderVisit(visit, overlay);
+}); // ← используем уже существующий renderVisit
 }
 
 function openVisitSelectionOverlay(visits) {
