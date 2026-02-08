@@ -31,17 +31,6 @@ html, body {
   overscroll-behavior: none;
 }
 
-.service-item-select {
-  display: flex;
-  justify-content: space-between;
-  padding: 12px;
-  border-radius: 12px;
-  margin-bottom: 8px;
-  background: white;
-  border: 1px solid #e6f2f6;
-  cursor: pointer;
-  transition: 0.2s ease;
-}
 
 .service-item-select.selected {
   background: #e6f8fb;
@@ -75,14 +64,6 @@ body {
   justify-content: center;
   height: 80vh;
   text-align: center;
-}
-
-
-.services-header {
-  display: flex;
-  justify-content: space-between;
-  font-weight: 600;
-  cursor: pointer;
 }
 
 .services-content {
@@ -751,12 +732,6 @@ body {
   font-weight: 600;
   font-size: 13px;
   margin-bottom: 6px;
-}
-
-.cal-grid {
-  display: grid;
-  grid-template-columns: repeat(7, 1fr);
-  gap: 4px;
 }
 
 .cal-day.selected {
@@ -1567,12 +1542,6 @@ body {
  background: #fff8e1;  /* тот же фон что у slot-moved */
   color: #f59e0b;        /* тот же цвет текста */
   border: 1px solid #FCD34D;
-}
-
-.slot-free {
-  background: #e6f8fb;
-  border: 1px solid #bfeaf4;
-  border-left: 4px solid #00a4c7;
 }
 
 .slot-past {
