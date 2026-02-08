@@ -198,20 +198,22 @@ if (isMove) {
   const cancelBtn = document.getElementById("cancelMoveBtn");
 
   if (cancelBtn) {
-    cancelBtn.addEventListener("click", () => {
+cancelBtn.addEventListener("click", () => {
+  selectedServices = [];
+  overlay.remove();
 
-      selectedServices = [];
-      overlay.remove();
+  if (previousOverlay) {
+    previousOverlay.classList.remove("hidden");
+  }
 
-      // 🔥 ВОССТАНАВЛИВАЕМ старую карточку
-      if (previousOverlay) {
-        previousOverlay.classList.remove("hidden");
-      }
+  const createOverlay = document.getElementById("createOverlay");
+  if (createOverlay) {
+    createOverlay.classList.remove("hidden");
+  }
 
-      // 🔥 Возвращаем FAB
-      const fab = document.getElementById("fabCreate");
-      if (fab) fab.style.display = "flex";
-    });
+  const fab = document.getElementById("fabCreate");
+  if (fab) fab.style.display = "flex";
+});
   }
 }
 
