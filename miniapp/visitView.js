@@ -137,10 +137,9 @@ const isRefused = visit.status === "refused";
 const moveBtn = document.getElementById("moveVisitBtn");
 
 if (moveBtn) {
-  moveBtn.addEventListener("click", () => {
-    overlay.classList.add("hidden");
-    startMoveVisit(visit, overlay);
-  });
+ moveBtn.addEventListener("click", () => {
+  startMoveVisit(visit, overlay);
+});
 }
 
 
@@ -628,3 +627,5 @@ function enableSwipeToClose(overlay) {
   });
 
 }
+
+
