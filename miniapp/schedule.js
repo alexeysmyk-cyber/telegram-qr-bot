@@ -444,13 +444,19 @@ if (diff > threshold) {
   );
 
   if (visit) {
-    overlay.remove();
+
+    deactivateLongPressMode(slot);
+    slot.style.transform = "";
+
     openCreateVisit({
       mode: "move",
       visit: visit
     });
   }
+
+  return;
 }
+
 
 
 
