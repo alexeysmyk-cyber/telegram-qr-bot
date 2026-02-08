@@ -38,16 +38,14 @@ if (isMoveMode && movingVisit) {
   const fioParts = (movingVisit.patient_name || "").split(" ");
 
   selectedPatient = {
-    patient_id: movingVisit.patient_id,
-
-    last_name: fioParts[0] || "",
-    first_name: fioParts[1] || "",
-    third_name: fioParts[2] || "",
-
-    birth_date: movingVisit.patient_birth_date,
-    gender: movingVisit.patient_gender,
-    mobile: movingVisit.patient_phone,
-    email: movingVisit.patient_email,
+  patient_id: movingVisit.patient_id,
+  last_name: movingVisit.patient_last_name,
+  first_name: movingVisit.patient_first_name,
+  third_name: movingVisit.patient_third_name,
+  gender: movingVisit.patient_gender,
+  birth_date: movingVisit.patient_birth_date,
+  mobile: movingVisit.patient_phone,
+  email: movingVisit.patient_email
 
     isNew: false
   };
