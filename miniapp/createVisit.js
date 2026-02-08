@@ -177,7 +177,7 @@ document.getElementById("createNextBtn")
     if (isMoveMode) {
 
       // Переходим сразу к confirm
-      overlay.remove();
+      overlay.classList.add("hidden");
 
       import("./confirmAppointment.js").then(module => {
         module.openConfirmAppointment(
