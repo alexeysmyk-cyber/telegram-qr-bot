@@ -244,8 +244,8 @@ function renderSlot(slot) {
 
   const status = normalizeStatus(slot);
 
-  const timeStart = slot.time_start.split(" ")[1];
-  const timeEnd = slot.time_end.split(" ")[1];
+ const timeStart = slot.time_start?.split(" ")[1] || "";
+const timeEnd = slot.time_end?.split(" ")[1] || "";
 
  let star = "";
 
@@ -317,7 +317,12 @@ function getSlotClass(status) {
 // ===============================
 function isPast(dateString) {
 
-  const [datePart, timePart] = dateString.split(" ");
+    if (!dateString) return false;
+
+  const parts = dateString.split(" ");
+  if (parts.length < 2) return false;
+
+  const [datePart, timePart] = parts;
   const [dd, mm, yyyy] = datePart.split(".");
 
   const visitUTC = Date.UTC(
