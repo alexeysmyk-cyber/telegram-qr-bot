@@ -34,15 +34,25 @@ if (isMoveMode && !movingVisit) {
   selectedPatient = null;
 
 if (isMoveMode && movingVisit) {
+
+  const fioParts = (movingVisit.patient_name || "").split(" ");
+
   selectedPatient = {
     patient_id: movingVisit.patient_id,
-    patient_name: movingVisit.patient_name,
-    patient_birth_date: movingVisit.patient_birth_date,
-    patient_gender: movingVisit.patient_gender,
-    patient_phone: movingVisit.patient_phone,
-    patient_email: movingVisit.patient_email
+
+    last_name: fioParts[0] || "",
+    first_name: fioParts[1] || "",
+    third_name: fioParts[2] || "",
+
+    birth_date: movingVisit.patient_birth_date,
+    gender: movingVisit.patient_gender,
+    mobile: movingVisit.patient_phone,
+    email: movingVisit.patient_email,
+
+    isNew: false
   };
 }
+
 
    // 🔥 СБРОС СОСТОЯНИЯ
   selectedSlots = [];
