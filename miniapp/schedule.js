@@ -436,15 +436,22 @@ slot.addEventListener("touchend", (e) => {
   e.stopPropagation();
   e.preventDefault();
 
- if (diff > threshold) {
+if (diff > threshold) {
 
-  const visit = window.currentVisits?.find(v => v.id == appointmentId);
+  const visit = window.currentVisits?.find(
+    v => v.id == appointmentId
+  );
 
   if (visit) {
-    openMoveVisitFlow(visit);
+    overlay.remove();
+    openCreateVisit({
+      mode: "move",
+      visit: visit
+    });
   }
-
 }
+
+
 
   else if (diff < -threshold) {
     const visit = window.currentVisits?.find(v => v.id == appointmentId);
