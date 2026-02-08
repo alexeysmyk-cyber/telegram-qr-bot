@@ -201,14 +201,19 @@ document.getElementById("createNextBtn")
     });
 });
 
-  document.getElementById("closeCreateBtn")
+document.getElementById("closeCreateBtn")
   .addEventListener("click", () => {
 
     overlay.remove();
 
+    if (previousOverlay) {
+      previousOverlay.classList.remove("hidden");
+    }
+
     const fab = document.getElementById("fabCreate");
     if (fab) fab.style.display = "flex";
 });
+
 
   await loadDoctorsForCreate();
 
