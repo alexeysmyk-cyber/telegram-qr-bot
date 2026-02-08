@@ -10,24 +10,11 @@ let selectedDate = null;
 let selectedDuration = 60;
 
 let hidePast = false;    
-let hideBusy = false;     
+let hideBusy = false; 
 
 let selectedPatient = null;
-
-if (isMove && movingVisit) {
-
-  selectedPatient = {
-    patient_id: movingVisit.patient_id,
-    patient_name: movingVisit.patient_name,
-    patient_birth_date: movingVisit.patient_birth_date,
-    patient_gender: movingVisit.patient_gender,
-    patient_phone: movingVisit.patient_phone,
-    patient_email: movingVisit.patient_email
-  };
-
-}
-
-
+let movingVisit = null;
+let isMoveMode = false;
 
 export function getSelectedSlotObject() {
   if (!selectedSlots.length) return null;
@@ -37,8 +24,21 @@ export function getSelectedSlotObject() {
 
 export async function openCreateVisit(options = {}) {
 
-  const isMove = options.mode === "move";
-const movingVisit = options.visit || null;
+  isMoveMode = options.mode === "move";
+  movingVisit = options.visit || null;
+
+  selectedPatient = null;
+
+if (isMoveMode && movingVisit) {
+  selectedPatient = {
+    patient_id: movingVisit.patient_id,
+    patient_name: movingVisit.patient_name,
+    patient_birth_date: movingVisit.patient_birth_date,
+    patient_gender: movingVisit.patient_gender,
+    patient_phone: movingVisit.patient_phone,
+    patient_email: movingVisit.patient_email
+  };
+}
 
    // 🔥 СБРОС СОСТОЯНИЯ
   selectedSlots = [];
@@ -143,9 +143,9 @@ document.getElementById("toggleHideBusy").checked = false;
 const actionBtn = document.createElement("div");
 actionBtn.className = "fixed-bottom";
 actionBtn.innerHTML = `
-  <button class="primary-btn" id="createNextBtn" disabled>
-    Выбрать пациента
-  </button>
+<button class="primary-btn" id="createNextBtn" disabled>
+  ${isMoveMode ? "Выбрать новый слот" : "Выбрать пациента"}
+</button>
 `;
 overlay.appendChild(actionBtn);
   
@@ -154,15 +154,34 @@ document.getElementById("createNextBtn")
 
     if (selectedSlots.length === 0) return;
 
-    if (!isMove) {
-    openSelectPatient((patient) => {
+    const slot = getSelectedSlotObject();
 
-      console.log("Выбран пациент:", patient);
+    if (isMoveMode) {
 
-      // здесь позже будем сохранять пациента
-    });
+      // Переходим сразу к confirm
+      overlay.remove();
+
+      import("./confirmAppointment.js").then(module => {
+        module.openConfirmAppointment(
+          selectedPatient,
+          slot,
+          {
+            mode: "move",
+            oldVisit: movingVisit,
+            defaultServices: movingVisit.services || []
+          }
+        );
+      });
+
+      return;
     }
-  });
+
+    // обычное создание
+    openSelectPatient((patient) => {
+      selectedPatient = patient;
+    });
+});
+
   document.getElementById("closeCreateBtn")
   .addEventListener("click", () => {
 
