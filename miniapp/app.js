@@ -1,4 +1,6 @@
-
+import { renderCalendar } from './calendar.js';
+import { loadSchedule } from "./schedule.js";
+import { openCreateVisit } from "./createVisit.js"; 
 
 // ===============================
 // Telegram Mini App Init
@@ -23,10 +25,6 @@ if (window.Telegram?.WebApp) {
 
 
 
-
-import { renderCalendar } from './calendar.js';
-import { loadSchedule } from "./schedule.js";
-import { openCreateVisit } from "./createVisit.js"; 
 
 // ===============================
 // DOM
