@@ -1,5 +1,6 @@
 import { openVisitView } from "./visitView.js";
 import { openCancelModal } from "./cancelVisit.js"; // если нужно
+import { openMoveVisitFlow } from "./moveVisit.js";
 
 // ===============================
 // REQUEST GUARD (защита от гонок)
@@ -435,9 +436,16 @@ slot.addEventListener("touchend", (e) => {
   e.stopPropagation();
   e.preventDefault();
 
-  if (diff > threshold) {
-    console.log("Перенос визита", appointmentId);
+ if (diff > threshold) {
+
+  const visit = window.currentVisits?.find(v => v.id == appointmentId);
+
+  if (visit) {
+    openMoveVisitFlow(visit);
   }
+
+}
+
   else if (diff < -threshold) {
     const visit = window.currentVisits?.find(v => v.id == appointmentId);
     if (visit) openCancelModal(visit);
