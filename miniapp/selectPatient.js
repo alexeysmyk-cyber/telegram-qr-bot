@@ -1,6 +1,6 @@
 import { openConfirmAppointment } from "./confirmAppointment.js";
 
-import { getSelectedSlotObject } from "./createVisit.js";
+//import { getSelectedSlotObject } from "./createVisit.js";
 
 import { openCreatePatient } from "./createPatient.js";
 
