@@ -205,45 +205,41 @@ document.getElementById("confirmCreateBtn")
   .addEventListener("click", () => {
 
     if (isMove) {
-      
-  if (!oldVisit) {
-    console.error("Old visit not found");
-    return;
-  }
-      
-  console.log("Перенос визита", {
-    old_visit_id: oldVisit?.id,
-    new_time_start: slot.time_start,
-    new_time_end: slot.time_end,
-    services: selectedServices.map(s => s.id)
-  });
-  return;
-}
 
+      if (!oldVisit) {
+        console.error("Old visit not found");
+        return;
+      }
 
+      console.log("Перенос визита", {
+        old_visit_id: oldVisit.id,
+        new_time_start: slot.time_start,
+        new_time_end: slot.time_end,
+        services: selectedServices.map(s => s.id)
+      });
+
+      return;
+    }
+
+    // обычное создание
     const servicesIds = selectedServices.map(s => s.id);
 
-console.log("Создать запись", {
+    console.log("Создать запись", {
+      patient_id: patient.isNew ? null : patient.patient_id,
+      new_patient: patient.isNew ? {
+        last_name: patient.last_name,
+        first_name: patient.first_name,
+        third_name: patient.third_name,
+        birth_date: patient.birth_date,
+        mobile: patient.mobile
+      } : null,
+      doctor_id: slot.user_id,
+      time_start: slot.time_start,
+      time_end: slot.time_end,
+      services: servicesIds
+    });
 
-  patient_id: patient.isNew ? null : patient.patient_id,
-
-  new_patient: patient.isNew ? {
-    last_name: patient.last_name,
-    first_name: patient.first_name,
-    third_name: patient.third_name,
-    birth_date: patient.birth_date,
-    mobile: patient.mobile
-  } : null,
-
-  doctor_id: slot.user_id,
-  time_start: slot.time_start,
-  time_end: slot.time_end,
-  services: servicesIds
 });
-
-
-  });
-
 
 }
 
