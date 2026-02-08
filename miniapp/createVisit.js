@@ -26,7 +26,11 @@ export async function openCreateVisit(options = {}) {
 
   isMoveMode = options.mode === "move";
   movingVisit = options.visit || null;
-
+if (isMoveMode && !movingVisit) {
+  console.error("Move mode without visit");
+  return;
+}
+  
   selectedPatient = null;
 
 if (isMoveMode && movingVisit) {
@@ -62,7 +66,7 @@ if (fab) fab.style.display = "none";
 
 <div class="create-header">
   <div class="create-title">
-    ${isMove ? "Перенос визита" : "Создание визита"}
+    ${isMoveMode ? "Перенос визита" : "Создание визита"}
   </div>
   <div class="create-close" id="closeCreateBtn">✕</div>
 </div>
@@ -147,7 +151,7 @@ const actionBtn = document.createElement("div");
 actionBtn.className = "fixed-bottom";
 actionBtn.innerHTML = `
   <button class="primary-btn" id="createNextBtn" disabled>
-    ${isMove ? "Продолжить перенос" : "Выбрать пациента"}
+    ${isMoveMode ? "Продолжить перенос" : "Выбрать пациента"}
   </button>
 `;
 overlay.appendChild(actionBtn);
