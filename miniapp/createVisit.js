@@ -37,18 +37,18 @@ if (isMoveMode && movingVisit) {
 
   const fioParts = (movingVisit.patient_name || "").split(" ");
 
-  selectedPatient = {
+selectedPatient = {
   patient_id: movingVisit.patient_id,
-  last_name: movingVisit.patient_last_name,
-  first_name: movingVisit.patient_first_name,
-  third_name: movingVisit.patient_third_name,
+  last_name: fioParts[0] || "",
+  first_name: fioParts[1] || "",
+  third_name: fioParts[2] || "",
   gender: movingVisit.patient_gender,
   birth_date: movingVisit.patient_birth_date,
   mobile: movingVisit.patient_phone,
-  email: movingVisit.patient_email
+  email: movingVisit.patient_email,
+  isNew: false
+};
 
-    isNew: false
-  };
 }
 
 
