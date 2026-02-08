@@ -192,9 +192,10 @@ document.getElementById("createNextBtn")
     }
 
     // обычное создание
-    openSelectPatient((patient) => {
-      selectedPatient = patient;
-    });
+const slot = getSelectedSlotObject();
+
+openSelectPatient(slot);
+    
 });
 
   document.getElementById("closeCreateBtn")
