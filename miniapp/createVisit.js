@@ -24,6 +24,8 @@ export function getSelectedSlotObject() {
 
 export async function openCreateVisit(options = {}) {
 
+  const previousOverlay = options.previousOverlay || null;
+
   isMoveMode = options.mode === "move";
   movingVisit = options.visit || null;
 if (isMoveMode && !movingVisit) {
