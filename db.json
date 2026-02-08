@@ -183,7 +183,7 @@
           "enabled": true,
           "mode": "all",
           "time": "18:00",
-          "last_sent": null
+          "last_sent": "2026-02-07"
         }
       ]
     },
@@ -194,7 +194,7 @@
           "enabled": true,
           "mode": "self",
           "time": "07:00",
-          "last_sent": "2026-02-04"
+          "last_sent": "2026-02-08"
         },
         {
           "id": "uv_1700000001234",
@@ -238,6 +238,54 @@
       "doctor": "Смык Е. Б.",
       "file": "lab_33909983_1770140366037.pdf",
       "date": "2026-02-03T17:39:26.038Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "34097340",
+      "patient": "Богословский Ярослав Дмитриевич",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34097340_1770467957882.pdf",
+      "date": "2026-02-07T12:39:17.883Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "34097428",
+      "patient": "Трибельгорн Марина Алексеевна",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34097428_1770471560902.pdf",
+      "date": "2026-02-07T13:39:20.903Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34079148",
+      "patient": "Блинкова Эмма Андреевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34079148_1770478760686.pdf",
+      "date": "2026-02-07T15:39:20.688Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34079148",
+      "patient": "Блинкова Эмма Андреевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34079148_1770482366599.pdf",
+      "date": "2026-02-07T16:39:26.600Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "33933567",
+      "patient": "Павленко Алина Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_33933567_1770489564958.pdf",
+      "date": "2026-02-07T18:39:24.959Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "33910113",
+      "patient": "Артемова Екатерина Александровна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_33910113_1770518466212.pdf",
+      "date": "2026-02-08T02:41:06.213Z"
     }
   ]
 }
