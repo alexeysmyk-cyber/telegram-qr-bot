@@ -24,9 +24,23 @@ function cleanExpiredCache() {
   }
 }
 
+function cleanExpiredScheduleCache() {
+  const now = Date.now();
+
+  for (const key in scheduleCache) {
+    if (scheduleCache[key].expires <= now) {
+      delete scheduleCache[key];
+    }
+  }
+}
+
+
+
+
 // автоочистка раз в минуту
 setInterval(() => {
   cleanExpiredCache();
+  cleanExpiredScheduleCache();
 }, 60 * 1000);
 
 // =====================================================
@@ -72,6 +86,9 @@ router.post("/appointments", async (req, res) => {
     // =====================================================
     const formattedDate = formatDate(date);
 
+    if (!formattedDate) {
+  return res.status(400).json({ error: "INVALID_DATE" });
+}
     const body = {
       api_key: process.env.API_KEY,
       date_from: formattedDate + " 00:01",
@@ -92,7 +109,11 @@ router.post("/appointments", async (req, res) => {
       }
     );
 
-    if (!response.data || response.data.error !== 0) {
+    if (
+  !response.data ||
+  typeof response.data !== "object" ||
+  response.data.error !== 0
+) {
       console.log("MIS getAppointments error:", response.data);
       return res.status(502).json({ error: "MIS_ERROR" });
     }
@@ -201,8 +222,25 @@ router.post("/cancel-appointment", async (req, res) => {
         validateStatus: () => true // ← ВАЖНО
       }
     );
+if (!response.data || typeof response.data !== "object") {
+  return res.status(502).json({ error: "MIS_INVALID_RESPONSE" });
+}
+    
 
+// ===============================
+// CLEAR CACHE AFTER CANCEL
+// ===============================
+for (const key in appointmentsCache) {
+  delete appointmentsCache[key];
+}
+
+for (const key in scheduleCache) {
+  delete scheduleCache[key];
+}
+    
     // Передаём статус и тело ответа как есть
+
+    
     return res.status(response.status).json(response.data);
 
   } catch (err) {
@@ -254,15 +292,16 @@ router.post("/get-schedule", async (req, res) => {
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/getSchedule";
 
-    const response = await axios.post(
-      url,
-      qs.stringify(body),
-      {
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded"
-        }
-      }
-    );
+const response = await axios.post(
+  url,
+  qs.stringify(body),
+  {
+    headers: {
+      "Content-Type": "application/x-www-form-urlencoded"
+    },
+    timeout: 8000
+  }
+);
 
     if (!response.data || response.data.error !== 0) {
       return res.status(500).json({ error: "MIS_ERROR" });
