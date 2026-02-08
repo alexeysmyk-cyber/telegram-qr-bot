@@ -23,7 +23,8 @@ export function getSelectedSlotObject() {
 
 
 export async function openCreateVisit(options = {}) {
-
+  
+  
   const previousOverlay = options.previousOverlay || null;
 
   isMoveMode = options.mode === "move";
@@ -180,14 +181,15 @@ document.getElementById("createNextBtn")
 
       import("./confirmAppointment.js").then(module => {
         module.openConfirmAppointment(
-          selectedPatient,
-          slot,
-          {
-            mode: "move",
-            oldVisit: movingVisit,
-            defaultServices: movingVisit.services || []
-          }
-        );
+  selectedPatient,
+  slot,
+  {
+    mode: "move",
+    oldVisit: movingVisit,
+    defaultServices: movingVisit.services || [],
+    previousOverlay
+  }
+);
       });
 
       return;
