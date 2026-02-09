@@ -293,7 +293,8 @@ setTimeout(async () => {
 
   overlay.remove();
 
-  const visitDate = slot.time_start.split(" ")[0];
+ const visitDate = normalizeDateTime(slot.time_start).split(" ")[0];
+
   const doctorId = slot.user_id;
 
   const module = await import("./createVisit.js");
