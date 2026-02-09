@@ -281,6 +281,24 @@ try {
   // STATE
   // ===============================
   const doctorSelect = document.getElementById("doctorSelect");
+if (window.forceScheduleState) {
+
+  const { date, doctorId } = window.forceScheduleState;
+
+  if (doctorId && doctorSelect) {
+    doctorSelect.value = doctorId;
+  }
+
+  if (date) {
+    selectedDate = new Date(
+      date.split(".").reverse().join("-")
+    );
+  }
+
+  window.forceScheduleState = null;
+}
+
+  
 
 function initDoctorSelect() {
 
