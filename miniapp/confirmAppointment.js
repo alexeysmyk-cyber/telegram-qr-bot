@@ -272,7 +272,6 @@ showCreateLoader(overlay);
 
     if (!response.ok || data.error !== 0) {
 
-      confirmBtn.disabled = false;
 showCreateError(
   overlay,
   data?.data?.desc || "Ошибка создания визита",
@@ -293,15 +292,24 @@ showCreateError(
 
   } catch (err) {
 
-showCreateError(
-  overlay,
-  "Ошибка соединения",
-  createAppointmentRequest,
-  previousOverlay
+  showCreateError(
+      overlay,
+      "Ошибка соединения",
+      retryCreate,
+      previousOverlay
 );
   }
 }
+function retryCreate() {
+  overlay.remove();
 
+  openConfirmAppointment(patient, slot, {
+    previousOverlay,
+    mode: isMove ? "move" : undefined,
+    oldVisit,
+    defaultServices
+  });
+}
 
 }
 
@@ -652,13 +660,4 @@ function renderOldServices(visit) {
       `).join("")}
     </div>
   `;
-}
-function retryCreate() {
-  overlay.remove();
-  openConfirmAppointment(patient, slot, {
-    previousOverlay,
-    mode: isMove ? "move" : undefined,
-    oldVisit,
-    defaultServices
-  });
 }
