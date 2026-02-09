@@ -1,4 +1,4 @@
-
+window.forceScheduleState = null;
 
 // ===============================
 // Telegram Mini App Init
