@@ -465,11 +465,17 @@ router.post("/create-appointment", async (req, res) => {
     }
 
     // услуги
+//    if (services && services.length) {
+//      body.services = JSON.stringify(
+//        services.map(id => ({ service_id: id }))
+//      );
+//    }
+
     if (services && services.length) {
-      body.services = JSON.stringify(
-        services.map(id => ({ service_id: id }))
-      );
-    }
+  services.forEach((id, index) => {
+    body[`services[${index}][service_id]`] = id;
+  });
+}
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/createAppointment";
