@@ -614,9 +614,11 @@ renderCalendar(
 );
 
 
-  // 🔥 Автозагрузка сегодняшнего дня
+// 🔥 Первая загрузка без debounce
+const container = document.getElementById("scheduleContainer");
+if (container && selectedDate) {
   loadSchedule({
-    container: scheduleContainer,
+    container,
     date: formatLocalDate(selectedDate),
     doctorId: showAll ? null : doctorSelect.value,
     showAll,
@@ -624,6 +626,7 @@ renderCalendar(
     showCancelled,
     showCompleted
   });
+}
 
 
   addFloatingButton();
@@ -774,6 +777,18 @@ window.setMainDateAndReload = function (dateString) {
   );
 
   // 🔥 ВАЖНО: вызываем refreshSchedule, а не reloadSchedule
-  refreshSchedule();
+  const container = document.getElementById("scheduleContainer");
+if (container) {
+  loadSchedule({
+    container,
+    date: formatLocalDate(selectedDate),
+    doctorId: document.getElementById("doctorSelect")?.value,
+    showAll: false,
+    duration: selectedDuration,
+    showCancelled: false,
+    showCompleted: false
+  });
+}
+
 };
 
