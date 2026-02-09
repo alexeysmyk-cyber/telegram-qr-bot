@@ -258,20 +258,65 @@ document.getElementById("confirmCreateBtn")
     // обычное создание
     const servicesIds = selectedServices.map(s => s.id);
 
-    console.log("Создать запись", {
+// ===============================
+// СОЗДАНИЕ ВИЗИТА
+// ===============================
+
+confirmBtn.disabled = true;
+showCreateLoader(overlay);
+
+try {
+
+  const response = await fetch("/api/mis/create-appointment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
       patient_id: patient.isNew ? null : patient.patient_id,
-      new_patient: patient.isNew ? {
-        last_name: patient.last_name,
-        first_name: patient.first_name,
-        third_name: patient.third_name,
-        birth_date: patient.birth_date,
-        mobile: patient.mobile
-      } : null,
+      first_name: patient.isNew ? patient.first_name : null,
+      last_name: patient.isNew ? patient.last_name : null,
+      third_name: patient.isNew ? patient.third_name : null,
+      birth_date: patient.isNew ? patient.birth_date.replaceAll("-", ".") : null,
+      mobile: patient.isNew ? patient.mobile : null,
+      gender: patient.isNew
+        ? (patient.gender === "М" ? 1 : 2)
+        : null,
+      email: patient.isNew ? patient.email : null,
       doctor_id: slot.user_id,
       time_start: slot.time_start,
       time_end: slot.time_end,
-      services: servicesIds
-    });
+      room: slot.room,
+      services: selectedServices.map(s => s.id)
+    })
+  });
+
+  const data = await response.json();
+
+  if (!response.ok || data.error !== 0) {
+    showCreateError(overlay, data?.data?.desc || "Ошибка создания визита");
+    confirmBtn.disabled = false;
+    return;
+  }
+
+  showSuccessCheckmark(overlay);
+
+  setTimeout(() => {
+
+    overlay.remove();
+
+    if (window.reloadSchedule) {
+      window.reloadSchedule(
+        slot.time_start.split(" ")[0]
+      );
+    }
+
+  }, 2000);
+
+} catch (err) {
+
+  showCreateError(overlay, "Ошибка соединения");
+  confirmBtn.disabled = false;
+}
+
 
 });
 
@@ -281,6 +326,62 @@ document.getElementById("confirmCreateBtn")
 // =============================
 // HELPERS
 // =============================
+
+function showCreateError(overlay, message) {
+
+  overlay.innerHTML = `
+    <div class="visit-loading">
+      <div style="font-size:40px;color:#d9534f;">✖</div>
+      <div class="visit-loading-text" style="color:#d9534f;">
+        ${message}
+      </div>
+
+      <div style="margin-top:20px;">
+        <button class="primary-btn" id="retryCreateBtn">
+          Попробовать снова
+        </button>
+      </div>
+
+      <div style="margin-top:10px;">
+        <button class="secondary-btn" id="closeCreateBtn">
+          Назад
+        </button>
+      </div>
+    </div>
+  `;
+
+  document
+    .getElementById("closeCreateBtn")
+    ?.addEventListener("click", () => overlay.remove());
+
+}
+
+
+function showSuccessCheckmark(overlay) {
+
+  overlay.innerHTML = `
+    <div class="visit-loading">
+      <div style="font-size:60px;color:#00a4c7;">✔</div>
+      <div class="visit-loading-text">
+        Визит успешно создан
+      </div>
+    </div>
+  `;
+}
+
+
+function showCreateLoader(overlay) {
+
+  overlay.innerHTML = `
+    <div class="visit-loading">
+      <div class="visit-spinner"></div>
+      <div class="visit-loading-text">
+        Создание визита...
+      </div>
+    </div>
+  `;
+}
+
 
 function formatFio(p) {
   return [p.last_name, p.first_name, p.third_name]
