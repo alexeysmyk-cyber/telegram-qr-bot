@@ -1,6 +1,12 @@
 let selectedServices = [];
 
 export function openConfirmAppointment(patient, slot, options = {}) {
+const existing = document.querySelector(".create-fullscreen");
+if (existing) {
+  existing.remove();
+}
+
+  
   const previousOverlay = options.previousOverlay || null;
  const isMove = options.mode === "move";
   const oldVisit = options.oldVisit || null;
@@ -301,7 +307,11 @@ showCreateError(
   }
 }
 function retryCreate() {
-  overlay.remove();
+
+  const existing = document.querySelector(".create-fullscreen");
+  if (existing) {
+    existing.remove();
+  }
 
   openConfirmAppointment(patient, slot, {
     previousOverlay,
@@ -341,8 +351,8 @@ function showCreateError(overlay, message, retryCallback, previousOverlay) {
     </div>
   `;
 
-  const retryBtn = document.getElementById("retryCreateBtn");
-  const closeBtn = document.getElementById("closeCreateBtn");
+const retryBtn = overlay.querySelector("#retryCreateBtn");
+const closeBtn = overlay.querySelector("#closeCreateBtn");
 
   if (retryBtn && retryCallback) {
     retryBtn.addEventListener("click", () => {
