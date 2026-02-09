@@ -675,14 +675,23 @@ function normalizeDateTime(str) {
 
   if (!str) return null;
 
-  // если MIS формат dd.mm.yyyy hh:mm:ss
-  if (str.includes(".")) {
-    const [datePart, timePart] = str.split(" ");
-    const [hh, mm] = timePart.split(":");
-    return `${datePart} ${hh}:${mm}`;
+  // Уже dd.mm.yyyy hh:mm
+  if (/^\d{2}\.\d{2}\.\d{4}\s\d{2}:\d{2}$/.test(str)) {
+    return str;
   }
 
-  // если ISO или yyyy-mm-dd
+  // yyyy-mm-dd hh:mm:ss
+  if (/^\d{4}-\d{2}-\d{2}/.test(str)) {
+
+    const [datePart, timePart] = str.split(" ");
+
+    const [yyyy, mm, dd] = datePart.split("-");
+    const [hh, min] = timePart.split(":");
+
+    return `${dd}.${mm}.${yyyy} ${hh}:${min}`;
+  }
+
+  // ISO формат
   const d = new Date(str);
 
   if (isNaN(d)) return null;
