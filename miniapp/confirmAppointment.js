@@ -267,8 +267,8 @@ showCreateLoader(overlay);
           : null,
         email: patient.isNew ? patient.email : null,
         doctor_id: slot.user_id,
-        time_start: slot.time_start,
-        time_end: slot.time_end,
+        time_start: normalizeDateTime(slot.time_start),
+       time_end: normalizeDateTime(slot.time_end),
         room: slot.room,
         services: selectedServices.map(s => s.id)
       })
@@ -670,4 +670,28 @@ function renderOldServices(visit) {
       `).join("")}
     </div>
   `;
+}
+function normalizeDateTime(str) {
+
+  if (!str) return null;
+
+  // если MIS формат dd.mm.yyyy hh:mm:ss
+  if (str.includes(".")) {
+    const [datePart, timePart] = str.split(" ");
+    const [hh, mm] = timePart.split(":");
+    return `${datePart} ${hh}:${mm}`;
+  }
+
+  // если ISO или yyyy-mm-dd
+  const d = new Date(str);
+
+  if (isNaN(d)) return null;
+
+  const dd = String(d.getDate()).padStart(2, "0");
+  const mm = String(d.getMonth() + 1).padStart(2, "0");
+  const yyyy = d.getFullYear();
+  const hh = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+
+  return `${dd}.${mm}.${yyyy} ${hh}:${min}`;
 }
