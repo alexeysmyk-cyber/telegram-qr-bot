@@ -236,101 +236,73 @@ document.getElementById("addServiceBtn")
   });
 
 document.getElementById("confirmCreateBtn")
-  .addEventListener("click", async () => {
+  .addEventListener("click", createAppointmentRequest);
 
-    if (isMove) {
 
-      if (!oldVisit) {
-        console.error("Old visit not found");
-        return;
-      }
+  async function createAppointmentRequest() {
 
-      console.log("Перенос визита", {
-        old_visit_id: oldVisit.id,
-        new_time_start: slot.time_start,
-        new_time_end: slot.time_end,
+  const confirmBtn = document.getElementById("confirmCreateBtn");
+  if (!confirmBtn) return;
+
+  confirmBtn.disabled = true;
+  showCreateLoader(overlay);
+
+  try {
+
+    const response = await fetch("/api/mis/create-appointment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        patient_id: patient.isNew ? null : patient.patient_id,
+        first_name: patient.isNew ? patient.first_name : null,
+        last_name: patient.isNew ? patient.last_name : null,
+        third_name: patient.isNew ? patient.third_name : null,
+        birth_date: patient.isNew && patient.birth_date
+          ? patient.birth_date.replaceAll("-", ".")
+          : null,
+        mobile: patient.isNew ? patient.mobile : null,
+        gender: patient.isNew
+          ? (patient.gender === "М" ? 1 : 2)
+          : null,
+        email: patient.isNew ? patient.email : null,
+        doctor_id: slot.user_id,
+        time_start: slot.time_start,
+        time_end: slot.time_end,
+        room: slot.room,
         services: selectedServices.map(s => s.id)
-      });
+      })
+    });
 
+    const data = await response.json();
+
+    if (!response.ok || data.error !== 0) {
+  showCreateError(
+  overlay,
+  data?.data?.desc || "Ошибка создания визита",
+  createAppointmentRequest
+);
       return;
     }
 
-    // обычное создание
-    const servicesIds = selectedServices.map(s => s.id);
+    showSuccessCheckmark(overlay);
 
-// ===============================
-// СОЗДАНИЕ ВИЗИТА
-// ===============================
+    setTimeout(() => {
+      overlay.remove();
+      if (window.reloadSchedule) {
+        window.reloadSchedule(slot.time_start.split(" ")[0]);
+      }
+    }, 2000);
 
-    
-const confirmBtn = document.getElementById("confirmCreateBtn");
-confirmBtn.disabled = true;
-showCreateLoader(overlay);
+  } catch (err) {
 
-try {
-
-  const response = await fetch("/api/mis/create-appointment", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      patient_id: patient.isNew ? null : patient.patient_id,
-      first_name: patient.isNew ? patient.first_name : null,
-      last_name: patient.isNew ? patient.last_name : null,
-      third_name: patient.isNew ? patient.third_name : null,
-  birth_date: patient.isNew && patient.birth_date
-  ? patient.birth_date.replaceAll("-", ".")
-  : null,
-      mobile: patient.isNew ? patient.mobile : null,
-      gender: patient.isNew
-        ? (patient.gender === "М" ? 1 : 2)
-        : null,
-      email: patient.isNew ? patient.email : null,
-      doctor_id: slot.user_id,
-      time_start: slot.time_start,
-      time_end: slot.time_end,
-      room: slot.room,
-      services: selectedServices.map(s => s.id)
-    })
-  });
-
-  const data = await response.json();
-
-  if (!response.ok || data.error !== 0) {
     showCreateError(
-  overlay,
-  data?.data?.desc || "Ошибка создания визита",
-  () => openConfirmAppointment(patient, slot, options)
-);
-    confirmBtn.disabled = false;
-    return;
+      overlay,
+      "Ошибка соединения",
+      createAppointmentRequest
+    );
   }
-
-  showSuccessCheckmark(overlay);
-
-  setTimeout(() => {
-
-    overlay.remove();
-
-    if (window.reloadSchedule) {
-      window.reloadSchedule(
-        slot.time_start.split(" ")[0]
-      );
-    }
-
-  }, 2000);
-
-} catch (err) {
-
-  showCreateError(
-  overlay,
-  "Ошибка соединения",
-  () => openConfirmAppointment(patient, slot, options)
-);
-  confirmBtn.disabled = false;
 }
 
-
-});
 
 }
 
