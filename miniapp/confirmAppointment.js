@@ -236,7 +236,7 @@ document.getElementById("addServiceBtn")
   });
 
 document.getElementById("confirmCreateBtn")
-  .addEventListener("click", () => {
+  .addEventListener("click", async () => {
 
     if (isMove) {
 
@@ -262,6 +262,8 @@ document.getElementById("confirmCreateBtn")
 // СОЗДАНИЕ ВИЗИТА
 // ===============================
 
+    
+const confirmBtn = document.getElementById("confirmCreateBtn");
 confirmBtn.disabled = true;
 showCreateLoader(overlay);
 
@@ -275,7 +277,9 @@ try {
       first_name: patient.isNew ? patient.first_name : null,
       last_name: patient.isNew ? patient.last_name : null,
       third_name: patient.isNew ? patient.third_name : null,
-      birth_date: patient.isNew ? patient.birth_date.replaceAll("-", ".") : null,
+  birth_date: patient.isNew && patient.birth_date
+  ? patient.birth_date.replaceAll("-", ".")
+  : null,
       mobile: patient.isNew ? patient.mobile : null,
       gender: patient.isNew
         ? (patient.gender === "М" ? 1 : 2)
@@ -550,6 +554,7 @@ container.querySelectorAll(".service-item-select")
         );
         el.classList.remove("selected");
       } else {
+        if (!service) return;
        selectedServices.push({
   id: service.service_id || service.id,
   name: service.title || service.name,
