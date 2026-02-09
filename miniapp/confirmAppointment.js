@@ -357,7 +357,7 @@ function showCreateError(overlay, message, retryCallback, previousOverlay) {
       // 🔥 ВОССТАНАВЛИВАЕМ ПРЕДЫДУЩИЙ OVERLAY
     if (previousOverlay && document.body.contains(previousOverlay)) {
   previousOverlay.classList.remove("hidden");
-}}
+}
 
       const fab = document.getElementById("fabCreate");
       if (fab) fab.style.display = "flex";
