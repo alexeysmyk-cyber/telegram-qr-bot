@@ -312,7 +312,7 @@ showCreateError(
 // HELPERS
 // =============================
 
-function showCreateError(overlay, message, retryCallback, previousOverlay) {
+function showCreateError(overlay, message, retryCallback, previousOverlay)
 
   overlay.innerHTML = `
     <div class="visit-loading">
@@ -345,12 +345,18 @@ function showCreateError(overlay, message, retryCallback, previousOverlay) {
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
       overlay.remove();
-      if (previousOverlay) {
+
+      // 🔥 ВОССТАНАВЛИВАЕМ ПРЕДЫДУЩИЙ OVERLAY
+      if (typeof previousOverlay !== "undefined" && previousOverlay) {
         previousOverlay.classList.remove("hidden");
       }
+
+      const fab = document.getElementById("fabCreate");
+      if (fab) fab.style.display = "flex";
     });
   }
 }
+
 
 
 
