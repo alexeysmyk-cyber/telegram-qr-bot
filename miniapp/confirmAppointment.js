@@ -241,12 +241,7 @@ document.getElementById("confirmCreateBtn")
 
   async function createAppointmentRequest() {
 
-  const confirmBtn = document.getElementById("confirmCreateBtn");
-  if (!confirmBtn) return;
-
-  confirmBtn.disabled = true;
-  showCreateLoader(overlay);
-
+showCreateLoader(overlay);
   try {
 
     const response = await fetch("/api/mis/create-appointment", {
