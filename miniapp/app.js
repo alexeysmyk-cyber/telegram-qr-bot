@@ -741,12 +741,10 @@ window.setMainDateAndReload = function (dateString) {
 
   let date;
 
-  // dd.mm.yyyy
   if (dateString.includes(".")) {
     const [dd, mm, yyyy] = dateString.split(".");
     date = new Date(yyyy, mm - 1, dd);
   }
-  // yyyy-mm-dd
   else if (dateString.includes("-")) {
     const [yyyy, mm, dd] = dateString.split("-");
     date = new Date(yyyy, mm - 1, dd);
@@ -759,6 +757,7 @@ window.setMainDateAndReload = function (dateString) {
 
   selectedDate = date;
 
+  // 🔥 Перерисовываем календарь
   renderCalendar(
     document.getElementById("calendar"),
     (date) => {
@@ -768,5 +767,7 @@ window.setMainDateAndReload = function (dateString) {
     selectedDate
   );
 
+  // 🔥 ВАЖНО: вызываем refreshSchedule, а не reloadSchedule
   refreshSchedule();
 };
+
