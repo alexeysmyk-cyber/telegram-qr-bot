@@ -512,8 +512,11 @@ function refreshSchedule() {
 
   scheduleTimeout = setTimeout(() => {
 
+    const container = document.getElementById("scheduleContainer");
+    if (!container) return;
+
     loadSchedule({
-      container: scheduleContainer,
+      container,
       date: formatLocalDate(selectedDate),
       doctorId: showAll ? null : doctorSelect.value,
       showAll,
@@ -522,8 +525,9 @@ function refreshSchedule() {
       showCompleted
     });
 
-  }, 350); // 🔥 задержка 350мс
+  }, 350);
 }
+
 
 
 function updateFilterSummary() {
