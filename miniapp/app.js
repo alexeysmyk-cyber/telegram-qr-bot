@@ -735,3 +735,21 @@ async function init() {
 
 init();
 
+window.setMainDateAndReload = function (dateString) {
+
+  if (!dateString) return;
+
+  const [dd, mm, yyyy] = dateString.split(".");
+  selectedDate = new Date(yyyy, mm - 1, dd);
+
+  renderCalendar(
+    document.getElementById("calendar"),
+    (date) => {
+      selectedDate = new Date(date);
+      refreshSchedule();
+    },
+    selectedDate
+  );
+
+  refreshSchedule();
+};
