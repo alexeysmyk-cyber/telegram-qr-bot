@@ -21,6 +21,14 @@ export function getSelectedSlotObject() {
   return currentSchedule[selectedSlots[0]];
 }
 
+export function resetCreateVisitState() {
+  movingVisit = null;
+  isMoveMode = false;
+  selectedPatient = null;
+  selectedSlots = [];
+}
+
+
 
 export async function openCreateVisit(options = {}) {
   
