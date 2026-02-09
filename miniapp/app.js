@@ -739,8 +739,25 @@ window.setMainDateAndReload = function (dateString) {
 
   if (!dateString) return;
 
-  const [dd, mm, yyyy] = dateString.split(".");
-  selectedDate = new Date(yyyy, mm - 1, dd);
+  let date;
+
+  // dd.mm.yyyy
+  if (dateString.includes(".")) {
+    const [dd, mm, yyyy] = dateString.split(".");
+    date = new Date(yyyy, mm - 1, dd);
+  }
+  // yyyy-mm-dd
+  else if (dateString.includes("-")) {
+    const [yyyy, mm, dd] = dateString.split("-");
+    date = new Date(yyyy, mm - 1, dd);
+  }
+  else {
+    date = new Date(dateString);
+  }
+
+  if (isNaN(date)) return;
+
+  selectedDate = date;
 
   renderCalendar(
     document.getElementById("calendar"),
