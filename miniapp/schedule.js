@@ -564,3 +564,23 @@ window.reloadSchedule = function(dateOverride = null) {
 
   loadSchedule(params);
 };
+
+window.openMainSchedule = function ({ date, doctorId }) {
+
+  const visitsTab = document.getElementById("visitsTab");
+  if (visitsTab) visitsTab.click();
+
+  if (window.loadSchedule) {
+    window.loadSchedule({
+      container: document.getElementById("content"),
+      date,
+      doctorId,
+      showAll: false,
+      duration: null,
+      showCancelled: false,
+      showCompleted: false
+    });
+  }
+};
+
+
