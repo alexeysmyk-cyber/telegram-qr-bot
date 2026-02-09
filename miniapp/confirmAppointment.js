@@ -312,7 +312,7 @@ showCreateError(
 // HELPERS
 // =============================
 
-function showCreateError(overlay, message, retryCallback, previousOverlay)
+function showCreateError(overlay, message, retryCallback, previousOverlay) {
 
   overlay.innerHTML = `
     <div class="visit-loading">
