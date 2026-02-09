@@ -410,6 +410,108 @@ function normalizePhone(phone) {
   return digits;
 }
 
+// ===============================
+// 📌 СОЗДАНИЕ ВИЗИТА
+// ===============================
+router.post("/create-appointment", async (req, res) => {
+
+  try {
+
+    const {
+      patient_id,
+      first_name,
+      last_name,
+      third_name,
+      birth_date,
+      mobile,
+      gender,
+      email,
+      doctor_id,
+      time_start,
+      time_end,
+      room,
+      services
+    } = req.body;
+
+    if (!doctor_id || !time_start || !time_end) {
+      return res.status(400).json({ error: "NO_REQUIRED_FIELDS" });
+    }
+
+    const body = {
+      api_key: process.env.API_KEY,
+      clinic_id: 2997,
+      doctor_id,
+      time_start,
+      time_end,
+      room: room || "",
+      source: "Telegram Bot",
+      is_handled: true
+    };
+
+    // ===============================
+    // ЕСЛИ СУЩЕСТВУЮЩИЙ ПАЦИЕНТ
+    // ===============================
+    if (patient_id) {
+      body.patient_id = patient_id;
+    }
+    else {
+      body.first_name = first_name;
+      body.last_name = last_name;
+      body.third_name = third_name || "";
+      body.birth_date = birth_date;
+      body.mobile = mobile;
+      body.gender = gender;
+      body.email = email || "";
+    }
+
+    // услуги
+    if (services && services.length) {
+      body.services = JSON.stringify(
+        services.map(id => ({ service_id: id }))
+      );
+    }
+
+    const url =
+      process.env.BASE_URL.replace(/\/$/, "") + "/createAppointment";
+
+    const response = await axios.post(
+      url,
+      qs.stringify(body),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        validateStatus: () => true
+      }
+    );
+
+    if (!response.data || typeof response.data !== "object") {
+      return res.status(502).json({ error: "MIS_INVALID_RESPONSE" });
+    }
+
+    if (response.data.error !== 0) {
+      return res.status(400).json(response.data);
+    }
+
+    // 🧹 очищаем кэш
+    for (const key in appointmentsCache) delete appointmentsCache[key];
+    for (const key in scheduleCache) delete scheduleCache[key];
+
+    return res.json(response.data);
+
+  } catch (err) {
+
+    console.log("Create appointment error:",
+      err.response?.data || err.message
+    );
+
+    return res.status(500).json({
+      error: "SERVER_ERROR"
+    });
+  }
+});
+
+
 router.post("/get-services", misController.getServices);
 
 module.exports = router;
