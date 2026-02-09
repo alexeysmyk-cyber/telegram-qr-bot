@@ -204,7 +204,7 @@ router.post("/cancel-appointment", async (req, res) => {
       api_key: process.env.API_KEY,
       appointment_id,
       comment: comment || "",
-      source: "Telegram Bot",
+      source: 1090,
       is_handled: true,
       cancel_reason: reason
     };
@@ -444,7 +444,7 @@ router.post("/create-appointment", async (req, res) => {
       time_start,
       time_end,
       room: room || "",
-      source: "Telegram Bot",
+      source: 1090,
       is_handled: true
     };
 
