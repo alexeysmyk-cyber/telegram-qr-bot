@@ -506,6 +506,7 @@ async function openSelectServices(doctorId) {
 async function loadServices(doctorId) {
 
   const container = document.getElementById("servicesList");
+  if (!container) return;
 
   try {
 
