@@ -567,19 +567,26 @@ window.reloadSchedule = function(dateOverride = null) {
 
 window.openMainSchedule = function ({ date }) {
 
-  // удалить все оверлеи
+  // 🔥 Удаляем ВСЕ возможные оверлеи
   document.querySelectorAll(".visit-overlay").forEach(el => el.remove());
   document.querySelectorAll(".create-fullscreen").forEach(el => el.remove());
+  document.querySelectorAll("#createOverlay").forEach(el => el.remove());
+  document.querySelectorAll(".services-overlay").forEach(el => el.remove());
+  document.querySelectorAll(".patient-overlay").forEach(el => el.remove());
 
-  // вернуть FAB
+  // 🔥 Возвращаем FAB
   const fab = document.getElementById("fabCreate");
   if (fab) fab.style.display = "flex";
 
-  // 🔥 ПРАВИЛЬНОЕ ОБНОВЛЕНИЕ
+  // 🔥 Принудительно снимаем возможную блокировку
+  document.body.style.overflow = "";
+
+  // 🔥 Обновляем дату и перезагружаем
   if (window.setMainDateAndReload) {
     window.setMainDateAndReload(date);
   }
 };
+
 
 
 
