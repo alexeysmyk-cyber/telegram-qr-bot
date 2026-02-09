@@ -296,11 +296,12 @@ showCreateError(
 
   } catch (err) {
 
-    showCreateError(
-      overlay,
-      "Ошибка соединения",
-      createAppointmentRequest
-    );
+showCreateError(
+  overlay,
+  "Ошибка соединения",
+  createAppointmentRequest,
+  previousOverlay
+);
   }
 }
 
