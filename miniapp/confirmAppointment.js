@@ -289,14 +289,21 @@ showCreateError(
 
     showSuccessCheckmark(overlay);
 
-setTimeout(() => {
+setTimeout(async () => {
 
   overlay.remove();
 
   const visitDate = slot.time_start.split(" ")[0];
+  const doctorId = slot.user_id;
 
-  if (window.reloadSchedule) {
-    window.reloadSchedule(visitDate);
+  const module = await import("./createVisit.js");
+  module.resetCreateVisitState();
+
+  if (window.openMainSchedule) {
+    window.openMainSchedule({
+      date: visitDate,
+      doctorId: doctorId
+    });
   }
 
 }, 2000);
