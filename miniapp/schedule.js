@@ -565,13 +565,22 @@ window.reloadSchedule = function(dateOverride = null) {
   loadSchedule(params);
 };
 
-window.openMainSchedule = function ({ date, doctorId }) {
+window.openMainSchedule = function ({ date }) {
 
-  window.forceScheduleState = { date, doctorId };
+  // 1️⃣ Удаляем все оверлеи
+  document.querySelectorAll(".visit-overlay").forEach(el => el.remove());
+  document.querySelectorAll(".create-fullscreen").forEach(el => el.remove());
 
-  const visitsTab = document.getElementById("visitsTab");
-  if (visitsTab) visitsTab.click();
+  // 2️⃣ Возвращаем FAB
+  const fab = document.getElementById("fabCreate");
+  if (fab) fab.style.display = "flex";
+
+  // 3️⃣ Просто обновляем расписание
+  if (window.reloadSchedule) {
+    window.reloadSchedule(date);
+  }
 };
+
 
 
 
