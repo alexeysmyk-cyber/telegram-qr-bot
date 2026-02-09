@@ -72,7 +72,7 @@
     "648009056": "WAIT_MIS_ID",
     "1582980728": null,
     "5900607039": "MIS",
-    "7485978153": "MIS",
+    "7485978153": null,
     "5280146224": "MIS"
   },
   "pending": [],
@@ -135,11 +135,23 @@
     }
   },
   "notify_admin_limits": {
-    "133334492": {},
-    "310418501": {},
+    "133334492": {
+      "visit_create": false,
+      "patient_create": false,
+      "visit_cancel": false
+    },
+    "310418501": {
+      "visit_create": false,
+      "patient_create": false,
+      "visit_cancel": false
+    },
     "1582980728": {},
     "7485978153": {},
-    "5280146224": {}
+    "5280146224": {
+      "visit_create": false,
+      "patient_create": false,
+      "visit_cancel": false
+    }
   },
   "users": {
     "133334492": {
