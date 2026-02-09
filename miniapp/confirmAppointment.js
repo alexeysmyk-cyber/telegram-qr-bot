@@ -296,7 +296,11 @@ try {
   const data = await response.json();
 
   if (!response.ok || data.error !== 0) {
-    showCreateError(overlay, data?.data?.desc || "Ошибка создания визита");
+    showCreateError(
+  overlay,
+  data?.data?.desc || "Ошибка создания визита",
+  () => openConfirmAppointment(patient, slot, options)
+);
     confirmBtn.disabled = false;
     return;
   }
@@ -317,7 +321,11 @@ try {
 
 } catch (err) {
 
-  showCreateError(overlay, "Ошибка соединения");
+  showCreateError(
+  overlay,
+  "Ошибка соединения",
+  () => openConfirmAppointment(patient, slot, options)
+);
   confirmBtn.disabled = false;
 }
 
@@ -331,7 +339,7 @@ try {
 // HELPERS
 // =============================
 
-function showCreateError(overlay, message) {
+function showCreateError(overlay, message, retryCallback) {
 
   overlay.innerHTML = `
     <div class="visit-loading">
@@ -354,11 +362,18 @@ function showCreateError(overlay, message) {
     </div>
   `;
 
-  document
-    .getElementById("closeCreateBtn")
-    ?.addEventListener("click", () => overlay.remove());
+  const retryBtn = document.getElementById("retryCreateBtn");
+  const closeBtn = document.getElementById("closeCreateBtn");
 
+  if (retryBtn && retryCallback) {
+    retryBtn.addEventListener("click", retryCallback);
+  }
+
+  if (closeBtn) {
+    closeBtn.addEventListener("click", () => overlay.remove());
+  }
 }
+
 
 
 function showSuccessCheckmark(overlay) {
