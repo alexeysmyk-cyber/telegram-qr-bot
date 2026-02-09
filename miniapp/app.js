@@ -591,7 +591,9 @@ initStepSlider((value) => {
   // ===============================
   // Calendar
   // ===============================
+ if (!selectedDate) {
   selectedDate = new Date();
+}
 
 renderCalendar(
   document.getElementById("calendar"),
