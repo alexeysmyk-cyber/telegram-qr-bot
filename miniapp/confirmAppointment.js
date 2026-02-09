@@ -276,10 +276,11 @@ document.getElementById("confirmCreateBtn")
     const data = await response.json();
 
     if (!response.ok || data.error !== 0) {
-  showCreateError(
+showCreateError(
   overlay,
   data?.data?.desc || "Ошибка создания визита",
-  createAppointmentRequest
+  createAppointmentRequest,
+  previousOverlay
 );
       return;
     }
@@ -311,7 +312,7 @@ document.getElementById("confirmCreateBtn")
 // HELPERS
 // =============================
 
-function showCreateError(overlay, message, retryCallback) {
+function showCreateError(overlay, message, retryCallback, previousOverlay) {
 
   overlay.innerHTML = `
     <div class="visit-loading">
@@ -342,9 +343,15 @@ function showCreateError(overlay, message, retryCallback) {
   }
 
   if (closeBtn) {
-    closeBtn.addEventListener("click", () => overlay.remove());
+    closeBtn.addEventListener("click", () => {
+      overlay.remove();
+      if (previousOverlay) {
+        previousOverlay.classList.remove("hidden");
+      }
+    });
   }
 }
+
 
 
 
