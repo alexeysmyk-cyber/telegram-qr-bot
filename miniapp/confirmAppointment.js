@@ -276,10 +276,12 @@ document.getElementById("confirmCreateBtn")
     const data = await response.json();
 
     if (!response.ok || data.error !== 0) {
+
+      confirmBtn.disabled = false;
 showCreateError(
   overlay,
   data?.data?.desc || "Ошибка создания визита",
-  createAppointmentRequest,
+   retryCreate,
   previousOverlay
 );
       return;
@@ -340,7 +342,9 @@ function showCreateError(overlay, message, retryCallback, previousOverlay) {
   const closeBtn = document.getElementById("closeCreateBtn");
 
   if (retryBtn && retryCallback) {
-    retryBtn.addEventListener("click", retryCallback);
+    retryBtn.addEventListener("click", () => {
+  retryCallback();
+});
   }
 
   if (closeBtn) {
@@ -348,9 +352,9 @@ function showCreateError(overlay, message, retryCallback, previousOverlay) {
       overlay.remove();
 
       // 🔥 ВОССТАНАВЛИВАЕМ ПРЕДЫДУЩИЙ OVERLAY
-      if (typeof previousOverlay !== "undefined" && previousOverlay) {
-        previousOverlay.classList.remove("hidden");
-      }
+    if (previousOverlay && document.body.contains(previousOverlay)) {
+  previousOverlay.classList.remove("hidden");
+}}
 
       const fab = document.getElementById("fabCreate");
       if (fab) fab.style.display = "flex";
@@ -654,4 +658,12 @@ function renderOldServices(visit) {
     </div>
   `;
 }
-
+function retryCreate() {
+  overlay.remove();
+  openConfirmAppointment(patient, slot, {
+    previousOverlay,
+    mode: isMove ? "move" : undefined,
+    oldVisit,
+    defaultServices
+  });
+}
