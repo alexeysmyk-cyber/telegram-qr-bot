@@ -567,19 +567,20 @@ window.reloadSchedule = function(dateOverride = null) {
 
 window.openMainSchedule = function ({ date }) {
 
-  // 1️⃣ Удаляем все оверлеи
+  // удалить все оверлеи
   document.querySelectorAll(".visit-overlay").forEach(el => el.remove());
   document.querySelectorAll(".create-fullscreen").forEach(el => el.remove());
 
-  // 2️⃣ Возвращаем FAB
+  // вернуть FAB
   const fab = document.getElementById("fabCreate");
   if (fab) fab.style.display = "flex";
 
-  // 3️⃣ Просто обновляем расписание
-  if (window.reloadSchedule) {
-    window.reloadSchedule(date);
+  // 🔥 ПРАВИЛЬНОЕ ОБНОВЛЕНИЕ
+  if (window.setMainDateAndReload) {
+    window.setMainDateAndReload(date);
   }
 };
+
 
 
 
