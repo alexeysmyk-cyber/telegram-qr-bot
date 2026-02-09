@@ -289,12 +289,21 @@ showCreateError(
 
     showSuccessCheckmark(overlay);
 
-    setTimeout(() => {
-      overlay.remove();
-      if (window.reloadSchedule) {
-        window.reloadSchedule(slot.time_start.split(" ")[0]);
-      }
-    }, 2000);
+setTimeout(() => {
+
+  overlay.remove();
+
+  const visitDate = slot.time_start.split(" ")[0];
+  const doctorId = slot.user_id;
+
+  if (window.openMainSchedule) {
+    window.openMainSchedule({
+      date: visitDate,
+      doctorId: doctorId
+    });
+  }
+
+}, 2000);
 
   } catch (err) {
 
