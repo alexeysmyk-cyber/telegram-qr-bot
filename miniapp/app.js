@@ -608,7 +608,6 @@ renderCalendar(
 // ===============================
 
 let createSheetOpen = false;
-
 function addFloatingButton() {
 
   if (document.getElementById("fabCreate")) return;
@@ -620,29 +619,20 @@ function addFloatingButton() {
 
   document.body.appendChild(fab);
 
-  let timer = null;
+  let blocked = false;
 
-  function startPress() {
-    timer = setTimeout(() => {
-      openCreateVisit();
-    }, 300);
-  }
+  fab.addEventListener("click", (e) => {
+    if (blocked) return;
 
-  function cancelPress() {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-  }
-
-  fab.addEventListener("touchstart", startPress);
-  fab.addEventListener("touchend", cancelPress);
-  fab.addEventListener("touchcancel", cancelPress);
-
-  // fallback для десктопа
-  fab.addEventListener("click", () => {
+    blocked = true;
     openCreateVisit();
+
+    // защита от повторного открытия
+    setTimeout(() => {
+      blocked = false;
+    }, 500);
   });
+
 }
 
 
