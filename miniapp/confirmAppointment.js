@@ -207,12 +207,14 @@ if (isMove) {
 cancelBtn.addEventListener("click", () => {
 
   selectedServices = [];
-  overlay.remove();
+overlay.remove();
 
+const createOverlay = document.getElementById("createOverlay");
 
-
+if (!createOverlay) {
   const fab = document.getElementById("fabCreate");
   if (fab) fab.style.display = "flex";
+}
 });
 
   }
@@ -225,14 +227,18 @@ document.getElementById("closeConfirm")
   .addEventListener("click", () => {
 
     selectedServices = [];
-    overlay.remove();
+overlay.remove();
 
-    if (previousOverlay) {
-      previousOverlay.classList.remove("hidden");
-    }
+if (previousOverlay) {
+  previousOverlay.classList.remove("hidden");
+}
 
-    const fab = document.getElementById("fabCreate");
-    if (fab) fab.style.display = "flex";
+const createOverlay = document.getElementById("createOverlay");
+
+if (!createOverlay) {
+  const fab = document.getElementById("fabCreate");
+  if (fab) fab.style.display = "flex";
+}
   });
 
 
@@ -446,15 +452,19 @@ const closeBtn = overlay.querySelector("#closeCreateBtn");
 
   if (closeBtn) {
     closeBtn.addEventListener("click", () => {
-      overlay.remove();
+overlay.remove();
 
-      // 🔥 ВОССТАНАВЛИВАЕМ ПРЕДЫДУЩИЙ OVERLAY
-    if (previousOverlay && document.body.contains(previousOverlay)) {
+if (previousOverlay && document.body.contains(previousOverlay)) {
   previousOverlay.classList.remove("hidden");
 }
 
-      const fab = document.getElementById("fabCreate");
-      if (fab) fab.style.display = "flex";
+const createOverlay = document.getElementById("createOverlay");
+
+if (!createOverlay) {
+  const fab = document.getElementById("fabCreate");
+  if (fab) fab.style.display = "flex";
+}
+
     });
   }
 }
