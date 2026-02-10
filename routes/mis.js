@@ -194,20 +194,29 @@ router.post("/cancel-appointment", async (req, res) => {
 
   try {
 
-    const { appointment_id, comment, reason } = req.body;
+    const { appointment_id, comment, reason, moved_to, is_handled } = req.body;
 
-    if (!appointment_id || !reason) {
-      return res.status(400).json({ error: "NO_DATA" });
+    if (!appointment_id) {
+      return res.status(400).json({ error: "NO_ID" });
     }
 
     const body = {
       api_key: process.env.API_KEY,
       appointment_id,
-      comment: comment || "",
       source: 1090,
-      is_handled: true,
-      cancel_reason: reason
+      is_handled: is_handled === true
     };
+
+    // 🔹 Если это перенос
+    if (moved_to) {
+      body.moved_to = moved_to;
+    }
+
+    // 🔹 Если это обычная отмена
+    if (reason) {
+      body.cancel_reason = reason;
+      body.comment = comment || "";
+    }
 
     const url =
       process.env.BASE_URL.replace(/\/$/, "") + "/cancelAppointment";
@@ -219,28 +228,18 @@ router.post("/cancel-appointment", async (req, res) => {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded"
         },
-        validateStatus: () => true // ← ВАЖНО
+        validateStatus: () => true
       }
     );
-if (!response.data || typeof response.data !== "object") {
-  return res.status(502).json({ error: "MIS_INVALID_RESPONSE" });
-}
-    
 
-// ===============================
-// CLEAR CACHE AFTER CANCEL
-// ===============================
-for (const key in appointmentsCache) {
-  delete appointmentsCache[key];
-}
+    if (!response.data || typeof response.data !== "object") {
+      return res.status(502).json({ error: "MIS_INVALID_RESPONSE" });
+    }
 
-for (const key in scheduleCache) {
-  delete scheduleCache[key];
-}
-    
-    // Передаём статус и тело ответа как есть
+    // 🧹 ЧИСТИМ КЭШ
+    for (const key in appointmentsCache) delete appointmentsCache[key];
+    for (const key in scheduleCache) delete scheduleCache[key];
 
-    
     return res.status(response.status).json(response.data);
 
   } catch (err) {
@@ -254,7 +253,8 @@ for (const key in scheduleCache) {
   }
 
 });
-;
+
+
 
 
 // ===============================
