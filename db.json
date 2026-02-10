@@ -135,11 +135,26 @@
     }
   },
   "notify_admin_limits": {
-    "133334492": {},
-    "310418501": {},
+    "133334492": {
+      "visit_create": false,
+      "patient_create": false,
+      "visit_cancel": false,
+      "visit_move": false
+    },
+    "310418501": {
+      "visit_create": false,
+      "patient_create": false,
+      "visit_cancel": false,
+      "visit_move": false
+    },
     "1582980728": {},
     "7485978153": {},
-    "5280146224": {}
+    "5280146224": {
+      "visit_create": false,
+      "patient_create": false,
+      "visit_cancel": false,
+      "visit_move": false
+    }
   },
   "users": {
     "133334492": {
