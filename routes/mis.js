@@ -430,7 +430,8 @@ router.post("/create-appointment", async (req, res) => {
       time_start,
       time_end,
       room,
-      services
+      services,
+      moved_from
     } = req.body;
 
     if (!doctor_id || !time_start || !time_end) {
@@ -463,7 +464,9 @@ router.post("/create-appointment", async (req, res) => {
       body.gender = gender;
       body.email = email || "";
     }
-
+if (moved_from) {
+  body.moved_from = moved_from;
+}
     // услуги
 //    if (services && services.length) {
 //      body.services = JSON.stringify(
