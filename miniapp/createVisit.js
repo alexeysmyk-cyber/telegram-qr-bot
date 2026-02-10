@@ -28,7 +28,8 @@ export function resetCreateVisitState() {
   selectedSlots = [];
 }
 
-
+// 👇 добавить сразу после функции
+window.resetCreateVisitState = resetCreateVisitState;
 
 export async function openCreateVisit(options = {}) {
   
