@@ -252,73 +252,86 @@ async function createAppointmentRequest() {
   try {
 
     // ==============================
-    // 1️⃣ СОЗДАЁМ НОВЫЙ ВИЗИТ
+    // 1️⃣ СОЗДАНИЕ НОВОГО ВИЗИТА
     // ==============================
 
-    const createResponse = await fetch("/api/mis/create-appointment", {
+    const createBody = {
+      patient_id: patient.isNew ? null : patient.patient_id,
+      first_name: patient.isNew ? patient.first_name : null,
+      last_name: patient.isNew ? patient.last_name : null,
+      third_name: patient.isNew ? patient.third_name : null,
+      birth_date: patient.isNew && patient.birth_date
+        ? patient.birth_date.replaceAll("-", ".")
+        : null,
+      mobile: patient.isNew ? patient.mobile : null,
+      gender: patient.isNew
+        ? (patient.gender === "М" ? 1 : 2)
+        : null,
+      email: patient.isNew ? patient.email : null,
+      doctor_id: slot.user_id,
+      time_start: normalizeDateTime(slot.time_start),
+      time_end: normalizeDateTime(slot.time_end),
+      room: slot.room,
+      services: selectedServices.map(s => s.id)
+    };
+
+    // если перенос — добавляем moved_from
+    if (isMove && oldVisit?.id) {
+      createBody.moved_from = oldVisit.id;
+    }
+
+    const response = await fetch("/api/mis/create-appointment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        patient_id: patient.isNew ? null : patient.patient_id,
-        first_name: patient.isNew ? patient.first_name : null,
-        last_name: patient.isNew ? patient.last_name : null,
-        third_name: patient.isNew ? patient.third_name : null,
-        birth_date: patient.isNew && patient.birth_date
-          ? patient.birth_date.replaceAll("-", ".")
-          : null,
-        mobile: patient.isNew ? patient.mobile : null,
-        gender: patient.isNew
-          ? (patient.gender === "М" ? 1 : 2)
-          : null,
-        email: patient.isNew ? patient.email : null,
-        doctor_id: slot.user_id,
-        time_start: normalizeDateTime(slot.time_start),
-        time_end: normalizeDateTime(slot.time_end),
-        room: slot.room,
-        services: selectedServices.map(s => s.id),
-
-        // 🔥 ДОБАВЛЯЕМ ПРИ ПЕРЕНОСЕ
-        moved_from: isMove ? oldVisit.id : null
-      })
+      body: JSON.stringify(createBody)
     });
 
-    const createData = await createResponse.json();
+    const data = await response.json();
 
-    if (!createResponse.ok || createData.error !== 0) {
+    if (!response.ok || data.error !== 0) {
       showCreateError(
         overlay,
-        createData?.data?.desc || "Ошибка создания визита",
+        data?.data?.desc || "Ошибка создания визита",
         retryCreate,
         previousOverlay
       );
       return;
     }
 
-    const newVisitId =
-      createData?.data?.appointment_id ||
-      createData?.data?.id ||
-      createData?.data;
+    const newVisitId = data.data;
 
     // ==============================
-    // ЕСЛИ ЭТО НЕ ПЕРЕНОС — ВСЁ
+    // 2️⃣ ЕСЛИ ЭТО НЕ ПЕРЕНОС
     // ==============================
+
     if (!isMove) {
 
       showSuccessCheckmark(overlay);
 
       setTimeout(() => {
+
         overlay.remove();
-        window.setMainDateAndReload(slot.time_start.split(" ")[0]);
+
+        if (window.resetCreateVisitState) {
+          window.resetCreateVisitState();
+        }
+
+        if (window.openMainSchedule) {
+          window.openMainSchedule({
+            date: slot.time_start.split(" ")[0]
+          });
+        }
+
       }, 2000);
 
       return;
     }
 
     // ==============================
-    // 2️⃣ УДАЛЯЕМ СТАРЫЙ ВИЗИТ
+    // 3️⃣ ЕСЛИ ЭТО ПЕРЕНОС — УДАЛЯЕМ СТАРЫЙ
     // ==============================
 
-    const cancelResponse = await fetch("/api/mis/cancel-appointment", {
+    const deleteResponse = await fetch("/api/mis/cancel-appointment", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -327,15 +340,15 @@ async function createAppointmentRequest() {
       })
     });
 
-    const cancelData = await cancelResponse.json();
+    const deleteData = await deleteResponse.json();
 
-    if (!cancelResponse.ok || cancelData.error !== 0) {
+    if (!deleteResponse.ok || deleteData.error !== 0) {
 
-      // ⚠ Новый создан, старый не удалён
       showCreateError(
         overlay,
-        "Новый визит создан, но старый не удалён. Пожалуйста удалите старый визит через МИС.",
-        null,
+        (deleteData?.data?.desc || "Ошибка удаления старого визита") +
+        "\n\nНовый визит был создан, но старый не удалён.\nПожалуйста удалите старый визит вручную в МИС.",
+        retryCreate,
         previousOverlay
       );
 
@@ -343,7 +356,7 @@ async function createAppointmentRequest() {
     }
 
     // ==============================
-    // ✅ ОБА ШАГА УСПЕШНЫ
+    // 4️⃣ ВСЁ УСПЕШНО
     // ==============================
 
     showSuccessCheckmark(overlay);
@@ -356,9 +369,11 @@ async function createAppointmentRequest() {
         window.resetCreateVisitState();
       }
 
-      window.setMainDateAndReload(
-        slot.time_start.split(" ")[0]
-      );
+      if (window.openMainSchedule) {
+        window.openMainSchedule({
+          date: slot.time_start.split(" ")[0]
+        });
+      }
 
     }, 2000);
 
@@ -370,8 +385,10 @@ async function createAppointmentRequest() {
       retryCreate,
       previousOverlay
     );
+
   }
 }
+
 
 function retryCreate() {
 
