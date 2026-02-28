@@ -15,7 +15,8 @@
     7485978153,
     133334492,
     5280146224,
-    310418501
+    310418501,
+    260414970
   ],
   "history": {
     "133334492": [
@@ -62,18 +63,30 @@
       {
         "amount": 13400,
         "date": "2026-01-16T12:37:20.586Z"
+      },
+      {
+        "amount": 3500,
+        "date": "2026-02-26T06:53:31.793Z"
+      }
+    ],
+    "5280146224": [
+      {
+        "amount": 2015,
+        "date": "2026-02-26T06:56:43.312Z"
       }
     ]
   },
   "state": {
     "133334492": "MIS",
-    "260414970": "MIS",
+    "260414970": null,
     "310418501": "MIS",
     "648009056": "WAIT_MIS_ID",
     "1582980728": null,
     "5900607039": "MIS",
-    "7485978153": null,
-    "5280146224": "MIS"
+    "7485978153": {
+      "mis_mode": "all"
+    },
+    "5280146224": null
   },
   "pending": [],
   "notify_pending": [],
@@ -88,6 +101,17 @@
       "lab_partial": true,
       "lab_full": true,
       "visit_move": "all"
+    },
+    "260414970": {
+      "visit_create": "self",
+      "visit_cancel": "self",
+      "visit_move": "self",
+      "visit_finish": "none",
+      "invoice_create": false,
+      "patient_create": false,
+      "invoice_pay": false,
+      "lab_partial": false,
+      "lab_full": false
     },
     "310418501": {
       "visit_create": "none",
@@ -148,7 +172,7 @@
     },
     "260414970": {
       "username": "urolog_ageeva",
-      "mis_id": null
+      "mis_id": "45721"
     },
     "310418501": {
       "username": "Dmitrii_Bogoslovski",
@@ -183,7 +207,7 @@
           "enabled": true,
           "mode": "all",
           "time": "18:00",
-          "last_sent": "2026-02-07"
+          "last_sent": "2026-02-27"
         }
       ]
     },
@@ -194,7 +218,7 @@
           "enabled": true,
           "mode": "self",
           "time": "07:00",
-          "last_sent": "2026-02-08"
+          "last_sent": "2026-02-27"
         },
         {
           "id": "uv_1700000001234",
@@ -286,6 +310,158 @@
       "doctor": "Смык Е. Б.",
       "file": "lab_33910113_1770518466212.pdf",
       "date": "2026-02-08T02:41:06.213Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34157377",
+      "patient": "Садиков Олег Маратович",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34157377_1771385967263.pdf",
+      "date": "2026-02-18T03:39:27.265Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "34264683",
+      "patient": "Андреев Тимофей Михайлович",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34264683_1771407567518.pdf",
+      "date": "2026-02-18T09:39:27.520Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "34152317",
+      "patient": "Самойлов Николай Сергеевич",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34152317_1771407571156.pdf",
+      "date": "2026-02-18T09:39:31.158Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "34340523",
+      "patient": "Гайворонский Павел Амантаевич",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34340523_1771407573617.pdf",
+      "date": "2026-02-18T09:39:33.618Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34157377",
+      "patient": "Садиков Олег Маратович",
+      "doctor": "Богословский Д. Н.",
+      "file": "lab_34157377_1771407575833.pdf",
+      "date": "2026-02-18T09:39:35.835Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34605402",
+      "patient": "Гавриленко Марина Юрьевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34605402_1772102596517.pdf",
+      "date": "2026-02-26T10:43:16.518Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34487178",
+      "patient": "Дунаевская Валерия Игоревна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34487178_1772102598634.pdf",
+      "date": "2026-02-26T10:43:18.635Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34735081",
+      "patient": "Волосюк Вячеслав Сергеевич",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34735081_1772102600584.pdf",
+      "date": "2026-02-26T10:43:20.586Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34386366",
+      "patient": "Волосюк Ольга Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34386366_1772102602746.pdf",
+      "date": "2026-02-26T10:43:22.747Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34386366",
+      "patient": "Волосюк Ольга Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34386366_1772113420174.pdf",
+      "date": "2026-02-26T13:43:40.175Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34605402",
+      "patient": "Гавриленко Марина Юрьевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34605402_1772117082546.pdf",
+      "date": "2026-02-26T14:44:42.547Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34605402",
+      "patient": "Гавриленко Марина Юрьевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34605402_1772127750138.pdf",
+      "date": "2026-02-26T17:42:30.139Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34386366",
+      "patient": "Волосюк Ольга Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34386366_1772127752436.pdf",
+      "date": "2026-02-26T17:42:32.437Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34386366",
+      "patient": "Волосюк Ольга Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": null,
+      "date": "2026-02-26T20:41:26.816Z"
+    },
+    {
+      "event": "full_ready_lab_result",
+      "appointment_id": "34735081",
+      "patient": "Волосюк Вячеслав Сергеевич",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34735081_1772160071748.pdf",
+      "date": "2026-02-27T02:41:11.749Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34487178",
+      "patient": "Дунаевская Валерия Игоревна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34487178_1772185375807.pdf",
+      "date": "2026-02-27T09:42:55.808Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34659135",
+      "patient": "Неудахина Ольга Николаевна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34659135_1772214146081.pdf",
+      "date": "2026-02-27T17:42:26.083Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34699989",
+      "patient": "Неудахин Борис Аниподистович",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34699989_1772214149286.pdf",
+      "date": "2026-02-27T17:42:29.288Z"
+    },
+    {
+      "event": "part_ready_lab_result",
+      "appointment_id": "34386366",
+      "patient": "Волосюк Ольга Владимировна",
+      "doctor": "Смык Е. Б.",
+      "file": "lab_34386366_1772214151980.pdf",
+      "date": "2026-02-27T17:42:31.980Z"
     }
   ]
 }
