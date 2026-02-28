@@ -1372,19 +1372,15 @@ if (
 });
 
 
-// ================== HTTP SERVER (TEST) ==================
+const PORT = process.env.PORT || 3000; // запасной порт на случай отсутствия PORT
 
+console.log('🔧 Attempting to start server on port:', PORT);
 
-const PORT = process.env.PORT;
+app.post('/mis', async (req, res) => {
+  await handleMisWebhook(req, res);
+});
 
-if (!PORT) {
-  console.error("PORT not provided by bothost");
-  process.exit(1);
-}
-
-app.post('/mis', async (req, res) => { await handleMisWebhook(req, res); });
-
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log('🌐 HTTP server started on port', PORT);
 
   cleanupLabs();
@@ -1402,14 +1398,40 @@ app.listen(PORT, () => {
   }, 60 * 1000);
 });
 
+// Обработка ошибки занятого порта
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.log(`❌ Порт ${PORT} занят. Пробуем порт ${PORT + 1}...`);
+    server.listen(PORT + 1);
+  } else {
+    console.error('Критическая ошибка сервера:', err);
+    process.exit(1);
+  }
+});
 
+// Graceful shutdown
+process.on('SIGINT', () => {
+  console.log('\n🛑 Получен сигнал завершения. Останавливаем сервер...');
+  server.close(() => {
+    console.log('✅ Сервер остановлен.');
+    process.exit(0);
+  });
+});
 
+process.on('SIGTERM', () => {
+  console.log('\n🛑 Получен сигнал завершения (SIGTERM). Останавливаем сервер...');
+  server.close(() => {
+    console.log('✅ Сервер остановлен.');
+    process.exit(0);
+  });
+});
 
 
 // ================== ОШИБКИ ==================
 bot.on('polling_error', (e) => {
   console.error('Polling error:', e.message);
 });
+
 
 
 
